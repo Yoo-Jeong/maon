@@ -28,7 +28,7 @@ public class PlayFabManager : MonoBehaviour
 
     void OnLoginSuccess(LoginResult result)
     {
-        print("로그인 성공");
+        print("로그인 성공" );
         SceneManager.LoadScene("Home_Scene");
 
     }

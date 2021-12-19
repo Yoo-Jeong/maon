@@ -31,5 +31,4 @@ public class Scene_Manager : MonoBehaviour
         SceneManager.LoadScene("Center_Scene");
     }
 
-
 }

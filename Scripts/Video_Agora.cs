@@ -20,8 +20,7 @@ public class Video_Agora : MonoBehaviour
     private string CHANNEL_NAME = "swuniverse";
     public Text logText;
     private Logger logger;
-    private IRtcEngine mRtcEngine = null;
-    private const float Offset = 100;
+    private IRtcEngine mRtcEngine;
 
 
     // Use this for initialization
@@ -42,7 +41,7 @@ public class Video_Agora : MonoBehaviour
     void CheckAppId()
     {
         logger = new Logger(logText);
-        logger.DebugAssert(APP_ID.Length > 10, "Please fill in your appId in VideoCanvas!!!!!");
+        logger.DebugAssert(APP_ID.Length > 10, "appId를 입력해주세요.");
     }
 
     void InitEngine()
@@ -71,9 +70,10 @@ public class Video_Agora : MonoBehaviour
 
     void OnJoinChannelSuccessHandler(string channelName, uint uid, int elapsed)
     {
-        logger.UpdateLog(string.Format("sdk version: ${0}", IRtcEngine.GetSdkVersion()));
-        logger.UpdateLog(string.Format("onJoinChannelSuccess!! channelName: {0}, uid: {1}, elapsed: {2}", channelName, uid, elapsed));
-        //makeVideoView(0);
+        logger.UpdateLog(string.Format("sdk 버전: ${0}", IRtcEngine.GetSdkVersion()));
+        logger.UpdateLog(string.Format("채널입장 성공 channelName: {0}, uid: {1}, elapsed: {2}", channelName, uid, elapsed));
+        
+        //내담자 자신의 웹캠 화면 
         GameObject go = GameObject.Find("MyView_RawImage");
         myView = go.AddComponent<VideoSurface>();
 
@@ -89,19 +89,19 @@ public class Video_Agora : MonoBehaviour
 
     void OnLeaveChannelHandler(RtcStats stats)
     {
-        logger.UpdateLog("OnLeaveChannelSuccess");
+        logger.UpdateLog("채널퇴장 성공");
         DestroyVideoView(0);
     }
 
     void OnUserJoinedHandler(uint uid, int elapsed)
     {
-        logger.UpdateLog(string.Format("OnUserJoined uid: ${0} elapsed: ${1}", uid, elapsed));
+        logger.UpdateLog(string.Format("다른 유저 입장  uid: ${0} elapsed: ${1}", uid, elapsed));
         makeVideoView(uid);
     }
 
     void OnUserOfflineHandler(uint uid, USER_OFFLINE_REASON reason)
     {
-        logger.UpdateLog(string.Format("OnUserOffLine uid: ${0}, reason: ${1}", uid, (int)reason));
+        logger.UpdateLog(string.Format("다른 유저 퇴장 uid: ${0}, reason: ${1}", uid, (int)reason));
         DestroyVideoView(uid);
     }
 
@@ -146,15 +146,20 @@ public class Video_Agora : MonoBehaviour
     private void makeVideoView(uint uid)
     {
         GameObject go = GameObject.Find("RemoteView_RawImage");
-
-        if (remoteView == null)
-        {
+        if (go)
+        {   
             remoteView = go.AddComponent<VideoSurface>();
+            Debug.Log(go.name + " 게임오브젝트 발견");
+        }
+        else
+        {
+            Debug.Log("게임오브젝트를 찾을 수 없습니다.");
         }
 
         remoteView.SetForUser(uid);
         remoteView.SetEnable(true);
         remoteView.SetVideoSurfaceType(AgoraVideoSurfaceType.RawImage);
+
     }
 
 
