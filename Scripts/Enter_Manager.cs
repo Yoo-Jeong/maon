@@ -5,6 +5,7 @@ using Photon.Pun;
 using Photon.Realtime;
 using UnityEngine.UI;
 
+
 //MonoBehaviourPunCallbacks은 포톤 PUN서비스의 이벤트를 감지할 수 있는 형태의 MonoBehaviour 스크립트
 //예시: override void OnConnectedToMaster()처럼 메소드명을 맞춰서 override로 선언하면
 //해당 이벤트가 발생했을 때 자동으로 해당 메소드가 실행된다.
@@ -29,6 +30,11 @@ public class Enter_Manager : MonoBehaviourPunCallbacks
         enterButton.interactable = false;
         // 접속을 시도 중임을 텍스트로 표시
         connectionInfoText.text = "마스터 서버에 접속중...";
+
+
+       
+
+
     }
 
     // 마스터 서버 접속 성공시 자동 실행
@@ -94,4 +100,10 @@ public class Enter_Manager : MonoBehaviourPunCallbacks
         // 모든 사용자들이 상담소 씬을 로드하게 함
         PhotonNetwork.LoadLevel("Center_Scene");
     }
+
+
+
+    
+
+
 }
