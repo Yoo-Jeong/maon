@@ -55,7 +55,7 @@ namespace agora_utilities
             //    };
 
             //    docRef.SetAsync(rtc);
-            //    Debug.Log("rtc 토큰 쓰기 완료");
+            //    print("rtc 토큰 쓰기 완료");
             //}
 
         }
