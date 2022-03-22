@@ -15,6 +15,7 @@ public class Resiter_Manager : MonoBehaviour
     public GameObject PasswordOK;
     public Toggle Male, Female;
     public bool emailOK;
+    public Dropdown years, months, day;
     
 
     public Toggle mzero, mone, mtwo, mthree, mfour, mfive; // 식사 횟수
@@ -36,6 +37,7 @@ public class Resiter_Manager : MonoBehaviour
         lifePattern.SetActive(false);
         SetFunction_UI();
         PasswordOK.SetActive(false);
+        SetDropdowonOptions();
 
         // 기본 값
         sex = "남";
@@ -163,7 +165,9 @@ public class Resiter_Manager : MonoBehaviour
             sex = Female.GetComponentInChildren<Text>().text;
         }
 
-        birth = BirthInput.text;
+        //birth = BirthInput.text;
+        birth = years.options[years.value].text + months.options[months.value].text + day.options[day.value].text;
+        print(birth);
         job = JobInput.text;
 
 
@@ -186,6 +190,40 @@ public class Resiter_Manager : MonoBehaviour
         }
      
     }
+
+    //생년월일 드롭다운 옵션목록 생성
+    public void SetDropdowonOptions()
+    {
+        //년도
+        years.options.Clear();
+        for(int i = 2022; i > 1939; i--)
+        {
+            Dropdown.OptionData option = new Dropdown.OptionData();
+            option.text = i.ToString() + "년";
+            years.options.Add(option);
+        }
+
+        //월
+        months.options.Clear();
+        for (int i = 1; i < 13; i++)
+        {
+            Dropdown.OptionData option = new Dropdown.OptionData();
+            option.text = i.ToString() + "월";
+            months.options.Add(option);
+        }
+
+        //일
+        day.options.Clear();
+        for (int i = 1; i < 32; i++)
+        {
+            Dropdown.OptionData option = new Dropdown.OptionData();
+            option.text = i.ToString() + "일";
+            day.options.Add(option);
+        }
+
+    }
+
+
 
     public void ResiterBefore()
     {
@@ -273,13 +311,18 @@ public class Resiter_Manager : MonoBehaviour
     }
 
 
-    // 아이디 중복체크 (로그인api 호출)
+
     //void OnLoginFailure(PlayFabError error) => print("로그인 실패" + error);
+    // 아이디 중복체크 (로그인api 호출)
     void OnLoginFailure(PlayFabError error)
     {
-        string errorCheck, userExist;
+        string errorCheck, userExist; //에러메세지를 담을 변수.
+
+        //유저가 없을때 뜨는 에러메세지. 유저가 없다면 사용할 수 있는 아이디이다.
         //userNotFound = "/Client/LoginWithEmailAddress: User not found";
-        userExist = "/Client/LoginWithEmailAddress: Invalid email address or password";
+
+        //잘못된 아이디나 비밀번호일 때 뜨는 에러메세지. 유저가 이미 있는것이라고 볼 수 있으니 사용할 수 없는 아이디이다.
+        userExist = "/Client/LoginWithEmailAddress: Invalid email address or password"; 
 
         errorCheck = error.ToString(); 
 

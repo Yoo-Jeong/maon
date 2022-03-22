@@ -31,10 +31,6 @@ public class Enter_Manager : MonoBehaviourPunCallbacks
         // 접속을 시도 중임을 텍스트로 표시
         connectionInfoText.text = "마스터 서버에 접속중...";
 
-
-       
-
-
     }
 
     // 마스터 서버 접속 성공시 자동 실행

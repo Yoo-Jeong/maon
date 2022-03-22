@@ -22,8 +22,7 @@ public class Scene_Manager : MonoBehaviour
     public void SceneChangeToLogIn()
     {
         SceneManager.LoadScene("LogIn_Scene");
-        
-        
+          
     }
 
     public void SceneChangeToRegister()
@@ -36,6 +35,12 @@ public class Scene_Manager : MonoBehaviour
         Screen.orientation = ScreenOrientation.Portrait;
         SceneManager.LoadScene("Home_Scene");
 
+    }
+
+    public void SceneChangeToReservationHome()
+    {
+        Screen.orientation = ScreenOrientation.Portrait;
+        SceneManager.LoadScene("ReservationHome_Scene");
 
     }
 
@@ -44,9 +49,24 @@ public class Scene_Manager : MonoBehaviour
         SceneManager.LoadScene("Center_Scene");
     }
 
+    public void SceneChangeToReservationCounselorProfile()
+    {
+        SceneManager.LoadScene("ReservationCounselorProfile_Scene");
+    }
+
+
+
     public void destory()
     {
         GameObject.Destroy(GameObject.Find("PlayFabManager"));
+    }
+
+
+    public void mypageMenu()
+    {
+        GameObject menu = GameObject.Find("mypageMenu_Panel");
+        menu.SetActive(true);
+
     }
 
 

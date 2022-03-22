@@ -18,11 +18,15 @@ public class Home_Calendar : MonoBehaviour
 
     private DateTime _dateTime;
     public static Home_Calendar _calendarInstance;
+    
 
     private string today = DateTime.Now.Day.ToString();
+    private string thisMonth = DateTime.Now.Month.ToString() + "월";
 
     void Start()
     {
+        
+
         _calendarInstance = this;
         Vector3 startPos = _item.transform.localPosition;
         _dateItems.Clear();
@@ -48,8 +52,6 @@ public class Home_Calendar : MonoBehaviour
 
     void CreateCalendar()
     {
-
-
         DateTime firstDay = _dateTime.AddDays(-(_dateTime.Day - 1));
         int index = GetDays(firstDay.DayOfWeek);
 
@@ -78,13 +80,58 @@ public class Home_Calendar : MonoBehaviour
                 today = _dateItems[i].ToString();
                 print(today);
                 _dateItems[i].GetComponent<Image>().color = new Color(255f/255f, 195f/255f, 43f/255f);
-                //todayColor.color = new Color(255 / 255, 195 / 255, 43 / 255);
+                
             }
 
         }
-        _todayText.text = _dateTime.ToString("yyyy.MM.dd.");
+        _todayText.text = DateTime.Now.ToString("yyyy.MM.dd.");
+        //_todayText.text = _dateTime.ToString("yyyy.MM.dd.");
+        _monthNumText.text = _dateTime.Month.ToString() + "월";
+
+        //print("현재 달: " + thisMonth + "   달력 달: " + _monthNumText.text);
+    }
+
+
+    void ReCreateCalendar()
+    {
+        DateTime firstDay = _dateTime.AddDays(-(_dateTime.Day - 1));
+        int index = GetDays(firstDay.DayOfWeek);
+
+        int date = 0;
+        for (int i = 0; i < _totalDateNum; i++)
+        {
+            Text label = _dateItems[i].GetComponentInChildren<Text>();
+            _dateItems[i].SetActive(false);
+
+            if (i >= index)
+            {
+                DateTime thatDay = firstDay.AddDays(date);
+                if (thatDay.Month == firstDay.Month)
+                {
+                    _dateItems[i].SetActive(true);
+                    _dateItems[i].GetComponent<Image>().color = new Color(255f / 255f, 255f / 255f, 255f / 255f);
+                    //_dateItems[i].GetComponent<Image>().enabled = false;
+
+                    label.text = (date + 1).ToString();
+                    date++;
+                }
+            }
+
+          /*  // 오늘 날짜 표시
+            if (_monthNumText.text == thisMonth)
+            {
+                print("현재 달: " + thisMonth + "   달력 달: " + _monthNumText.text);
+                _dateItems[i].GetComponent<Image>().enabled = true;
+
+            }*/
+
+        }
+        
+
+        //_todayText.text = _dateTime.ToString("yyyy.MM.dd.");
         _monthNumText.text = _dateTime.Month.ToString() + "월";
     }
+
 
     int GetDays(DayOfWeek day)
     {
@@ -115,14 +162,18 @@ public class Home_Calendar : MonoBehaviour
 
     public void MonthPrev()
     {
+        //print("현재 달: " + thisMonth + "   달력 달: " + _monthNumText.text);
         _dateTime = _dateTime.AddMonths(-1);
-        CreateCalendar();
+        ReCreateCalendar();
+
     }
 
     public void MonthNext()
     {
-        _dateTime = _dateTime.AddMonths(1);
-        CreateCalendar();
+        //print("현재 달: " + thisMonth + "   달력 달: " + _monthNumText.text);
+        _dateTime = _dateTime.AddMonths(1);       
+        ReCreateCalendar();
+
     }
 
     public void ShowCalendar(Text target)
