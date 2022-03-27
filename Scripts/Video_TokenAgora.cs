@@ -13,7 +13,6 @@ using Object = UnityEngine.Object;
 
 
 //토큰서버에서 토큰을 가져온다. !!로컬서버라 나(유정)이 토큰서버를 실행하고 있어야 돌아감!!
-//agora-token-server
 public class Video_TokenAgora : MonoBehaviour
 {
     //FirebaseFirestore db;
