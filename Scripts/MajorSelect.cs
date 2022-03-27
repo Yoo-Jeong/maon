@@ -26,8 +26,6 @@ public class MajorSelect : MonoBehaviour
         Item.SetActive(true);
         Button.SetActive(false);
 
-
-
     }
 
 }
