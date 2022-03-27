@@ -4,8 +4,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using Photon.Pun;
 using Photon.Realtime;
-using PlayFab;
-using PlayFab.ClientModels;
 
 public class EmotionCtrl : MonoBehaviourPunCallbacks //, IPunObservable
 {
@@ -141,14 +139,14 @@ public class EmotionCtrl : MonoBehaviourPunCallbacks //, IPunObservable
     }
 
     public void SetEmotionData()
-    {
+    {/*
         var request = new UpdateUserDataRequest()
         {
             Data = new Dictionary<string, string>() { { "감정", currentEmotion } }
         ,
             Permission = UserDataPermission.Public
         };
-        PlayFabClientAPI.UpdateUserData(request, (result) => print("데이터 저장 성공"), (error) => print("데이터 저장 실패"));
+        PlayFabClientAPI.UpdateUserData(request, (result) => print("데이터 저장 성공"), (error) => print("데이터 저장 실패"));*/
     }
 
 
@@ -161,7 +159,7 @@ public class EmotionCtrl : MonoBehaviourPunCallbacks //, IPunObservable
     [PunRPC]
     public void GetEmotionData()
     {
-        var request = new GetUserDataRequest() { PlayFabId = otherID };
+       /* var request = new GetUserDataRequest() { PlayFabId = otherID };
 
         PlayFabClientAPI.GetUserData(request, (result) =>
            stateText.text = (
@@ -169,7 +167,7 @@ public class EmotionCtrl : MonoBehaviourPunCallbacks //, IPunObservable
              + result.Data["감정"].Value + "을" + "\n"
              + "느끼고 있습니다."),
 
-           (error) => print("데이터 불러오기 실패"));
+           (error) => print("데이터 불러오기 실패"));*/
 
         Invoke("WaitRe", 0.8f);
 
