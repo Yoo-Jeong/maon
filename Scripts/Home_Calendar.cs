@@ -26,7 +26,6 @@ public class Home_Calendar : MonoBehaviour
     void Start()
     {
         
-
         _calendarInstance = this;
         Vector3 startPos = _item.transform.localPosition;
         _dateItems.Clear();
@@ -76,9 +75,9 @@ public class Home_Calendar : MonoBehaviour
             // 오늘 날짜 표시
             if (today == label.text)
             {
-                print(today + label.text);
+                print("오늘날짜: " + today +"일 / 표시날짜: "+ label.text);
                 today = _dateItems[i].ToString();
-                print(today);
+                //print(today);
                 _dateItems[i].GetComponent<Image>().color = new Color(255f/255f, 195f/255f, 43f/255f);
                 
             }
@@ -183,8 +182,8 @@ public class Home_Calendar : MonoBehaviour
         //_calendarPanel.transform.position = new Vector3(965, 475, 0);//Input.mousePosition-new Vector3(0,120,0);
     }
 
-    Text _target;
 
+    Text _target;
     //Item 클릭했을 경우 Text에 표시.
     public void OnDateItemClick(string day)
     {

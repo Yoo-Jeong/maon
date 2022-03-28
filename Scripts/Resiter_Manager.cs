@@ -3,12 +3,16 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using PlayFab;
-using PlayFab.ClientModels;
+using Firebase;
+using Firebase.Auth;
+using Firebase.Extensions;
 
 public class Resiter_Manager : MonoBehaviour
 {
+
     public GameObject info, lifePattern; // 페이지 전환
+
+    private string userGroup;
 
     public InputField EmailInput, PasswordInput, PasswordCheckInput, DisplayNameInput, BirthInput, JobInput;
     public Text emailCheck;
@@ -16,7 +20,6 @@ public class Resiter_Manager : MonoBehaviour
     public Toggle Male, Female;
     public bool emailOK;
     public Dropdown years, months, day;
-    
 
     public Toggle mzero, mone, mtwo, mthree, mfour, mfive; // 식사 횟수
     public Toggle ezero, eone, ethree, efive; // 운동 횟수
@@ -27,11 +30,12 @@ public class Resiter_Manager : MonoBehaviour
     private int max = 24;
 
     // 입력 정보
-    public string email, password, passwordCheck, username, displayName, sex, birth, job, meal, sleep, exercise; 
-    //private string reservation, counselor, counselDay, counselTime, concern;
+    public string email, password, passwordCheck, username, displayName, sex, birth, job, meal, sleep, exercise;
 
 
-    private void Start()
+
+    // Start is called before the first frame update
+    void Start()
     {
         info.SetActive(true);
         lifePattern.SetActive(false);
@@ -40,88 +44,27 @@ public class Resiter_Manager : MonoBehaviour
         SetDropdowonOptions();
 
         // 기본 값
+        userGroup = "내담자";
         sex = "남";
         meal = "0 끼";
         sleep = "7 시간";
         exercise = "0회";
-      /*  reservation = "0";
-        counselor = "";
-        counselDay = "";
-        counselTime = "";
-        concern = "";*/
+        /*  reservation = "0";
+          counselor = "";
+          counselDay = "";
+          counselTime = "";
+          concern = "";*/
 
-        emailOK = false;
         InvokeRepeating("PasswordCheck", 1, 2);
-       
-    }
 
-    public void ResiterSignin()
-    {
-        var request = new LoginWithEmailAddressRequest { Email = email, Password = password };
-        PlayFabClientAPI.LoginWithEmailAddress(request, OnLoginSuccess, OnLoginFailure);
     }
-
 
     public void SetProfileData()
     {
-        var request = new UpdateUserDataRequest()
-        {
-            Data = new Dictionary<string, string>() { { "이름", displayName }, { "성별", sex },
-            { "생년월일", birth },{ "직업", job },{ "식사", meal },{ "수면", sleep },{ "운동", exercise },
-             { "예약여부", "0" },},
-        
-            Permission = UserDataPermission.Public
-        };
-        PlayFabClientAPI.UpdateUserData(request, (result) => print("데이터 저장 성공"), (error) => print("데이터 저장 실패" + error));
 
-        
-    }
-
-    public void SetReserData()
-    {
-        var request = new UpdateUserDataRequest()
-        {
-            Data = new Dictionary<string, string>() { 
-                { "예약여부", "0" }, { "상담사", "" },{ "상담날짜", "" },{ "상담시간", "" },{ "고민내용", "" }},
-
-            Permission = UserDataPermission.Public
-        };
-        PlayFabClientAPI.UpdateUserData(request, (result) => print("데이터 저장 성공"), (error) => print("데이터 저장 실패" + error));
 
 
     }
-
-
-    public void RegisterBtn()
-    {
-        MealToggle();
-        ExerciseToggle();
-        
-        var request = new RegisterPlayFabUserRequest { Email = email, Password = password, Username = username, DisplayName = displayName };
-        PlayFabClientAPI.RegisterPlayFabUser(request, OnRegisterSuccess, OnRegisterFailure);
-
-        Invoke("ResiterSignin", 1);
-
-    }
-
-
-    void OnLoginSuccess(LoginResult result)
-    {
-        print("로그인 성공");
-        SetProfileData();
-        //SetReserData();
-        SceneManager.LoadScene("LogIn_Scene");
-
-    }
-
-    // 이메일 중복 체크 버튼
-    public void EmailCheckBtn()
-    {
-        email = EmailInput.text;
-        var request = new LoginWithEmailAddressRequest { Email = email, Password = "password" };
-        PlayFabClientAPI.LoginWithEmailAddress(request, OnLoginSuccess, OnLoginFailure);
-    }
-
 
     // 비밀번호 일치 확인
     public void PasswordCheck()
@@ -129,11 +72,11 @@ public class Resiter_Manager : MonoBehaviour
         password = PasswordInput.text;
         passwordCheck = PasswordCheckInput.text;
 
-        if( (password != passwordCheck) || (password == ""))
+        if ((password != passwordCheck) || (password == ""))
         {
             PasswordOK.SetActive(false);
             print("비밀번호가 일치하지 않습니다.");
-            
+
         }
         else
         {
@@ -152,7 +95,7 @@ public class Resiter_Manager : MonoBehaviour
         displayName = DisplayNameInput.text;
         username = EmailInput.text;
         username = username.Substring(0, username.LastIndexOf('@'));
-       
+
 
         if (Male.isOn)
         {
@@ -169,7 +112,7 @@ public class Resiter_Manager : MonoBehaviour
         job = JobInput.text;
 
 
-        if ((password == passwordCheck && password != "") && emailOK == true)
+        if ((password == passwordCheck && password != ""))
         {
             print("비밀번호가 일치합니다.");
 
@@ -177,7 +120,8 @@ public class Resiter_Manager : MonoBehaviour
             info.SetActive(false);
             lifePattern.SetActive(true);
 
-        }else if (emailOK == false)
+        }
+       /* else if (emailOK == false)   //아이디 중복체크 부분
         {
             print("이미 존재하는 아이디입니다.");
         }
@@ -185,42 +129,9 @@ public class Resiter_Manager : MonoBehaviour
         {
             PasswordOK.SetActive(false);
             print("비밀번호가 일치하지 않습니다.");
-        }
-     
-    }
-
-    //생년월일 드롭다운 옵션목록 생성
-    public void SetDropdowonOptions()
-    {
-        //년도
-        years.options.Clear();
-        for(int i = 2022; i > 1939; i--)
-        {
-            Dropdown.OptionData option = new Dropdown.OptionData();
-            option.text = i.ToString() + "년";
-            years.options.Add(option);
-        }
-
-        //월
-        months.options.Clear();
-        for (int i = 1; i < 13; i++)
-        {
-            Dropdown.OptionData option = new Dropdown.OptionData();
-            option.text = i.ToString() + "월";
-            months.options.Add(option);
-        }
-
-        //일
-        day.options.Clear();
-        for (int i = 1; i < 32; i++)
-        {
-            Dropdown.OptionData option = new Dropdown.OptionData();
-            option.text = i.ToString() + "일";
-            day.options.Add(option);
-        }
+        }*/
 
     }
-
 
 
     public void ResiterBefore()
@@ -273,14 +184,49 @@ public class Resiter_Manager : MonoBehaviour
         else if (eone.isOn)
         {
             exercise = eone.GetComponentInChildren<Text>().text;
-        }else if (ethree.isOn)
+        }
+        else if (ethree.isOn)
         {
             exercise = ethree.GetComponentInChildren<Text>().text;
-        } else
+        }
+        else
         {
             exercise = efive.GetComponentInChildren<Text>().text;
         }
     }
+
+    //생년월일 드롭다운 옵션목록 생성
+    public void SetDropdowonOptions()
+    {
+        //년도
+        years.options.Clear();
+        for (int i = 2022; i > 1939; i--)
+        {
+            Dropdown.OptionData option = new Dropdown.OptionData();
+            option.text = i.ToString() + "년";
+            years.options.Add(option);
+        }
+
+        //월
+        months.options.Clear();
+        for (int i = 1; i < 13; i++)
+        {
+            Dropdown.OptionData option = new Dropdown.OptionData();
+            option.text = i.ToString() + "월";
+            months.options.Add(option);
+        }
+
+        //일
+        day.options.Clear();
+        for (int i = 1; i < 32; i++)
+        {
+            Dropdown.OptionData option = new Dropdown.OptionData();
+            option.text = i.ToString() + "일";
+            day.options.Add(option);
+        }
+
+    }
+
 
     // 기존에 있던 UI 관련 기능을 모두 삭제하고 슬라이더에 기능을 할당 (초기 UI의 기능을 할당해야 할 타이밍에 삽입)
     private void SetFunction_UI()
@@ -310,35 +256,4 @@ public class Resiter_Manager : MonoBehaviour
 
 
 
-    //void OnLoginFailure(PlayFabError error) => print("로그인 실패" + error);
-    // 아이디 중복체크 (로그인api 호출)
-    void OnLoginFailure(PlayFabError error)
-    {
-        string errorCheck, userExist; //에러메세지를 담을 변수.
-
-        //유저가 없을때 뜨는 에러메세지. 유저가 없다면 사용할 수 있는 아이디이다.
-        //userNotFound = "/Client/LoginWithEmailAddress: User not found";
-
-        //잘못된 아이디나 비밀번호일 때 뜨는 에러메세지. 유저가 이미 있는것이라고 볼 수 있으니 사용할 수 없는 아이디이다.
-        userExist = "/Client/LoginWithEmailAddress: Invalid email address or password"; 
-
-        errorCheck = error.ToString(); 
-
-        if ( errorCheck == userExist)
-        {
-            emailCheck.text = "이미 존재하는 아이디입니다.";
-            print("이미 존재하는 아이디입니다. : " + errorCheck);
-            emailOK = false;
-        }
-        else
-        {
-            emailCheck.text = "사용가능한 아이디입니다.";
-            print("사용가능한 아이디입니다. : " + errorCheck);
-            emailOK = true;
-        }
-    }
-
-
-    void OnRegisterSuccess(RegisterPlayFabUserResult result) => print("회원가입 성공");
-    void OnRegisterFailure(PlayFabError error) => print("회원가입 실패" + error);
 }
