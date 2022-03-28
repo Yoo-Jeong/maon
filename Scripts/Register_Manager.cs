@@ -7,7 +7,7 @@ using Firebase;
 using Firebase.Auth;
 using Firebase.Extensions;
 
-public class Resiter_Manager : MonoBehaviour
+public class Register_Manager : MonoBehaviour
 {
 
     public GameObject info, lifePattern; // 페이지 전환
