@@ -15,7 +15,7 @@ public class CounselorLoad : MonoBehaviour
 {
     public GameObject item;
 
-    public Toggle relationshipT;
+    public Toggle familyT, relationshipT;
     public RawImage profileImg;
 
     public Text nameText, introduce, major;
@@ -45,8 +45,6 @@ public class CounselorLoad : MonoBehaviour
             FirebaseDatabase.DefaultInstance.GetReference("CounselorUsers").Child("relationship")
                 .GetValueAsync().ContinueWithOnMainThread(task =>
                 {
-
-
                     if (task.IsFaulted)
                     {
                         // Handle the error...
@@ -65,6 +63,7 @@ public class CounselorLoad : MonoBehaviour
                         {
                             // JSON은 사전 형태이기 때문에 딕셔너리 형으로 변환
                             IDictionary relationship = (IDictionary)data.Value;
+
                             Debug.Log("상담사: " + relationship["userGroup"] + ", email: " + relationship["email"]
                                 + ", pic: " + relationship["pic"] + ", username: " + relationship["username"]
                                 + ", sex: " + relationship["sex"] + ", intro: " + relationship["intro"]
@@ -102,6 +101,73 @@ public class CounselorLoad : MonoBehaviour
     }
 
 
+    private void Function_fToggle(bool _bool)
+    {
+        Debug.Log("가족 선택 : " + _bool);
+
+
+        if (_bool == true)
+        {
+            FirebaseDatabase.DefaultInstance.GetReference("CounselorUsers").Child("family")
+                .GetValueAsync().ContinueWithOnMainThread(task =>
+                {
+
+
+                    if (task.IsFaulted)
+                    {
+                        // Handle the error...
+                        print("실패...");
+                    }
+
+                    // 성공적으로 데이터를 가져왔으면
+                    if (task.IsCompleted)
+                    {
+                        // 데이터를 출력하고자 할때는 Snapshot 객체 사용함
+                        DataSnapshot snapshot = task.Result;
+                        print($"데이터 레코드 갯수 : {snapshot.ChildrenCount}"); //데이터 건수 출력
+
+
+                        foreach (DataSnapshot data in snapshot.Children)
+                        {
+                            // JSON은 사전 형태이기 때문에 딕셔너리 형으로 변환
+                            IDictionary family = (IDictionary)data.Value;
+
+                            Debug.Log("상담사: " + family["userGroup"] + ", email: " + family["email"]
+                                + ", pic: " + family["pic"] + ", username: " + family["username"]
+                                + ", sex: " + family["sex"] + ", intro: " + family["intro"]
+                                + ", family: " + family["family"] + ", myself: " + family["myself"]
+                                + ", relationship: " + family["relationship"] + ", romance: " + family["romance"]
+                                + ", work: " + family["work"] + ", career: " + family["career"]
+                                + ", career1: " + family["career1"] + ", career2: " + family["career2"]
+                                + ", career3: " + family["career3"] + ", day: " + family["day"]
+                                + ", time: " + family["time"] + ", appointment: " + family["appointment"]
+                                + ", patient: " + family["patient"] + ", appDay: " + family["appDay"]
+                                + ", appTime: " + family["appTime"] + ", worry: " + family["worry"]
+                                );
+
+                            nameText.text = (string)family["username"];
+                            introduce.text = (string)family["intro"];
+                            major.text = "가족";
+
+                            // 이미지 적용
+                            StartCoroutine(GetTexture((string)family["pic"]));
+
+                            item.SetActive(true);
+
+
+                        }
+                    }
+
+                });
+        }
+        else
+        {
+            item.SetActive(false);
+        }
+
+
+    }
+
     // 웹url에서 이미지를 가져와 RawImage에 적용시키는 함수.
     IEnumerator GetTexture(string url)
     {
@@ -124,11 +190,13 @@ public class CounselorLoad : MonoBehaviour
         //Reset
         ResetFunction_UI();
         relationshipT.onValueChanged.AddListener(Function_Toggle);
+        familyT.onValueChanged.AddListener(Function_fToggle);
     }
 
     private void ResetFunction_UI()
     {
         relationshipT.onValueChanged.RemoveAllListeners();
+        familyT.onValueChanged.RemoveAllListeners();
     }
 
 

@@ -37,7 +37,7 @@ public class Register_Manager : MonoBehaviour
     // 입력 정보
     public string email, password, passwordCheck, username, displayName, sex, birth, job, meal, sleep, exercise;
 
-
+    private bool RegiOK;
 
     // Start is called before the first frame update
     void Start()
@@ -54,6 +54,8 @@ public class Register_Manager : MonoBehaviour
         SetFunction_UI();
         PasswordOK.SetActive(false);
         SetDropdowonOptions();
+
+        RegiOK = false;
 
         // 기본 값 설정
         userGroup = "내담자";
@@ -75,6 +77,7 @@ public class Register_Manager : MonoBehaviour
         ExerciseToggle(); //운동 횟수
 
         // 회원가입
+        // Async가 완료된것을 확인 할 수 있는 방법 찾아보기.
         auth.CreateUserWithEmailAndPasswordAsync(email, password).ContinueWith(task => {
             if (task.IsCanceled)
             {
@@ -86,31 +89,59 @@ public class Register_Manager : MonoBehaviour
                 Debug.LogError("CreateUserWithEmailAndPasswordAsync encountered an error: " + task.Exception);
                 return;
             }
-      
+            else
+            {
 
-            // 회원가입 성공시
-            Firebase.Auth.FirebaseUser newUser = task.Result;
-            Debug.LogFormat("회원가입 성공: {0} ({1})", displayName, newUser.UserId);
-
-           
-
-            // RDB에 내담자 데이터 저장
-            ClientUser clientUser = new ClientUser(userGroup, email, displayName, sex, birth, job, meal, sleep, exercise,
-               false, "", "", "", "");
-
-            // 데이터를 json형태로 반환
-            string json = JsonUtility.ToJson(clientUser);
-
-            // 생성된 키의 자식으로 json데이터를 삽입
-            reference.Child("ClientUsers").Child(newUser.UserId).SetRawJsonValueAsync(json);
+                // 회원가입 성공시
+                Firebase.Auth.FirebaseUser newUser = task.Result;
+                Debug.LogFormat("회원가입 성공: {0} ({1})", displayName, newUser.UserId);
 
 
 
-            //SceneManager.LoadScene("LogIn_Scene");  //회원가입에 성공했을 때 씬이 넘어가고 싶은데 작동 안함
+                // RDB에 내담자 데이터 저장
+                ClientUser clientUser = new ClientUser(userGroup, email, displayName, sex, birth, job, meal, sleep, exercise,
+                   false, "", "", "", "");
+
+                // 데이터를 json형태로 반환
+                string json = JsonUtility.ToJson(clientUser);
+
+                // 생성된 키의 자식으로 json데이터를 삽입
+                reference.Child("ClientUsers").Child(newUser.UserId).SetRawJsonValueAsync(json);
+
+                print(RegiOK);
+                RegiOK = true;
+                print(RegiOK);
+
+            }
+
 
         });
+
+        Invoke("RegiCheck", 2);
+
+
+        /*if (RegiOK == true)
+        {
+            print("테스트2");
+            SceneManager.LoadScene("Scenes/LogIn_Scene");  //회원가입에 성공했을 때 씬이 넘어가고 싶은데 작동 안함
+            print("테스트3");
+        }*/
     }
 
+    //회원가입이 완료됐는지 확인 기다리기위한 함수.
+    public void RegiCheck()
+    {
+        if (RegiOK == true)
+        {
+            print("테스트2");
+            SceneManager.LoadScene("Scenes/LogIn_Scene");  //회원가입에 성공했을 때 씬이 넘어가고 싶은데 작동 안함
+            print("테스트3");
+
+            print(RegiOK);
+            RegiOK = false;
+            print(RegiOK);
+        }
+    }
  
 
     // 비밀번호 일치 확인 함수
@@ -155,7 +186,7 @@ public class Register_Manager : MonoBehaviour
 
         //birth = BirthInput.text;
         birth = years.options[years.value].text + months.options[months.value].text + day.options[day.value].text;
-        print(birth);
+        //print(birth);
         job = JobInput.text;
 
 
