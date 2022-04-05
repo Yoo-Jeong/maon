@@ -102,7 +102,7 @@ public class Register_Manager : MonoBehaviour
 
                 // RDB에 내담자 데이터 저장
                 ClientUser clientUser = new ClientUser(userGroup, newUser.UserId,email, displayName, sex, birth, job, meal, sleep, exercise,
-                   false, "", "", "", "");
+                   false);
 
                 // 데이터를 json형태로 반환
                 string json = JsonUtility.ToJson(clientUser);
@@ -345,13 +345,13 @@ public class Register_Manager : MonoBehaviour
     {
         public string userGroup, uid, email, username, sex, birth, job, meal, sleep, exercise;
         public bool appointment;
-        public string counselorInCharge, appDay, appTime, worry;
+        
 
 
         // 내담자 생성자.
         public ClientUser(string userGroup, string uid, string email, string username, string sex, string birth, string job,
             string meal, string sleep, string exercise,
-            bool appointment, string counselorInCharge, string appDay, string appTime, string worry)
+            bool appointment)
         {
             this.userGroup = userGroup;
             this.uid = uid;
@@ -365,10 +365,7 @@ public class Register_Manager : MonoBehaviour
             this.exercise = exercise;
 
             this.appointment = appointment;
-            this.counselorInCharge = counselorInCharge;
-            this.appDay = appDay;
-            this.appTime = appTime;
-            this.worry = worry;
+        
         }
     }
 

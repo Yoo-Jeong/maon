@@ -138,15 +138,16 @@ public class DB_TEST : MonoBehaviour
     // 상담사 레코드 하위에 위치한 예약 레코드(appointment)
     class CounselorAppo
     {
-        // 거절사유, 고민내용, 내담자 후기, 상담날짜, 상담시간, 신청인(내담자)이름
-        public string refuse, worry, feedback, appDay, appTime, client;
+        // 내담자uid, 거절사유, 고민내용, 내담자 후기, 상담날짜, 상담시간, 신청인(내담자)이름
+        public string clientUid, refuse, worry, feedback, appDay, appTime, client;
 
         // 수락상태, 0:무반응 1:수락 2:거절
         public int progress;
 
-        public CounselorAppo(string refuse, string worry, string feedback,
+        public CounselorAppo(string clientUid, string refuse, string worry, string feedback,
             string appDay, string appTime, string client, int progress)
         {
+            this.clientUid = clientUid;
             this.refuse = refuse;
             this.worry = worry;
             this.feedback = feedback;
@@ -217,7 +218,7 @@ public class DB_TEST : MonoBehaviour
              false);
 
         // 상담사 예약정보
-        CounselorAppo counselorAppo = new CounselorAppo("", "", "", "", "", "", 0);
+        CounselorAppo counselorAppo = new CounselorAppo("uid", "", "", "", "", "", "", 0);
 
         // 상담사 가능 시간
         CounselorTime counselorTime = new CounselorTime("9:00-10:00", "10:00-11:00", "11:00-12:00", "12:00-13:00"
@@ -242,66 +243,66 @@ public class DB_TEST : MonoBehaviour
         // 해당 전문 분야 하위에 상담사 데이터 저장. (전문 분야로 쿼리하기 위해..?)
         if (counselorUser.family)
         {
-            reference.Child("CounselorUsers").Child("family").Child(key).SetRawJsonValueAsync(json);
+            reference.Child("CounselorUsers").Child("가족").Child(key).SetRawJsonValueAsync(json);
 
-            reference.Child("CounselorUsers").Child("family").Child(key).Child("appointment").Child(key).SetRawJsonValueAsync(json2);
+            reference.Child("CounselorUsers").Child("가족").Child(key).Child("appointment").Child(key).SetRawJsonValueAsync(json2);
 
-            reference.Child("CounselorUsers").Child("family").Child(key).Child("counselorTime").SetRawJsonValueAsync(json3);
+            reference.Child("CounselorUsers").Child("가족").Child(key).Child("counselorTime").SetRawJsonValueAsync(json3);
 
-            reference.Child("CounselorUsers").Child("family").Child(key).Child("counselorDay").SetRawJsonValueAsync(json4);
+            reference.Child("CounselorUsers").Child("가족").Child(key).Child("counselorDay").SetRawJsonValueAsync(json4);
 
 
         }
         else if (counselorUser.myself)
         {
-            reference.Child("CounselorUsers").Child("myself").Child(key).SetRawJsonValueAsync(json);
+            reference.Child("CounselorUsers").Child("나 자신").Child(key).SetRawJsonValueAsync(json);
 
-            reference.Child("CounselorUsers").Child("myself").Child(key).Child("appointment").Child(key).SetRawJsonValueAsync(json2);
+            reference.Child("CounselorUsers").Child("나 자신").Child(key).Child("appointment").Child(key).SetRawJsonValueAsync(json2);
 
-            reference.Child("CounselorUsers").Child("family").Child(key).Child("counselorTime").SetRawJsonValueAsync(json3);
+            reference.Child("CounselorUsers").Child("나 자신").Child(key).Child("counselorTime").SetRawJsonValueAsync(json3);
 
-            reference.Child("CounselorUsers").Child("family").Child(key).Child("counselorDay").SetRawJsonValueAsync(json4);
+            reference.Child("CounselorUsers").Child("나 자신").Child(key).Child("counselorDay").SetRawJsonValueAsync(json4);
         }
         else if (counselorUser.relationship)
         {
-            reference.Child("CounselorUsers").Child("relationship").Child(key).SetRawJsonValueAsync(json);
+            reference.Child("CounselorUsers").Child("대인관계").Child(key).SetRawJsonValueAsync(json);
 
-            reference.Child("CounselorUsers").Child("relationship").Child(key).Child("appointment").Child(key).SetRawJsonValueAsync(json2);
+            reference.Child("CounselorUsers").Child("대인관계").Child(key).Child("appointment").Child(key).SetRawJsonValueAsync(json2);
 
-            reference.Child("CounselorUsers").Child("relationship").Child(key).Child("counselorTime").SetRawJsonValueAsync(json3);
+            reference.Child("CounselorUsers").Child("대인관계").Child(key).Child("counselorTime").SetRawJsonValueAsync(json3);
 
-            reference.Child("CounselorUsers").Child("relationship").Child(key).Child("counselorDay").SetRawJsonValueAsync(json4);
+            reference.Child("CounselorUsers").Child("대인관계").Child(key).Child("counselorDay").SetRawJsonValueAsync(json4);
 
         }
         else if (counselorUser.romance)
         {
-            reference.Child("CounselorUsers").Child("romance").Child(key).SetRawJsonValueAsync(json);
+            reference.Child("CounselorUsers").Child("연애").Child(key).SetRawJsonValueAsync(json);
 
-            reference.Child("CounselorUsers").Child("romance").Child(key).Child("appointment").Child(key).SetRawJsonValueAsync(json2);
+            reference.Child("CounselorUsers").Child("연애").Child(key).Child("appointment").Child(key).SetRawJsonValueAsync(json2);
 
-            reference.Child("CounselorUsers").Child("romance").Child(key).Child("counselorTime").SetRawJsonValueAsync(json3);
+            reference.Child("CounselorUsers").Child("연애").Child(key).Child("counselorTime").SetRawJsonValueAsync(json3);
 
-            reference.Child("CounselorUsers").Child("romance").Child(key).Child("counselorDay").SetRawJsonValueAsync(json4);
+            reference.Child("CounselorUsers").Child("연애").Child(key).Child("counselorDay").SetRawJsonValueAsync(json4);
         }
         else if (counselorUser.work)
         {
-            reference.Child("CounselorUsers").Child("work").Child(key).SetRawJsonValueAsync(json);
+            reference.Child("CounselorUsers").Child("직장").Child(key).SetRawJsonValueAsync(json);
 
-            reference.Child("CounselorUsers").Child("work").Child(key).Child("appointment").Child(key).SetRawJsonValueAsync(json2);
+            reference.Child("CounselorUsers").Child("직장").Child(key).Child("appointment").Child(key).SetRawJsonValueAsync(json2);
 
-            reference.Child("CounselorUsers").Child("work").Child(key).Child("counselorTime").SetRawJsonValueAsync(json3);
+            reference.Child("CounselorUsers").Child("직장").Child(key).Child("counselorTime").SetRawJsonValueAsync(json3);
 
-            reference.Child("CounselorUsers").Child("work").Child(key).Child("counselorDay").SetRawJsonValueAsync(json4);
+            reference.Child("CounselorUsers").Child("직장").Child(key).Child("counselorDay").SetRawJsonValueAsync(json4);
         }
         else
         {
-            reference.Child("CounselorUsers").Child("career").Child(key).SetRawJsonValueAsync(json);
+            reference.Child("CounselorUsers").Child("진로/취업").Child(key).SetRawJsonValueAsync(json);
 
-            reference.Child("CounselorUsers").Child("career").Child(key).Child("appointment").Child(key).SetRawJsonValueAsync(json2);
+            reference.Child("CounselorUsers").Child("진로/취업").Child(key).Child("appointment").Child(key).SetRawJsonValueAsync(json2);
 
-            reference.Child("CounselorUsers").Child("career").Child(key).Child("counselorTime").SetRawJsonValueAsync(json3);
+            reference.Child("CounselorUsers").Child("진로/취업").Child(key).Child("counselorTime").SetRawJsonValueAsync(json3);
 
-            reference.Child("CounselorUsers").Child("career").Child(key).Child("counselorDay").SetRawJsonValueAsync(json4);
+            reference.Child("CounselorUsers").Child("진로/취업").Child(key).Child("counselorDay").SetRawJsonValueAsync(json4);
         }
 
 

@@ -25,6 +25,7 @@ public class CounselorLoad : MonoBehaviour
     public int num;
 
     public Text nameText, introduce, major; // 리스트 상담사 간략정보를 담을 변수
+    public string Cuid;
 
     public string selectDay;                // 선택 날짜를 담을 변수
     public Text month, selectDayT;          // 달력의 월, 선택한 날짜 텍스트 변수
@@ -54,7 +55,10 @@ public class CounselorLoad : MonoBehaviour
         FirebaseApp.DefaultInstance.Options.DatabaseUrl =
        new System.Uri("https://swuniverse-d9641-default-rtdb.firebaseio.com/");
 
- 
+        // Database의 특정지점을 가리킬 수 있다, 그 중 RootReference를 가리킴
+        reference = FirebaseDatabase.DefaultInstance.RootReference;
+
+
         SetFunction_UI();
         item.SetActive(false);
 
@@ -67,7 +71,7 @@ public class CounselorLoad : MonoBehaviour
 
         if (_bool == true)
         {
-            FirebaseDatabase.DefaultInstance.GetReference("CounselorUsers").Child("relationship")
+            FirebaseDatabase.DefaultInstance.GetReference("CounselorUsers").Child("대인관계")
                 .GetValueAsync().ContinueWithOnMainThread(task =>
                 {
                     if (task.IsFaulted)
@@ -84,7 +88,7 @@ public class CounselorLoad : MonoBehaviour
                         print($"데이터 레코드 갯수 : {snapshot.ChildrenCount}"); //데이터 건수 출력
 
                         num = (int)snapshot.ChildrenCount;
-                        
+
 
                         foreach (DataSnapshot data in snapshot.Children)
                         {
@@ -92,22 +96,22 @@ public class CounselorLoad : MonoBehaviour
                             // JSON은 사전 형태이기 때문에 딕셔너리 형으로 변환
                             IDictionary relationship = (IDictionary)data.Value;
 
-                            Debug.Log("상담사: " + relationship["userGroup"] 
+                            Debug.Log("상담사: " + relationship["userGroup"]
                                 + "\n uid: " + relationship["uid"]
-                                + "\n email: " + relationship["email"] 
-                                + "\n pic: " + relationship["pic"] 
+                                + "\n email: " + relationship["email"]
+                                + "\n pic: " + relationship["pic"]
                                 + "\n username: " + relationship["username"]
-                                + "\n sex: " + relationship["sex"] 
+                                + "\n sex: " + relationship["sex"]
                                 + "\n intro: " + relationship["intro"]
-                                + "\n family: " + relationship["family"] 
+                                + "\n family: " + relationship["family"]
                                 + "\n myself: " + relationship["myself"]
-                                + "\n relationship: " + relationship["relationship"] 
+                                + "\n relationship: " + relationship["relationship"]
                                 + "\n romance: " + relationship["romance"]
-                                + "\n work: " + relationship["work"] 
+                                + "\n work: " + relationship["work"]
                                 + "\n career: " + relationship["career"]
-                                + "\n career1: " + relationship["career1"] 
+                                + "\n career1: " + relationship["career1"]
                                 + "\n career2: " + relationship["career2"]
-                                + "\n career3: " + relationship["career3"] 
+                                + "\n career3: " + relationship["career3"]
                                 + "\n appointment: " + relationship["appointment"]
                                 );
 
@@ -124,18 +128,19 @@ public class CounselorLoad : MonoBehaviour
                             Cname2.text = (string)relationship["username"];
                             Cname3.text = (string)relationship["username"];
                             Cmajor.text = "대인관계";
-                            Cintro.text =  (string)relationship["intro"];
+                            Cintro.text = (string)relationship["intro"];
                             career1.text = (string)relationship["career1"];
                             career2.text = (string)relationship["career2"];
                             career3.text = (string)relationship["career3"];
 
-                            
-                                prefab = Instantiate(item, parent);
-                                prefab.transform.position = new Vector3(1450, 367, 0);
-                                print("생성");
-                            
+                            Cuid = (string)relationship["uid"];
 
-                            
+                            prefab = Instantiate(item, parent);
+                            prefab.transform.position = new Vector3(1450, 367, 0);
+                            print("생성");
+
+
+
                         }
                     }
 
@@ -148,7 +153,7 @@ public class CounselorLoad : MonoBehaviour
             Destroy(item);
         }
 
-    
+
 
     }
 
@@ -160,7 +165,7 @@ public class CounselorLoad : MonoBehaviour
 
         if (_bool == true)
         {
-            FirebaseDatabase.DefaultInstance.GetReference("CounselorUsers").Child("family")
+            FirebaseDatabase.DefaultInstance.GetReference("CounselorUsers").Child("가족")
                 .GetValueAsync().ContinueWithOnMainThread(task =>
                 {
 
@@ -220,6 +225,8 @@ public class CounselorLoad : MonoBehaviour
                             career1.text = (string)family["career1"];
                             career2.text = (string)family["career2"];
                             career3.text = (string)family["career3"];
+
+                            Cuid = (string)family["uid"];
 
 
                         }
@@ -298,7 +305,7 @@ public class CounselorLoad : MonoBehaviour
         else
         {
             print(DayBtn.thisDay);
-            
+
         }
         string monthSub = month.text;
         selectDay = "2022." + monthSub.Substring(0, monthSub.Length - 1) + "." + DayBtn.thisDay + ".";
@@ -469,8 +476,90 @@ public class CounselorLoad : MonoBehaviour
 
     }
 
-    
+
+    // 팝업창 최종 예약하기 버튼
+    public void ReservationFinal()
+    {
+        // RDB에 내담자 데이터 저장
+        ClientAppo clientAppo = new ClientAppo( Cuid,"", worry2.text, "", selectDayT2.text, selectTime2.text
+            , Cname4.text, 0 );
+
+
+        // 상담사 하위에 예약신청 정보 저장
+        CounselorAppo counselorAppo = new CounselorAppo(Auth_Manager.User.UserId, "", worry2.text, "", selectDayT2.text, selectTime2.text
+            , Cname4.text, 0);
+
+
+        // 데이터를 json형태로 반환
+        string json = JsonUtility.ToJson(clientAppo);
+        string json2 = JsonUtility.ToJson(counselorAppo);
+
+        Debug.Log(Auth_Manager.User.UserId + "\n" + Cuid);
+        Debug.Log(clientAppo.counselorUid);
+
+
+        // 생성된 키의 자식으로 json데이터를 삽입
+        reference.Child("ClientUsers").Child(Auth_Manager.User.UserId).Child("appointment").Child(Cuid).SetRawJsonValueAsync(json);
+        reference.Child("CounselorUsers").Child(major.text).Child(Cuid).Child("appointment").Child(Auth_Manager.User.UserId).SetRawJsonValueAsync(json2);
+
+    }
+
+
+    // 내담자 레코드 하위에 위치한 예약 레코드(appointment)
+    class ClientAppo
+    {
+        // 거절사유, 고민내용, 내담자 후기, 상담날짜, 상담시간, 신청인(내담자)이름
+        public string counselorUid, refuse, worry, feedback, appDay, appTime, counselorInCharge;
+
+        // 수락상태, 0:무반응 1:수락 2:거절
+        public int progress;
+
+        public ClientAppo(string counselorUid, string refuse, string worry, string feedback,
+            string appDay, string appTime, string counselorInCharge, int progress)
+        {
+            this.counselorUid = counselorUid;
+            this.refuse = refuse;
+            this.worry = worry;
+            this.feedback = feedback;
+            this.appDay = appDay;
+            this.appTime = appTime;
+            this.counselorInCharge = counselorInCharge;
+            this.progress = progress;
+
+        }
+
+
+    }
+
+    // 상담사 레코드 하위에 위치한 예약 레코드(appointment)
+    class CounselorAppo
+    {
+        // 내담자uid, 거절사유, 고민내용, 내담자 후기, 상담날짜, 상담시간, 신청인(내담자)이름
+        public string clientUid, refuse, worry, feedback, appDay, appTime, client;
+
+        // 수락상태, 0:무반응 1:수락 2:거절
+        public int progress;
+
+        public CounselorAppo(string clientUid, string refuse, string worry, string feedback,
+            string appDay, string appTime, string client, int progress)
+        {
+            this.clientUid = clientUid;
+            this.refuse = refuse;
+            this.worry = worry;
+            this.feedback = feedback;
+            this.appDay = appDay;
+            this.appTime = appTime;
+            this.client = client;
+            this.progress = progress;
+
+        }
+
+    }
+
+
+
 }
+
 
 
 

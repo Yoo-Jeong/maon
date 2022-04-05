@@ -70,12 +70,14 @@ public class CanvasMng_Home : MonoBehaviour
 
     public void ReserBtn()
     {
+     
         checkPopup.enabled = false;
         checkPopupObj.SetActive(false);
         completePopup.enabled = true;
 
     }
 
+ 
 
     public void CprofileCan()
     {
