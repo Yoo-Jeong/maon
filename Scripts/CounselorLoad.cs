@@ -4,6 +4,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Networking;
 
+using System;
+
 
 using Firebase;
 using Firebase.Database;
@@ -13,12 +15,35 @@ using Firebase.Extensions;
 
 public class CounselorLoad : MonoBehaviour
 {
-    public GameObject item;
+    public GameObject item;              // 리스트 상담사 버튼
 
-    public Toggle familyT, relationshipT;
-    public RawImage profileImg;
+    public Toggle familyT, relationshipT; // 상담사 전문분야 선택 토글
+    public RawImage profileImg, profileImg2;   // 상담사 프로필 이미지
 
-    public Text nameText, introduce, major;
+    public Transform parent;
+    public GameObject prefab;
+    public int num;
+
+    public Text nameText, introduce, major; // 리스트 상담사 간략정보를 담을 변수
+
+    public string selectDay;                // 선택 날짜를 담을 변수
+    public Text month, selectDayT;          // 달력의 월, 선택한 날짜 텍스트 변수
+
+    public Text selectTime;                 // 선택한 시간을 담을 텍스트 변수
+
+    // 시간 선택 토글
+    public Toggle nine, ten, eleven, twelve, thirteen, fourteen, fifteen, sixteen, seventeen;
+
+
+    // 상담사 상세 프로필을 담을 변수
+    public Text Cname1, Cname2, Cname3, Cmajor, Cintro, career1, career2, career3;
+
+    public Text worry, worry2; // 고민내용을 담을 변수
+
+
+    // 예약 신청내용 확인 팝업창 안의 텍스트
+    public Text Cname4, selectDayT2, selectTime2;
+
 
     // 라이브러리를 통해 불러온 FirebaseDatabase 관련객체를 선언해서 사용
     public DatabaseReference reference { get; set; }
@@ -29,7 +54,7 @@ public class CounselorLoad : MonoBehaviour
         FirebaseApp.DefaultInstance.Options.DatabaseUrl =
        new System.Uri("https://swuniverse-d9641-default-rtdb.firebaseio.com/");
 
-
+ 
         SetFunction_UI();
         item.SetActive(false);
 
@@ -58,23 +83,32 @@ public class CounselorLoad : MonoBehaviour
                         DataSnapshot snapshot = task.Result;
                         print($"데이터 레코드 갯수 : {snapshot.ChildrenCount}"); //데이터 건수 출력
 
+                        num = (int)snapshot.ChildrenCount;
+                        
 
                         foreach (DataSnapshot data in snapshot.Children)
                         {
+
                             // JSON은 사전 형태이기 때문에 딕셔너리 형으로 변환
                             IDictionary relationship = (IDictionary)data.Value;
 
-                            Debug.Log("상담사: " + relationship["userGroup"] + ", email: " + relationship["email"]
-                                + ", pic: " + relationship["pic"] + ", username: " + relationship["username"]
-                                + ", sex: " + relationship["sex"] + ", intro: " + relationship["intro"]
-                                + ", family: " + relationship["family"] + ", myself: " + relationship["myself"]
-                                + ", relationship: " + relationship["relationship"] + ", romance: " + relationship["romance"]
-                                + ", work: " + relationship["work"] + ", career: " + relationship["career"]
-                                + ", career1: " + relationship["career1"] + ", career2: " + relationship["career2"]
-                                + ", career3: " + relationship["career3"] + ", day: " + relationship["day"]
-                                + ", time: " + relationship["time"] + ", appointment: " + relationship["appointment"]
-                                + ", patient: " + relationship["patient"] + ", appDay: " + relationship["appDay"]
-                                + ", appTime: " + relationship["appTime"] + ", worry: " + relationship["worry"]
+                            Debug.Log("상담사: " + relationship["userGroup"] 
+                                + "\n uid: " + relationship["uid"]
+                                + "\n email: " + relationship["email"] 
+                                + "\n pic: " + relationship["pic"] 
+                                + "\n username: " + relationship["username"]
+                                + "\n sex: " + relationship["sex"] 
+                                + "\n intro: " + relationship["intro"]
+                                + "\n family: " + relationship["family"] 
+                                + "\n myself: " + relationship["myself"]
+                                + "\n relationship: " + relationship["relationship"] 
+                                + "\n romance: " + relationship["romance"]
+                                + "\n work: " + relationship["work"] 
+                                + "\n career: " + relationship["career"]
+                                + "\n career1: " + relationship["career1"] 
+                                + "\n career2: " + relationship["career2"]
+                                + "\n career3: " + relationship["career3"] 
+                                + "\n appointment: " + relationship["appointment"]
                                 );
 
                             nameText.text = (string)relationship["username"];
@@ -86,7 +120,22 @@ public class CounselorLoad : MonoBehaviour
 
                             item.SetActive(true);
 
+                            Cname1.text = (string)relationship["username"];
+                            Cname2.text = (string)relationship["username"];
+                            Cname3.text = (string)relationship["username"];
+                            Cmajor.text = "대인관계";
+                            Cintro.text =  (string)relationship["intro"];
+                            career1.text = (string)relationship["career1"];
+                            career2.text = (string)relationship["career2"];
+                            career3.text = (string)relationship["career3"];
 
+                            
+                                prefab = Instantiate(item, parent);
+                                prefab.transform.position = new Vector3(1450, 367, 0);
+                                print("생성");
+                            
+
+                            
                         }
                     }
 
@@ -95,8 +144,11 @@ public class CounselorLoad : MonoBehaviour
         else
         {
             item.SetActive(false);
+
+            Destroy(item);
         }
 
+    
 
     }
 
@@ -132,17 +184,23 @@ public class CounselorLoad : MonoBehaviour
                             // JSON은 사전 형태이기 때문에 딕셔너리 형으로 변환
                             IDictionary family = (IDictionary)data.Value;
 
-                            Debug.Log("상담사: " + family["userGroup"] + ", email: " + family["email"]
-                                + ", pic: " + family["pic"] + ", username: " + family["username"]
-                                + ", sex: " + family["sex"] + ", intro: " + family["intro"]
-                                + ", family: " + family["family"] + ", myself: " + family["myself"]
-                                + ", relationship: " + family["relationship"] + ", romance: " + family["romance"]
-                                + ", work: " + family["work"] + ", career: " + family["career"]
-                                + ", career1: " + family["career1"] + ", career2: " + family["career2"]
-                                + ", career3: " + family["career3"] + ", day: " + family["day"]
-                                + ", time: " + family["time"] + ", appointment: " + family["appointment"]
-                                + ", patient: " + family["patient"] + ", appDay: " + family["appDay"]
-                                + ", appTime: " + family["appTime"] + ", worry: " + family["worry"]
+                            Debug.Log("상담사: " + family["userGroup"]
+                                + "\n uid: " + family["uid"]
+                                + "\n email: " + family["email"]
+                                + "\n pic: " + family["pic"]
+                                + "\n username: " + family["username"]
+                                + "\n sex: " + family["sex"]
+                                + "\n intro: " + family["intro"]
+                                + "\n family: " + family["family"]
+                                + "\n myself: " + family["myself"]
+                                + "\n relationship: " + family["relationship"]
+                                + "\n romance: " + family["romance"]
+                                + "\n work: " + family["work"]
+                                + "\n career: " + family["career"]
+                                + "\n career1: " + family["career1"]
+                                + "\n career2: " + family["career2"]
+                                + "\n career3: " + family["career3"]
+                                + "\n appointment: " + family["appointment"]
                                 );
 
                             nameText.text = (string)family["username"];
@@ -153,6 +211,15 @@ public class CounselorLoad : MonoBehaviour
                             StartCoroutine(GetTexture((string)family["pic"]));
 
                             item.SetActive(true);
+
+                            Cname1.text = (string)family["username"];
+                            Cname2.text = (string)family["username"];
+                            Cname3.text = (string)family["username"];
+                            Cmajor.text = "가족";
+                            Cintro.text = (string)family["intro"];
+                            career1.text = (string)family["career1"];
+                            career2.text = (string)family["career2"];
+                            career3.text = (string)family["career3"];
 
 
                         }
@@ -181,6 +248,7 @@ public class CounselorLoad : MonoBehaviour
         else
         {
             profileImg.texture = ((DownloadHandlerTexture)www.downloadHandler).texture;
+            profileImg2.texture = ((DownloadHandlerTexture)www.downloadHandler).texture;
         }
     }
 
@@ -191,17 +259,62 @@ public class CounselorLoad : MonoBehaviour
         ResetFunction_UI();
         relationshipT.onValueChanged.AddListener(Function_Toggle);
         familyT.onValueChanged.AddListener(Function_fToggle);
+        nine.onValueChanged.AddListener(nine_Toggle);
     }
 
     private void ResetFunction_UI()
     {
         relationshipT.onValueChanged.RemoveAllListeners();
         familyT.onValueChanged.RemoveAllListeners();
+        nine.onValueChanged.RemoveAllListeners();
+    }
+
+
+    public void SelectDay()
+    {
+        if (DayBtn.thisDay == null)
+        {
+            DayBtn.thisDay = DateTime.Now.Day.ToString();
+            print(DayBtn.thisDay);
+        }
+        else
+        {
+            print(DayBtn.thisDay);
+            
+        }
+        string monthSub = month.text;
+        selectDay = "2022." + monthSub.Substring(0, monthSub.Length - 1) + "." + DayBtn.thisDay + ".";
+        selectDayT.text = selectDay;
+    }
+
+    private void nine_Toggle(bool _bool)
+    {
+        Debug.Log("9시 - 10시 : " + _bool);
+
+        if (_bool == true)
+        {
+            print(nine.GetComponentInChildren<Text>().text);
+            selectTime.text = nine.GetComponentInChildren<Text>().text;
+        }
     }
 
 
 
+    public void ReserBtn()
+    {
+        Cname4.text = Cname2.text;
+        selectDayT2.text = selectDay;
+        selectTime2.text = selectTime.text;
+        worry2.text = worry.text;
+
+    }
+
+    
 }
+
+
+
+    
 
 
 

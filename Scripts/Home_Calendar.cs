@@ -18,14 +18,17 @@ public class Home_Calendar : MonoBehaviour
 
     private DateTime _dateTime;
     public static Home_Calendar _calendarInstance;
-    
+
+
+    GameObject item;
+    public string year;
 
     private string today = DateTime.Now.Day.ToString();
     private string thisMonth = DateTime.Now.Month.ToString() + "월";
 
     void Start()
     {
-        
+
         _calendarInstance = this;
         Vector3 startPos = _item.transform.localPosition;
         _dateItems.Clear();
@@ -33,14 +36,18 @@ public class Home_Calendar : MonoBehaviour
 
         for (int i = 1; i < _totalDateNum; i++)
         {
-            GameObject item = GameObject.Instantiate(_item) as GameObject;
+            item = GameObject.Instantiate(_item) as GameObject;
             item.name = "Item" + (i + 1).ToString();
             item.transform.SetParent(_item.transform.parent);
             item.transform.localScale = Vector3.one;
             item.transform.localRotation = Quaternion.identity;
             item.transform.localPosition = new Vector3((i % 7) * 96 + startPos.x, startPos.y - (i / 7) * 60, startPos.z);
 
+            
+
             _dateItems.Add(item);
+
+
         }
 
         _dateTime = DateTime.Now;
@@ -69,17 +76,19 @@ public class Home_Calendar : MonoBehaviour
 
                     label.text = (date + 1).ToString();
                     date++;
+
+                    
                 }
             }
 
             // 오늘 날짜 표시
             if (today == label.text)
             {
-                print("오늘날짜: " + today +"일 / 표시날짜: "+ label.text);
+                print("오늘날짜: " + today + "일 / 표시날짜: " + label.text);
                 today = _dateItems[i].ToString();
                 //print(today);
-                _dateItems[i].GetComponent<Image>().color = new Color(255f/255f, 195f/255f, 43f/255f);
-                
+                _dateItems[i].GetComponent<Image>().color = new Color(255f / 255f, 195f / 255f, 43f / 255f);
+
             }
 
         }
@@ -116,16 +125,16 @@ public class Home_Calendar : MonoBehaviour
                 }
             }
 
-          /*  // 오늘 날짜 표시
-            if (_monthNumText.text == thisMonth)
-            {
-                print("현재 달: " + thisMonth + "   달력 달: " + _monthNumText.text);
-                _dateItems[i].GetComponent<Image>().enabled = true;
+            /*  // 오늘 날짜 표시
+              if (_monthNumText.text == thisMonth)
+              {
+                  print("현재 달: " + thisMonth + "   달력 달: " + _monthNumText.text);
+                  _dateItems[i].GetComponent<Image>().enabled = true;
 
-            }*/
+              }*/
 
         }
-        
+
 
         //_todayText.text = _dateTime.ToString("yyyy.MM.dd.");
         _monthNumText.text = _dateTime.Month.ToString() + "월";
@@ -170,7 +179,7 @@ public class Home_Calendar : MonoBehaviour
     public void MonthNext()
     {
         //print("현재 달: " + thisMonth + "   달력 달: " + _monthNumText.text);
-        _dateTime = _dateTime.AddMonths(1);       
+        _dateTime = _dateTime.AddMonths(1);
         ReCreateCalendar();
 
     }
@@ -191,6 +200,9 @@ public class Home_Calendar : MonoBehaviour
         _calendarPanel.SetActive(false);
     }
 
+
+    
+  
 }
 
 

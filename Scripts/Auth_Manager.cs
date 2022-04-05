@@ -11,7 +11,7 @@ using Firebase.Extensions;
 public class Auth_Manager : MonoBehaviour
 {
     //public Text LogText;
-
+   
     public bool IsFirebaseReady { get; private set; }
     public bool IsSignInOnProgress { get; private set; }
 
@@ -66,18 +66,18 @@ public class Auth_Manager : MonoBehaviour
     //이메일 로그인
     public void LogIn()
     {
-        if (!IsFirebaseReady || IsSignInOnProgress || User != null) { return; }
+        //if (!IsFirebaseReady || IsSignInOnProgress || User != null) { return; }
 
-        IsSignInOnProgress = true;
-        LogInButton.interactable = false;
+        //IsSignInOnProgress = true;
+        //LogInButton.interactable = false;
 
         firebaseAuth.SignInWithEmailAndPasswordAsync(emailField.text, passwordField.text)
             .ContinueWithOnMainThread(task =>
             {
                 //Debug.Log($"Sign in status : {task.Status}");
 
-                IsSignInOnProgress = false;
-                LogInButton.interactable = true;
+               // IsSignInOnProgress = false;
+                //LogInButton.interactable = true;
 
                 if (task.IsFaulted)
                 {
@@ -96,6 +96,7 @@ public class Auth_Manager : MonoBehaviour
 
                     //로그인에 성공하면 홈 화면으로 이동
                     SceneManager.LoadScene("Home_Scene");
+                    
                 }
             }
             );
@@ -105,8 +106,12 @@ public class Auth_Manager : MonoBehaviour
     public void LogOut()
     {
         firebaseAuth.SignOut();
+        
         //LogText.text = "로그아웃";
         Debug.Log("로그아웃 되었습니다.");
+        Debug.Log(User.UserId);
+        //User = null;
+        //Debug.Log(User.UserId);
     }
 
 

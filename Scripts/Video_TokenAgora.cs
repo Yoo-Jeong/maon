@@ -28,6 +28,7 @@ public class Video_TokenAgora : MonoBehaviour
     private const float Offset = 100;
     private static string channelName = "swuniverse";
     private static string channelToken = "";
+    //private static string tokenBase = "http://localhost:8080";
     private static string tokenBase = "http://localhost:8080";
     private CONNECTION_STATE_TYPE state = CONNECTION_STATE_TYPE.CONNECTION_STATE_DISCONNECTED;
 
@@ -38,8 +39,12 @@ public class Video_TokenAgora : MonoBehaviour
 
         CheckAppId();
         InitEngine();
+        
+
         JoinChannel();
     }
+
+    
 
     void RenewOrJoinToken(string newToken)
     {
@@ -137,6 +142,7 @@ public class Video_TokenAgora : MonoBehaviour
         mRtcEngine.OnTokenPrivilegeWillExpire += OnTokenPrivilegeWillExpireHandler;
         mRtcEngine.OnConnectionStateChanged += OnConnectionStateChangedHandler;
 
+       
     }
 
     void JoinChannel()
@@ -155,6 +161,7 @@ public class Video_TokenAgora : MonoBehaviour
 
     void OnJoinChannelSuccessHandler(string channelName, uint uid, int elapsed)
     {
+        print("성공2");
         logger.UpdateLog(string.Format("sdk version: ${0}", IRtcEngine.GetSdkVersion()));
         logger.UpdateLog(string.Format("onJoinChannelSuccess channelName: {0}, uid: {1}, elapsed: {2}", channelName, uid, elapsed));
         logger.UpdateLog(string.Format("New Token: {0}", Video_TokenAgora.channelToken));

@@ -10,6 +10,8 @@ using Firebase.Extensions;
 
 public class Register_Manager : MonoBehaviour
 {
+
+ 
     public DatabaseReference reference { get; set; }
 
     Firebase.Auth.FirebaseAuth auth;
@@ -99,7 +101,7 @@ public class Register_Manager : MonoBehaviour
 
 
                 // RDB에 내담자 데이터 저장
-                ClientUser clientUser = new ClientUser(userGroup, email, displayName, sex, birth, job, meal, sleep, exercise,
+                ClientUser clientUser = new ClientUser(userGroup, newUser.UserId,email, displayName, sex, birth, job, meal, sleep, exercise,
                    false, "", "", "", "");
 
                 // 데이터를 json형태로 반환
@@ -109,6 +111,7 @@ public class Register_Manager : MonoBehaviour
                 reference.Child("ClientUsers").Child(newUser.UserId).SetRawJsonValueAsync(json);
 
                 print(RegiOK);
+                
                 RegiOK = true;
                 print(RegiOK);
 
@@ -118,6 +121,7 @@ public class Register_Manager : MonoBehaviour
         });
 
         Invoke("RegiCheck", 2);
+       
 
 
         /*if (RegiOK == true)
@@ -339,17 +343,18 @@ public class Register_Manager : MonoBehaviour
     // 내담자 정보를 담는 ClientUser 클래스.
     class ClientUser
     {
-        public string userGroup, email, username, sex, birth, job, meal, sleep, exercise;
+        public string userGroup, uid, email, username, sex, birth, job, meal, sleep, exercise;
         public bool appointment;
         public string counselorInCharge, appDay, appTime, worry;
 
 
         // 내담자 생성자.
-        public ClientUser(string userGroup, string email, string username, string sex, string birth, string job,
+        public ClientUser(string userGroup, string uid, string email, string username, string sex, string birth, string job,
             string meal, string sleep, string exercise,
             bool appointment, string counselorInCharge, string appDay, string appTime, string worry)
         {
             this.userGroup = userGroup;
+            this.uid = uid;
             this.email = email;
             this.username = username;
             this.sex = sex;

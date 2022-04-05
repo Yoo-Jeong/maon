@@ -2,12 +2,18 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using Photon.Pun;
+using Photon.Realtime;
 
 using UnityEngine.UI;
 
-public class Scene_Manager : MonoBehaviour
+public class Scene_Manager : MonoBehaviourPunCallbacks
 {
- 
+
+    public void click()
+    {
+        print("클릭");
+    }
 
     private void Start()
     {
@@ -34,8 +40,29 @@ public class Scene_Manager : MonoBehaviour
     {
         Screen.orientation = ScreenOrientation.Portrait;
         SceneManager.LoadScene("Home_Scene");
+        
+        Debug.Log("상담소 퇴장");
+        PhotonNetwork.Disconnect();
+       
+        Debug.Log("홈으로 이동");
+        
 
     }
+
+
+    public void SceneChangeToCounsel()
+    {
+        Screen.orientation = ScreenOrientation.Portrait;
+        SceneManager.LoadScene("Home_Scene");
+
+        Debug.Log("상담소 퇴장");
+        PhotonNetwork.Disconnect();
+
+        Debug.Log("홈으로 이동");
+
+
+    }
+
 
     public void SceneChangeToReservationHome()
     {

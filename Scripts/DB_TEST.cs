@@ -89,24 +89,24 @@ public class DB_TEST : MonoBehaviour
     class CounselorUser
     {
         // 기본 정보 : 상담사그룹, 이메일, 프로필이미지 경로, 이름, 성별, 한줄소개, 경력사항1, 경력사항2, 경력사항3, 상담가능요일, 상담가능시간
-        public string userGroup, email, pic, username, sex, intro, career1, career2, career3, day, time;
+        public string userGroup, uid, email, pic, username, sex, intro, career1, career2, career3;
 
         // 전문 분야 : 가족, 나 자신, 대인관계, 연애, 직장, 진로/취직
         public bool family, myself, relationship, romance, work, career;
 
         public bool appointment;  // 예약여부
 
-        // 예약이 있다면 : 내담자이름, 예약날짜, 예약시간, 고민내용
-        public string patient, appDay, appTime, worry;
+    
 
 
         // 상담사 생성자.
-        public CounselorUser(string userGroup, string email, string pic, string username, string sex, string intro,
+        public CounselorUser(string userGroup, string uid, string email, string pic, string username, string sex, string intro,
             bool family, bool myself, bool relationship, bool romance, bool work, bool career,
-            string career1, string career2, string career3, string day, string time,
-            bool appointment, string patient, string appDay, string appTime, string worry)
+            string career1, string career2, string career3,
+            bool appointment)
         {
             this.userGroup = userGroup;
+            this.uid = uid;
             this.email = email;
             this.pic = pic;
             this.username = username;
@@ -124,34 +124,119 @@ public class DB_TEST : MonoBehaviour
             this.career1 = career1;
             this.career2 = career2;
             this.career3 = career3;
-            this.day = day;
-            this.time = time;
+          
+           
 
             this.appointment = appointment;
-            this.patient = patient;
+           
+        }
+
+    }
+
+
+
+    // 상담사 레코드 하위에 위치한 예약 레코드(appointment)
+    class CounselorAppo
+    {
+        // 거절사유, 고민내용, 내담자 후기, 상담날짜, 상담시간, 신청인(내담자)이름
+        public string refuse, worry, feedback, appDay, appTime, client;
+
+        // 수락상태, 0:무반응 1:수락 2:거절
+        public int progress;
+
+        public CounselorAppo(string refuse, string worry, string feedback,
+            string appDay, string appTime, string client, int progress)
+        {
+            this.refuse = refuse;
+            this.worry = worry;
+            this.feedback = feedback;
             this.appDay = appDay;
             this.appTime = appTime;
-            this.worry = worry;
+            this.client = client;
+            this.progress = progress;
+
         }
+
     }
+
+
+    // 상담사 레코드 하위에 위치한 가능예약 시간레코드(time)
+    class CounselorTime
+    {
+        public string nine, ten, eleven, twelve, thirteen, fourteen
+            , fifteen, sixteen, seventeen;
+
+        public CounselorTime(string nine, string ten, string eleven, string twelve, string thirteen, string fourteen
+            , string fifteen, string sixteen, string seventeen)
+        {
+            this.nine = nine;
+            this.ten = ten;
+            this.eleven = eleven;
+            this.twelve = twelve;
+            this.thirteen = thirteen;
+            this.fourteen = fourteen;
+            this.fifteen = fifteen;
+            this.sixteen = sixteen;
+            this.seventeen = seventeen;
+ 
+        }
+
+    }
+
+    // 상담사 레코드 하위에 위치한 가능예약 요일레코드(day)
+    class CounselorDay
+    {
+        public bool Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday;
+
+        public CounselorDay(bool Monday, bool Tuesday, bool Wednesday
+            , bool Thursday, bool Friday, bool Saturday, bool Sunday)
+        {
+            this.Monday = Monday;
+            this.Tuesday = Tuesday;
+            this.Wednesday = Wednesday;
+            this.Thursday = Thursday;
+            this.Friday = Friday;
+            this.Saturday = Saturday;
+            this.Sunday = Sunday;
+
+        }
+
+    }
+
+
 
 
     // 상담사 임시유저 저장 버튼.
     public void TestCBtn()
     {
-        CounselorUser counselorUser = new CounselorUser("상담사", "asdf@gmail.com", "이미지 경로", "김상담", "여", 
+        // 상담사 기본정보
+        CounselorUser counselorUser = new CounselorUser("상담사", "-MzpTIrk43SkRf1yXmjd","asdf@gmail.com", "이미지 경로", "김상담", "여", 
             "책임감과 헌신적인 자세로 내담자의 마음을 치유하는 심리학 박사입니다.",
-            false, false, true, false, false, false,
+            false, false, true, false, true, true,
             "상담심리사 1급 (한국심리학회)", "정신건강임상심리사 1급 (보건복지부)", "전) 한양대병원 정신건강의학과 심리평가 및 상담", 
-            "월수금","", false, "", "", "", "");
+             false);
+
+        // 상담사 예약정보
+        CounselorAppo counselorAppo = new CounselorAppo("", "", "", "", "", "", 0);
+
+        // 상담사 가능 시간
+        CounselorTime counselorTime = new CounselorTime("9:00-10:00", "10:00-11:00", "11:00-12:00", "12:00-13:00"
+           , "13:00-14:00", "14:00-15:00", "15:00-16:00", "16:00-17:00", "17:00-18:00");
+
+        // 상담사 가능 요일
+        CounselorDay counselorDay = new CounselorDay(true, true, true, true, true, true, true);
 
 
         // 데이터를 json형태로 반환.
         string json = JsonUtility.ToJson(counselorUser);
+        string json2 = JsonUtility.ToJson(counselorAppo);
+        string json3 = JsonUtility.ToJson(counselorTime);
+        string json4 = JsonUtility.ToJson(counselorDay);
 
         // root의 자식 clientUser key 값을 추가.
         string key = reference.Child("CounselorUsers").Push().Key;
 
+   
 
 
         // 해당 전문 분야 하위에 상담사 데이터 저장. (전문 분야로 쿼리하기 위해..?)
@@ -159,26 +244,64 @@ public class DB_TEST : MonoBehaviour
         {
             reference.Child("CounselorUsers").Child("family").Child(key).SetRawJsonValueAsync(json);
 
+            reference.Child("CounselorUsers").Child("family").Child(key).Child("appointment").Child(key).SetRawJsonValueAsync(json2);
+
+            reference.Child("CounselorUsers").Child("family").Child(key).Child("counselorTime").SetRawJsonValueAsync(json3);
+
+            reference.Child("CounselorUsers").Child("family").Child(key).Child("counselorDay").SetRawJsonValueAsync(json4);
+
+
         }
         else if (counselorUser.myself)
         {
             reference.Child("CounselorUsers").Child("myself").Child(key).SetRawJsonValueAsync(json);
+
+            reference.Child("CounselorUsers").Child("myself").Child(key).Child("appointment").Child(key).SetRawJsonValueAsync(json2);
+
+            reference.Child("CounselorUsers").Child("family").Child(key).Child("counselorTime").SetRawJsonValueAsync(json3);
+
+            reference.Child("CounselorUsers").Child("family").Child(key).Child("counselorDay").SetRawJsonValueAsync(json4);
         }
         else if (counselorUser.relationship)
         {
             reference.Child("CounselorUsers").Child("relationship").Child(key).SetRawJsonValueAsync(json);
+
+            reference.Child("CounselorUsers").Child("relationship").Child(key).Child("appointment").Child(key).SetRawJsonValueAsync(json2);
+
+            reference.Child("CounselorUsers").Child("relationship").Child(key).Child("counselorTime").SetRawJsonValueAsync(json3);
+
+            reference.Child("CounselorUsers").Child("relationship").Child(key).Child("counselorDay").SetRawJsonValueAsync(json4);
+
         }
         else if (counselorUser.romance)
         {
             reference.Child("CounselorUsers").Child("romance").Child(key).SetRawJsonValueAsync(json);
+
+            reference.Child("CounselorUsers").Child("romance").Child(key).Child("appointment").Child(key).SetRawJsonValueAsync(json2);
+
+            reference.Child("CounselorUsers").Child("romance").Child(key).Child("counselorTime").SetRawJsonValueAsync(json3);
+
+            reference.Child("CounselorUsers").Child("romance").Child(key).Child("counselorDay").SetRawJsonValueAsync(json4);
         }
         else if (counselorUser.work)
         {
             reference.Child("CounselorUsers").Child("work").Child(key).SetRawJsonValueAsync(json);
+
+            reference.Child("CounselorUsers").Child("work").Child(key).Child("appointment").Child(key).SetRawJsonValueAsync(json2);
+
+            reference.Child("CounselorUsers").Child("work").Child(key).Child("counselorTime").SetRawJsonValueAsync(json3);
+
+            reference.Child("CounselorUsers").Child("work").Child(key).Child("counselorDay").SetRawJsonValueAsync(json4);
         }
         else
         {
             reference.Child("CounselorUsers").Child("career").Child(key).SetRawJsonValueAsync(json);
+
+            reference.Child("CounselorUsers").Child("career").Child(key).Child("appointment").Child(key).SetRawJsonValueAsync(json2);
+
+            reference.Child("CounselorUsers").Child("career").Child(key).Child("counselorTime").SetRawJsonValueAsync(json3);
+
+            reference.Child("CounselorUsers").Child("career").Child(key).Child("counselorDay").SetRawJsonValueAsync(json4);
         }
 
 
@@ -187,3 +310,9 @@ public class DB_TEST : MonoBehaviour
 
 
 }
+
+
+
+// 예약 수락이 되면 -> 채널 이름을 파이어베이스에 저장(내담자 uid로?)
+// 상담소에 입장할 때 파이어베이스에 저장한 채널이름으로 토큰 생성
+// 예약 날짜 당일,시간이 아니면 상담입장은 비활성화 되어야함
