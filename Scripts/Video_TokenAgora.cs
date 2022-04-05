@@ -149,10 +149,10 @@ public class Video_TokenAgora : MonoBehaviour
     {
         if (string.IsNullOrEmpty(channelToken))
         {
-            StartCoroutine(HelperClass.FetchToken(tokenBase, channelName, 0, this.RenewOrJoinToken));
+            StartCoroutine(HelperClass.FetchToken(tokenBase, channelName, 1, this.RenewOrJoinToken));
             return;
         }
-        mRtcEngine.JoinChannelByKey(channelToken, channelName, "", 0);
+        mRtcEngine.JoinChannelByKey(channelToken, channelName, "", 1);
 
         //내 웹캠 출력
         GameObject go = GameObject.Find("MyView_RawImage");

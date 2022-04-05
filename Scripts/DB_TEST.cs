@@ -33,16 +33,15 @@ public class DB_TEST : MonoBehaviour
         // 기본 정보 : 내담자그룹, 이메일, 이름, 성별, 생년월일, 직업, 식사횟수, 수면시간, 운동횟수
         public string userGroup, email, username, sex, birth, job, meal, sleep, exercise;
 
-        public bool appointment; // 예약여부
+        public bool appointmentcheck; // 예약여부
 
-        // 예약이 있다면 : 예약한 상담사이름, 예약날짜, 예약시간, 고민내용
-        public string counselorInCharge, appDay, appTime, worry;
+      
 
 
         // 내담자 생성자.
         public ClientUser(string userGroup, string email, string username, string sex, string birth , string job, 
             string meal, string sleep, string exercise,
-            bool appointment, string counselorInCharge, string appDay, string appTime, string worry)
+            bool appointmentcheck )
         {
             this.userGroup = userGroup;
             this.email = email;
@@ -54,11 +53,8 @@ public class DB_TEST : MonoBehaviour
             this.sleep = sleep;
             this.exercise = exercise;
 
-            this.appointment = appointment;
-            this.counselorInCharge = counselorInCharge;
-            this.appDay = appDay;
-            this.appTime = appTime;
-            this.worry = worry;
+            this.appointmentcheck = appointmentcheck;
+       
         }
     }
 
@@ -67,7 +63,7 @@ public class DB_TEST : MonoBehaviour
     public void TestBtn()
     {
         ClientUser clientUser = new ClientUser("내담자","asdf@gmail.com","김내담", "여","19950202", "학생","3끼", "7시간", "0회",
-            false, "","","","");
+            false );
 
         // 데이터를 json형태로 반환
         string json = JsonUtility.ToJson(clientUser);

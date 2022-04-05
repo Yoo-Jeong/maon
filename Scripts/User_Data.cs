@@ -74,9 +74,9 @@ public class User_Data : MonoBehaviour
 
 
                             // 예약 여부 확인 true면 예약있음, false면 예약없음.
-                            print(snapshot.Child("appointment").Value);    
+                            print(snapshot.Child("appointmentcheck").Value);    
                             // 예약이 있으면 예약일정 화면 표시
-                            if ((bool)snapshot.Child("appointment").Value == true)
+                            if ((bool)snapshot.Child("appointmentcheck").Value == true)
                             {
                                 
                                 Yapp.SetActive(true);

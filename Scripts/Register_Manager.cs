@@ -344,14 +344,14 @@ public class Register_Manager : MonoBehaviour
     class ClientUser
     {
         public string userGroup, uid, email, username, sex, birth, job, meal, sleep, exercise;
-        public bool appointment;
+        public bool appointmentcheck;
         
 
 
         // 내담자 생성자.
         public ClientUser(string userGroup, string uid, string email, string username, string sex, string birth, string job,
             string meal, string sleep, string exercise,
-            bool appointment)
+            bool appointmentcheck )
         {
             this.userGroup = userGroup;
             this.uid = uid;
@@ -364,7 +364,7 @@ public class Register_Manager : MonoBehaviour
             this.sleep = sleep;
             this.exercise = exercise;
 
-            this.appointment = appointment;
+            this.appointmentcheck = appointmentcheck;
         
         }
     }
