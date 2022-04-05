@@ -313,6 +313,12 @@ public class CounselorLoad : MonoBehaviour
         {
             print(nine.GetComponentInChildren<Text>().text);
             selectTime.text = nine.GetComponentInChildren<Text>().text;
+            selectTime.color = Color.black;
+        }
+        else
+        {
+            selectTime.text = "시간을 선택하세요.";
+            selectTime.color = Color.grey;
         }
     }
 
@@ -324,6 +330,12 @@ public class CounselorLoad : MonoBehaviour
         {
             print(ten.GetComponentInChildren<Text>().text);
             selectTime.text = ten.GetComponentInChildren<Text>().text;
+            selectTime.color = Color.black;
+        }
+        else
+        {
+            selectTime.text = "시간을 선택하세요.";
+            selectTime.color = Color.grey;
         }
     }
 
@@ -335,6 +347,12 @@ public class CounselorLoad : MonoBehaviour
         {
             print(eleven.GetComponentInChildren<Text>().text);
             selectTime.text = eleven.GetComponentInChildren<Text>().text;
+            selectTime.color = Color.black;
+        }
+        else
+        {
+            selectTime.text = "시간을 선택하세요.";
+            selectTime.color = Color.grey;
         }
     }
 
@@ -346,6 +364,12 @@ public class CounselorLoad : MonoBehaviour
         {
             print(twelve.GetComponentInChildren<Text>().text);
             selectTime.text = twelve.GetComponentInChildren<Text>().text;
+            selectTime.color = Color.black;
+        }
+        else
+        {
+            selectTime.text = "시간을 선택하세요.";
+            selectTime.color = Color.grey;
         }
     }
 
@@ -357,6 +381,12 @@ public class CounselorLoad : MonoBehaviour
         {
             print(thirteen.GetComponentInChildren<Text>().text);
             selectTime.text = thirteen.GetComponentInChildren<Text>().text;
+            selectTime.color = Color.black;
+        }
+        else
+        {
+            selectTime.text = "시간을 선택하세요.";
+            selectTime.color = Color.grey;
         }
     }
 
@@ -368,6 +398,12 @@ public class CounselorLoad : MonoBehaviour
         {
             print(fourteen.GetComponentInChildren<Text>().text);
             selectTime.text = fourteen.GetComponentInChildren<Text>().text;
+            selectTime.color = Color.black;
+        }
+        else
+        {
+            selectTime.text = "시간을 선택하세요.";
+            selectTime.color = Color.grey;
         }
     }
 
@@ -380,6 +416,12 @@ public class CounselorLoad : MonoBehaviour
         {
             print(fifteen.GetComponentInChildren<Text>().text);
             selectTime.text = fifteen.GetComponentInChildren<Text>().text;
+            selectTime.color = Color.black;
+        }
+        else
+        {
+            selectTime.text = "시간을 선택하세요.";
+            selectTime.color = Color.grey;
         }
     }
 
@@ -391,6 +433,12 @@ public class CounselorLoad : MonoBehaviour
         {
             print(sixteen.GetComponentInChildren<Text>().text);
             selectTime.text = sixteen.GetComponentInChildren<Text>().text;
+            selectTime.color = Color.black;
+        }
+        else
+        {
+            selectTime.text = "시간을 선택하세요.";
+            selectTime.color = Color.grey;
         }
     }
 
@@ -402,6 +450,12 @@ public class CounselorLoad : MonoBehaviour
         {
             print(seventeen.GetComponentInChildren<Text>().text);
             selectTime.text = seventeen.GetComponentInChildren<Text>().text;
+            selectTime.color = Color.black;
+        }
+        else
+        {
+            selectTime.text = "시간을 선택하세요.";
+            selectTime.color = Color.grey;
         }
     }
 
