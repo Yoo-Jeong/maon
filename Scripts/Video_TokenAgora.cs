@@ -29,7 +29,7 @@ public class Video_TokenAgora : MonoBehaviour
     private static string channelName = "swuniverse";
     private static string channelToken = "";
     //private static string tokenBase = "http://localhost:8080";
-    private static string tokenBase = "http://localhost:8080";
+    private static string tokenBase = "http://3Bears.iptime.org:18080";
     private CONNECTION_STATE_TYPE state = CONNECTION_STATE_TYPE.CONNECTION_STATE_DISCONNECTED;
 
     // Use this for initialization

@@ -179,6 +179,11 @@ public class EmotionCtrl : MonoBehaviourPunCallbacks //, IPunObservable
         re.SetActive(true);
     }
 
-
+    // 방 퇴장
+    public void OutRoom()
+    {
+        PhotonNetwork.Disconnect();
+        Debug.Log("방 퇴장");
+    }
 
 }

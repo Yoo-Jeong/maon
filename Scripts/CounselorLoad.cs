@@ -260,6 +260,15 @@ public class CounselorLoad : MonoBehaviour
         relationshipT.onValueChanged.AddListener(Function_Toggle);
         familyT.onValueChanged.AddListener(Function_fToggle);
         nine.onValueChanged.AddListener(nine_Toggle);
+
+        ten.onValueChanged.AddListener(nine_Toggle);
+        eleven.onValueChanged.AddListener(nine_Toggle);
+        twelve.onValueChanged.AddListener(nine_Toggle);
+        thirteen.onValueChanged.AddListener(nine_Toggle);
+        fourteen.onValueChanged.AddListener(nine_Toggle);
+        fifteen.onValueChanged.AddListener(nine_Toggle);
+        sixteen.onValueChanged.AddListener(nine_Toggle);
+        seventeen.onValueChanged.AddListener(nine_Toggle);
     }
 
     private void ResetFunction_UI()
@@ -267,6 +276,15 @@ public class CounselorLoad : MonoBehaviour
         relationshipT.onValueChanged.RemoveAllListeners();
         familyT.onValueChanged.RemoveAllListeners();
         nine.onValueChanged.RemoveAllListeners();
+
+        ten.onValueChanged.RemoveAllListeners();
+        eleven.onValueChanged.RemoveAllListeners();
+        twelve.onValueChanged.RemoveAllListeners();
+        thirteen.onValueChanged.RemoveAllListeners();
+        fourteen.onValueChanged.RemoveAllListeners();
+        fifteen.onValueChanged.RemoveAllListeners();
+        sixteen.onValueChanged.RemoveAllListeners();
+        seventeen.onValueChanged.RemoveAllListeners();
     }
 
 
@@ -298,6 +316,94 @@ public class CounselorLoad : MonoBehaviour
         }
     }
 
+    private void ten_Toggle(bool _bool)
+    {
+        Debug.Log("10시 - 11시 : " + _bool);
+
+        if (_bool == true)
+        {
+            print(ten.GetComponentInChildren<Text>().text);
+            selectTime.text = ten.GetComponentInChildren<Text>().text;
+        }
+    }
+
+    private void eleven_Toggle(bool _bool)
+    {
+        Debug.Log("11시 - 12시 : " + _bool);
+
+        if (_bool == true)
+        {
+            print(eleven.GetComponentInChildren<Text>().text);
+            selectTime.text = eleven.GetComponentInChildren<Text>().text;
+        }
+    }
+
+    private void twelve_Toggle(bool _bool)
+    {
+        Debug.Log("12시 - 13시 : " + _bool);
+
+        if (_bool == true)
+        {
+            print(twelve.GetComponentInChildren<Text>().text);
+            selectTime.text = twelve.GetComponentInChildren<Text>().text;
+        }
+    }
+
+    private void thirteen_Toggle(bool _bool)
+    {
+        Debug.Log("13시 - 14시 : " + _bool);
+
+        if (_bool == true)
+        {
+            print(thirteen.GetComponentInChildren<Text>().text);
+            selectTime.text = thirteen.GetComponentInChildren<Text>().text;
+        }
+    }
+
+    private void fourteen_Toggle(bool _bool)
+    {
+        Debug.Log("14시 - 15시 : " + _bool);
+
+        if (_bool == true)
+        {
+            print(fourteen.GetComponentInChildren<Text>().text);
+            selectTime.text = fourteen.GetComponentInChildren<Text>().text;
+        }
+    }
+
+
+    private void fifteen_Toggle(bool _bool)
+    {
+        Debug.Log("15시 - 16시 : " + _bool);
+
+        if (_bool == true)
+        {
+            print(fifteen.GetComponentInChildren<Text>().text);
+            selectTime.text = fifteen.GetComponentInChildren<Text>().text;
+        }
+    }
+
+    private void sixteen_Toggle(bool _bool)
+    {
+        Debug.Log("16시 - 17시 : " + _bool);
+
+        if (_bool == true)
+        {
+            print(sixteen.GetComponentInChildren<Text>().text);
+            selectTime.text = sixteen.GetComponentInChildren<Text>().text;
+        }
+    }
+
+    private void seventeen_Toggle(bool _bool)
+    {
+        Debug.Log("17시 - 18시 : " + _bool);
+
+        if (_bool == true)
+        {
+            print(seventeen.GetComponentInChildren<Text>().text);
+            selectTime.text = seventeen.GetComponentInChildren<Text>().text;
+        }
+    }
 
 
     public void ReserBtn()
