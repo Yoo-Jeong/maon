@@ -261,14 +261,14 @@ public class CounselorLoad : MonoBehaviour
         familyT.onValueChanged.AddListener(Function_fToggle);
         nine.onValueChanged.AddListener(nine_Toggle);
 
-        ten.onValueChanged.AddListener(nine_Toggle);
-        eleven.onValueChanged.AddListener(nine_Toggle);
-        twelve.onValueChanged.AddListener(nine_Toggle);
-        thirteen.onValueChanged.AddListener(nine_Toggle);
-        fourteen.onValueChanged.AddListener(nine_Toggle);
-        fifteen.onValueChanged.AddListener(nine_Toggle);
-        sixteen.onValueChanged.AddListener(nine_Toggle);
-        seventeen.onValueChanged.AddListener(nine_Toggle);
+        ten.onValueChanged.AddListener(ten_Toggle);
+        eleven.onValueChanged.AddListener(eleven_Toggle);
+        twelve.onValueChanged.AddListener(twelve_Toggle);
+        thirteen.onValueChanged.AddListener(thirteen_Toggle);
+        fourteen.onValueChanged.AddListener(fourteen_Toggle);
+        fifteen.onValueChanged.AddListener(fifteen_Toggle);
+        sixteen.onValueChanged.AddListener(sixteen_Toggle);
+        seventeen.onValueChanged.AddListener(seventeen_Toggle);
     }
 
     private void ResetFunction_UI()
