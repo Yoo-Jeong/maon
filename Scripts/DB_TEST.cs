@@ -92,7 +92,9 @@ public class DB_TEST : MonoBehaviour
 
         public bool appointment;  // 예약여부
 
-    
+
+        public int careersCount;
+        public string[] careers;
 
 
         // 상담사 생성자.
@@ -120,10 +122,11 @@ public class DB_TEST : MonoBehaviour
             this.career1 = career1;
             this.career2 = career2;
             this.career3 = career3;
-          
-           
 
-            this.appointment = appointment;
+            //this.appointment = appointment;
+
+           // this.careersCount = careersCount;
+           // this.careers = new careers[careersCount];
            
         }
 
@@ -207,9 +210,9 @@ public class DB_TEST : MonoBehaviour
     public void TestCBtn()
     {
         // 상담사 기본정보
-        CounselorUser counselorUser = new CounselorUser("상담사", "-MzpTIrk43SkRf1yXmjd","asdf@gmail.com", "이미지 경로", "김상담", "여", 
+        CounselorUser counselorUser = new CounselorUser("상담사", "-MzpTIrk43SkRf1yXmjd","asdf@gmail.com", "이미지 경로", "박상담", "여", 
             "책임감과 헌신적인 자세로 내담자의 마음을 치유하는 심리학 박사입니다.",
-            false, false, true, false, true, true,
+            false, false, true, false, false, false,
             "상담심리사 1급 (한국심리학회)", "정신건강임상심리사 1급 (보건복지부)", "전) 한양대병원 정신건강의학과 심리평가 및 상담", 
              false);
 
@@ -241,7 +244,7 @@ public class DB_TEST : MonoBehaviour
         {
             reference.Child("CounselorUsers").Child("가족").Child(key).SetRawJsonValueAsync(json);
 
-            reference.Child("CounselorUsers").Child("가족").Child(key).Child("appointment").Child(key).SetRawJsonValueAsync(json2);
+            reference.Child("CounselorUsers").Child("가족").Child(key).Child("appointment").Push().Child(key).SetRawJsonValueAsync(json2);
 
             reference.Child("CounselorUsers").Child("가족").Child(key).Child("counselorTime").SetRawJsonValueAsync(json3);
 
@@ -253,7 +256,7 @@ public class DB_TEST : MonoBehaviour
         {
             reference.Child("CounselorUsers").Child("나 자신").Child(key).SetRawJsonValueAsync(json);
 
-            reference.Child("CounselorUsers").Child("나 자신").Child(key).Child("appointment").Child(key).SetRawJsonValueAsync(json2);
+            reference.Child("CounselorUsers").Child("나 자신").Child(key).Child("appointment").Push().Child(key).SetRawJsonValueAsync(json2);
 
             reference.Child("CounselorUsers").Child("나 자신").Child(key).Child("counselorTime").SetRawJsonValueAsync(json3);
 
@@ -263,7 +266,7 @@ public class DB_TEST : MonoBehaviour
         {
             reference.Child("CounselorUsers").Child("대인관계").Child(key).SetRawJsonValueAsync(json);
 
-            reference.Child("CounselorUsers").Child("대인관계").Child(key).Child("appointment").Child(key).SetRawJsonValueAsync(json2);
+            reference.Child("CounselorUsers").Child("대인관계").Child(key).Child("appointment").Push().Child(key).SetRawJsonValueAsync(json2);
 
             reference.Child("CounselorUsers").Child("대인관계").Child(key).Child("counselorTime").SetRawJsonValueAsync(json3);
 
@@ -274,7 +277,7 @@ public class DB_TEST : MonoBehaviour
         {
             reference.Child("CounselorUsers").Child("연애").Child(key).SetRawJsonValueAsync(json);
 
-            reference.Child("CounselorUsers").Child("연애").Child(key).Child("appointment").Child(key).SetRawJsonValueAsync(json2);
+            reference.Child("CounselorUsers").Child("연애").Child(key).Child("appointment").Push().Child(key).SetRawJsonValueAsync(json2);
 
             reference.Child("CounselorUsers").Child("연애").Child(key).Child("counselorTime").SetRawJsonValueAsync(json3);
 
@@ -284,7 +287,7 @@ public class DB_TEST : MonoBehaviour
         {
             reference.Child("CounselorUsers").Child("직장").Child(key).SetRawJsonValueAsync(json);
 
-            reference.Child("CounselorUsers").Child("직장").Child(key).Child("appointment").Child(key).SetRawJsonValueAsync(json2);
+            reference.Child("CounselorUsers").Child("직장").Child(key).Child("appointment").Push().Child(key).SetRawJsonValueAsync(json2);
 
             reference.Child("CounselorUsers").Child("직장").Child(key).Child("counselorTime").SetRawJsonValueAsync(json3);
 
@@ -294,7 +297,7 @@ public class DB_TEST : MonoBehaviour
         {
             reference.Child("CounselorUsers").Child("진로/취업").Child(key).SetRawJsonValueAsync(json);
 
-            reference.Child("CounselorUsers").Child("진로/취업").Child(key).Child("appointment").Child(key).SetRawJsonValueAsync(json2);
+            reference.Child("CounselorUsers").Child("진로/취업").Child(key).Child("appointment").Push().Child(key).SetRawJsonValueAsync(json2);
 
             reference.Child("CounselorUsers").Child("진로/취업").Child(key).Child("counselorTime").SetRawJsonValueAsync(json3);
 

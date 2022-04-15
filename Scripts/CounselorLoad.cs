@@ -18,13 +18,14 @@ public class CounselorLoad : MonoBehaviour
     public GameObject item;              // 리스트 상담사 버튼
 
     public Toggle familyT, relationshipT; // 상담사 전문분야 선택 토글
+    public Text relationshipText;
     public RawImage profileImg, profileImg2;   // 상담사 프로필 이미지
 
     public Transform parent;
     public GameObject prefab;
     public int num;
 
-    public Text nameText, introduce, major; // 리스트 상담사 간략정보를 담을 변수
+    public string major; // 리스트 상담사 간략정보를 담을 변수
     public string Cuid;
 
     public string selectDay;                // 선택 날짜를 담을 변수
@@ -60,97 +61,135 @@ public class CounselorLoad : MonoBehaviour
 
 
         SetFunction_UI();
-        item.SetActive(false);
+        //item.SetActive(false);
+
+
+
+        relationshipText = relationshipT.GetComponentInChildren<Text>(); // 토글 텍스트 색 변경을 위해 컴포넌트를 가져옴
+        relationshipText.color = Color.black; // 초기 토글 텍스트 색
+
+        nineText = nine.GetComponentInChildren<Text>();
+        nineText.color = Color.black;
+
+
 
     }
 
-    private void Function_Toggle(bool _bool)
+
+    // 캔버스. 
+    public Canvas home, counsel;
+    public Canvas Cprofile, Reservation, popup, myPage;
+    public Image checkPopup, completePopup;
+    public GameObject checkPopupObj;
+    public GameObject ReservationObj, CprofileObj;
+
+    // 상담사 상세 프로필 및 예약 캔버스 오픈.
+    public void CprofileCan()
+    {
+        home.enabled = false;
+        counsel.enabled = false;
+
+        CprofileObj.SetActive(true);
+        Cprofile.enabled = true;
+        ReservationObj.SetActive(false);
+        Reservation.enabled = false;
+        popup.enabled = false;
+    }
+
+
+    // int타입 변수 number2 받아와 
+    // prefabList[number2] 의 텍스트 값들로 상세 프로필 화면에 있는 텍스트값을 바꿈
+    public void InputData(int number2)
+    {
+        print("버튼 클릭");
+
+        SelectDay();
+
+        Cname1.text = prefabList[number2].GetComponentInChildren<Text>().text;
+        print(prefabList[number2].GetComponentInChildren<Text>().text + "번호 : " + number2);
+
+        Cuid = CounselorList.relationshipUid[number2];
+
+        StartCoroutine(GetTexture(CounselorList.relationshipPic[number2]));
+
+        career1.text = CounselorList.relationshipCareer1[number2];
+        career2.text = CounselorList.relationshipCareer2[number2];
+        career3.text = CounselorList.relationshipCareer3[number2];
+
+
+    }
+
+
+    // 프리팹 관련 변수들.
+    //public int number;
+    public List<GameObject> prefabList = new List<GameObject>();
+    public Text[] newCounselorDataShort;
+    public List<Button> btnList = new List<Button>();
+
+    public void Function_Toggle(bool _bool)
     {
         Debug.Log("대인관계 선택 : " + _bool);
 
 
         if (_bool == true)
         {
-            FirebaseDatabase.DefaultInstance.GetReference("CounselorUsers").Child("대인관계")
-                .GetValueAsync().ContinueWithOnMainThread(task =>
-                {
-                    if (task.IsFaulted)
-                    {
-                        // Handle the error...
-                        print("실패...");
-                    }
+            // 토글 텍스트 색 변경
+            relationshipText.color = Color.white;
+            relationshipText.text = "<b>대인관계</b>";
+            //relationshipText.text = $"<b>{relationshipText.text}</b>";
 
-                    // 성공적으로 데이터를 가져왔으면
-                    if (task.IsCompleted)
-                    {
-                        // 데이터를 출력하고자 할때는 Snapshot 객체 사용함
-                        DataSnapshot snapshot = task.Result;
-                        print($"데이터 레코드 갯수 : {snapshot.ChildrenCount}"); //데이터 건수 출력
+            major = "대인관계";
 
-                        num = (int)snapshot.ChildrenCount;
+            // CounselorList클래스의 대인관계전문 상담사이름의 수만큼 반복한다.
+            for (int i = 0; i < CounselorList.relationshipUsername.Count; i++)
+            {
+                print("리스트 저장 완료2/ " + " i=" + i + "/ 데이터 : " + CounselorList.relationshipUsername[i]);
+
+                prefab = Instantiate(item, parent);  // item의 부모객체 위치에 프리팹 생성
+                prefabList.Add(prefab); // 프리팹 리스트 prefabList에 프리팹 추가
+                prefab.SetActive(true);
 
 
-                        foreach (DataSnapshot data in snapshot.Children)
-                        {
-
-                            // JSON은 사전 형태이기 때문에 딕셔너리 형으로 변환
-                            IDictionary relationship = (IDictionary)data.Value;
-
-                            Debug.Log("상담사: " + relationship["userGroup"]
-                                + "\n uid: " + relationship["uid"]
-                                + "\n email: " + relationship["email"]
-                                + "\n pic: " + relationship["pic"]
-                                + "\n username: " + relationship["username"]
-                                + "\n sex: " + relationship["sex"]
-                                + "\n intro: " + relationship["intro"]
-                                + "\n family: " + relationship["family"]
-                                + "\n myself: " + relationship["myself"]
-                                + "\n relationship: " + relationship["relationship"]
-                                + "\n romance: " + relationship["romance"]
-                                + "\n work: " + relationship["work"]
-                                + "\n career: " + relationship["career"]
-                                + "\n career1: " + relationship["career1"]
-                                + "\n career2: " + relationship["career2"]
-                                + "\n career3: " + relationship["career3"]
-                                + "\n appointment: " + relationship["appointment"]
-                                );
-
-                            nameText.text = (string)relationship["username"];
-                            introduce.text = (string)relationship["intro"];
-                            major.text = "대인관계";
-
-                            // 이미지 적용
-                            StartCoroutine(GetTexture((string)relationship["pic"]));
-
-                            item.SetActive(true);
-
-                            Cname1.text = (string)relationship["username"];
-                            Cname2.text = (string)relationship["username"];
-                            Cname3.text = (string)relationship["username"];
-                            Cmajor.text = "대인관계";
-                            Cintro.text = (string)relationship["intro"];
-                            career1.text = (string)relationship["career1"];
-                            career2.text = (string)relationship["career2"];
-                            career3.text = (string)relationship["career3"];
-
-                            Cuid = (string)relationship["uid"];
-
-                            prefab = Instantiate(item, parent);
-                            prefab.transform.position = new Vector3(1450, 367, 0);
-                            print("생성");
+                // 텍스트 리스트 new newCounselorDataShort는 게임오브젝트 변수 prefab의 Text타입인 자식 객체들
+                newCounselorDataShort = prefab.GetComponentsInChildren<Text>();
+                newCounselorDataShort[0].text = CounselorList.relationshipUsername[i];  // newCounselorDataShort[0]의 텍스트는 상담사 이름
+                newCounselorDataShort[1].text = CounselorList.relationshipIntro[i];     //newCounselorDataShort[1]의 텍스트는 한 줄 소개
+                newCounselorDataShort[2].text = "대인관계";                             // newCounselorDataShort[2]의 텍스트는 전문분야(대인관계)
 
 
+                btnList.Add(prefab.GetComponentInChildren<Button>());  // 버튼 리스트 btnList에 게임오브젝트 변수 prefab의 Button타입 객체(각1개임) 추가
 
-                        }
-                    }
+                // 프리팹 안에 들어있는 버튼이 클릭 되었을때
+                int temp = i;
 
-                });
+                // btnLis의 temp번째 버튼이 눌렸을때(onClick) CprofileCan()함수 실행( 상세 프로필화면으로 이동)
+                btnList[i].onClick.AddListener(() => { CprofileCan(); });
+
+                // btnLis의 temp번째 버튼이 눌렸을때(onClick) InputData(temp)함수 실행(상세 프로필 화면에 있는 텍스트 값을 해당 프리팹의 데이터로 변경)
+                btnList[temp].onClick.AddListener(() => { InputData(temp); });
+
+
+                prefab.transform.position = new Vector3(1450, 367, 0);
+
+                print("상담사 프리팹 생성" + i);
+
+
+            }
+
+
         }
         else
         {
-            item.SetActive(false);
+            relationshipText.color = Color.black;
+            relationshipText.text = "대인관계";
 
-            Destroy(item);
+            for (int i = CounselorList.relationshipUsername.Count - 1; i >= 0; i--)
+            {
+                Destroy(prefabList[i]);
+                prefabList.Remove(prefabList[i]);
+                print("제거" + i);
+            }
+
         }
 
 
@@ -165,74 +204,7 @@ public class CounselorLoad : MonoBehaviour
 
         if (_bool == true)
         {
-            FirebaseDatabase.DefaultInstance.GetReference("CounselorUsers").Child("가족")
-                .GetValueAsync().ContinueWithOnMainThread(task =>
-                {
 
-
-                    if (task.IsFaulted)
-                    {
-                        // Handle the error...
-                        print("실패...");
-                    }
-
-                    // 성공적으로 데이터를 가져왔으면
-                    if (task.IsCompleted)
-                    {
-                        // 데이터를 출력하고자 할때는 Snapshot 객체 사용함
-                        DataSnapshot snapshot = task.Result;
-                        print($"데이터 레코드 갯수 : {snapshot.ChildrenCount}"); //데이터 건수 출력
-
-
-                        foreach (DataSnapshot data in snapshot.Children)
-                        {
-                            // JSON은 사전 형태이기 때문에 딕셔너리 형으로 변환
-                            IDictionary family = (IDictionary)data.Value;
-
-                            Debug.Log("상담사: " + family["userGroup"]
-                                + "\n uid: " + family["uid"]
-                                + "\n email: " + family["email"]
-                                + "\n pic: " + family["pic"]
-                                + "\n username: " + family["username"]
-                                + "\n sex: " + family["sex"]
-                                + "\n intro: " + family["intro"]
-                                + "\n family: " + family["family"]
-                                + "\n myself: " + family["myself"]
-                                + "\n relationship: " + family["relationship"]
-                                + "\n romance: " + family["romance"]
-                                + "\n work: " + family["work"]
-                                + "\n career: " + family["career"]
-                                + "\n career1: " + family["career1"]
-                                + "\n career2: " + family["career2"]
-                                + "\n career3: " + family["career3"]
-                                + "\n appointment: " + family["appointment"]
-                                );
-
-                            nameText.text = (string)family["username"];
-                            introduce.text = (string)family["intro"];
-                            major.text = "가족";
-
-                            // 이미지 적용
-                            StartCoroutine(GetTexture((string)family["pic"]));
-
-                            item.SetActive(true);
-
-                            Cname1.text = (string)family["username"];
-                            Cname2.text = (string)family["username"];
-                            Cname3.text = (string)family["username"];
-                            Cmajor.text = "가족";
-                            Cintro.text = (string)family["intro"];
-                            career1.text = (string)family["career1"];
-                            career2.text = (string)family["career2"];
-                            career3.text = (string)family["career3"];
-
-                            Cuid = (string)family["uid"];
-
-
-                        }
-                    }
-
-                });
         }
         else
         {
@@ -256,6 +228,7 @@ public class CounselorLoad : MonoBehaviour
         {
             profileImg.texture = ((DownloadHandlerTexture)www.downloadHandler).texture;
             profileImg2.texture = ((DownloadHandlerTexture)www.downloadHandler).texture;
+            //prefab.GetComponentInChildren<RawImage>().texture = ((DownloadHandlerTexture)www.downloadHandler).texture;
         }
     }
 
@@ -312,6 +285,7 @@ public class CounselorLoad : MonoBehaviour
         selectDayT.text = selectDay;
     }
 
+    private Text nineText;
     private void nine_Toggle(bool _bool)
     {
         Debug.Log("9시 - 10시 : " + _bool);
@@ -321,11 +295,21 @@ public class CounselorLoad : MonoBehaviour
             print(nine.GetComponentInChildren<Text>().text);
             selectTime.text = nine.GetComponentInChildren<Text>().text;
             selectTime.color = Color.black;
+
+            // 토글 텍스트 색 변경
+            nineText.color = Color.white;
+            nineText.text = "<b>9:00 - 10:00</b>";
+
         }
         else
         {
             selectTime.text = "시간을 선택하세요.";
             selectTime.color = Color.grey;
+
+
+            // 토글 텍스트 색 변경
+            nineText.color = Color.black;
+            nineText.text = "9:00 - 10:00";
         }
     }
 
@@ -476,13 +460,13 @@ public class CounselorLoad : MonoBehaviour
 
     }
 
-
+    public bool isAppo;
     // 팝업창 최종 예약하기 버튼
     public void ReservationFinal()
     {
         // RDB에 내담자 데이터 저장
-        ClientAppo clientAppo = new ClientAppo( Cuid,"", worry2.text, "", selectDayT2.text, selectTime2.text
-            , Cname4.text, 0 );
+        ClientAppo clientAppo = new ClientAppo(Cuid, "", worry2.text, "", selectDayT2.text, selectTime2.text
+            , Cname4.text, 0);
 
 
         // 상담사 하위에 예약신청 정보 저장
@@ -494,15 +478,32 @@ public class CounselorLoad : MonoBehaviour
         string json = JsonUtility.ToJson(clientAppo);
         string json2 = JsonUtility.ToJson(counselorAppo);
 
+
+
+
         Debug.Log(Auth_Manager.User.UserId + "\n" + Cuid);
         Debug.Log(clientAppo.counselorUid);
 
 
+        // push(key) 통일해주기
         // 생성된 키의 자식으로 json데이터를 삽입
-        reference.Child("ClientUsers").Child(Auth_Manager.User.UserId).Child("appointment").Child(Cuid).SetRawJsonValueAsync(json);
-        reference.Child("CounselorUsers").Child(major.text).Child(Cuid).Child("appointment").Child(Auth_Manager.User.UserId).SetRawJsonValueAsync(json2);
+        reference.Child("ClientUsers").Child(Auth_Manager.User.UserId).Child("appointment").Child(Cuid).Push().SetRawJsonValueAsync(json);
+        reference.Child("CounselorUsers").Child(major).Child(Cuid).Child("appointment").Child(Auth_Manager.User.UserId).Push().SetRawJsonValueAsync(json2);
+
+        print("예약 완료");
+
+
+        // 예약하면 appointmentcheck true로 업데이트
+        Dictionary<string, object> isAppo = new Dictionary<string, object>();
+        isAppo["appointmentcheck"] = true;
+        reference.Child("ClientUsers").Child(Auth_Manager.User.UserId).UpdateChildrenAsync(isAppo);
+
+       
+
 
     }
+
+
 
 
     // 내담자 레코드 하위에 위치한 예약 레코드(appointment)
@@ -510,6 +511,7 @@ public class CounselorLoad : MonoBehaviour
     {
         // 거절사유, 고민내용, 내담자 후기, 상담날짜, 상담시간, 신청인(내담자)이름
         public string counselorUid, refuse, worry, feedback, appDay, appTime, counselorInCharge;
+
 
         // 수락상태, 0:무반응 1:수락 2:거절
         public int progress;
@@ -554,11 +556,16 @@ public class CounselorLoad : MonoBehaviour
 
         }
 
-    }
 
 
 
-}
+
+
+
+
+    } }
+
+
 
 
 

@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public class View_Controller : MonoBehaviour
 {
     public GameObject camRawImage;
+    public GameObject mycamRawImage;
     public GameObject panel;
     public GameObject openButton;
     public GameObject closeButton;
@@ -47,6 +48,29 @@ public class View_Controller : MonoBehaviour
     }
 
 
+    public void MyCamClose()
+    {
+        //내 캠 화면의 RectTransform 컴포넌트 추출
+        RectTransform camTran = mycamRawImage.GetComponent<RectTransform>();
+
+        //내 캠 화면 사이즈를 0,0으로 설정
+        camTran.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 0);
+        camTran.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 0);
+        Debug.Log("내 화면 비활성화  " + camTran.rect);
+    }
+
+    public void MyCamOpen()
+    {
+        //내 캠 화면의 RectTransform 컴포넌트 추출
+        RectTransform camTran = mycamRawImage.GetComponent<RectTransform>();
+
+        //상담사 내 화면 사이즈를 280,140으로 설정
+        camTran.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 280);
+        camTran.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 140);
+        Debug.Log("내 화면 활성화  " + camTran.rect);
+    }
+
+
     public void PanelButton()
     {
         if (panel.activeSelf == true)
@@ -62,6 +86,7 @@ public class View_Controller : MonoBehaviour
     public void Start()
     {
         CamClose();
+        MyCamClose();
         closeButton.SetActive(false);
         openButton.SetActive(true);
     }
