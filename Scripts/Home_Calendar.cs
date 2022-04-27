@@ -86,6 +86,20 @@ public class Home_Calendar : MonoBehaviour
     {
         DateTime firstDay = _dateTime.AddDays(-(_dateTime.Day - 1));
         int index = GetDays(firstDay.DayOfWeek);
+        _monthNumText.text = _dateTime.Month.ToString() + "월";
+
+        string month = _monthNumText.text;           //달력의 월을 string타입 변수 month에 저장
+
+        // 맨 뒤에 글자 "월"을 자른다 (예: 4월을 4로 바꾼다.)
+        month = month.Substring(0, month.Length - 1);
+
+        // month가 1자리수면 앞에 "0"삽입(예:4를 04로 바꾼다.)
+        if (month.Length < 2)
+        {
+            month = month.Insert(0, "0");
+        }
+
+     
 
         int date = 0;
         for (int i = 0; i < _totalDateNum; i++)
@@ -93,16 +107,8 @@ public class Home_Calendar : MonoBehaviour
             Text label = _dateItems[i].GetComponentInChildren<Text>();
             _dateItems[i].SetActive(false);
 
-
-            string month = _dateTime.Month.ToString();           //달력의 월을 string타입 변수 month에 저장
-            // month가 1자리수면 앞에 "0"삽입(예:4를 04로 바꾼다.)
-            if (month.Length < 2)
-            {
-                month = month.Insert(0, "0");
-            }
             //dateButton[i] 버튼을(달력 날짜버튼) 누르면 GetSeletedDateTime(string year, string month, string date) 함수 실행.
             dateButton[i].onClick.AddListener(() => { GetSeletedDateTime(_dateTime.Year.ToString(), month, label.text); });
-
 
             if (i >= index)
             {
@@ -131,7 +137,7 @@ public class Home_Calendar : MonoBehaviour
         }
         _todayText.text = DateTime.Now.ToString("yyyy.MM.dd.");
         //_todayText.text = _dateTime.ToString("yyyy.MM.dd.");
-        _monthNumText.text = _dateTime.Month.ToString() + "월";
+        
 
         //print("현재 달: " + thisMonth + "   달력 달: " + _monthNumText.text);
     }
