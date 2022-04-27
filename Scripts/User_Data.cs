@@ -23,13 +23,14 @@ public class User_Data : MonoBehaviour
 
     public GameObject Yapp, Napp;
 
- 
+    public static string myName;
+
     // 내담자 상담예약 정보 관련 리스트.
     public static List<string> appointmentCounselorInCharge = new List<string>();
     public static List<string> appointmentAppDay = new List<string>();
     public static List<string> appointmentAppTime = new List<string>();
     public static List<string> appointmentFeedback = new List<string>();
-    public  List<string> appointmentWorry = new List<string>();
+    public List<string> appointmentWorry = new List<string>();
 
     int temp;
 
@@ -47,7 +48,7 @@ public class User_Data : MonoBehaviour
         Napp.SetActive(false);
 
         LoadUserData();
-      
+
 
     }
 
@@ -82,6 +83,7 @@ public class User_Data : MonoBehaviour
 
                             //우측 상단 내담자 이름 표시.
                             displayname.text = snapshot.Child("username").Value.ToString();
+                            myName = snapshot.Child("username").Value.ToString();
 
 
 
@@ -94,6 +96,7 @@ public class User_Data : MonoBehaviour
                                 Yapp.SetActive(true);
                                 Napp.SetActive(false);
 
+                                LoadMyAppoData();
 
                             }
                             else // 예약이 없으면 예약없는 화면 표시
@@ -112,21 +115,69 @@ public class User_Data : MonoBehaviour
                     });
 
 
-
-
-
-
-
-
-
         }
 
 
+    }
+
+
+
+    // RDB에서 예약정보를 읽어오는 함수.
+    public void LoadMyAppoData()
+    {
+        FirebaseDatabase.DefaultInstance.GetReference("ClientUsers").Child(Auth_Manager.User.UserId)
+      .Child("appointment").GetValueAsync().ContinueWithOnMainThread(task =>
+      {
+          if (task.IsFaulted)
+          {
+              // Handle the error...
+              print("예약정보 데이터베이스 읽기 실패...");
+          }
+
+          if (task.IsCompleted)
+          {
+              DataSnapshot snapshot = task.Result;
+
+              //appoCount = (int)snapshot.ChildrenCount;
+
+
+              foreach (DataSnapshot data in snapshot.Children)
+              {
+
+                  IDictionary appo = (IDictionary)data.Value;
+
+                  counselorName.text = ((string)appo["counselorName"]);
+                  counselorName2.text = ((string)appo["counselorName"]);
+
+                  counselDay.text = ((string)appo["appDay1"]);
+                  counselDay2.text = ((string)appo["appDay1"]);
+
+                  counselTime.text = ((string)appo["appTime"]);
+                  counselTime2.text = ((string)appo["appTime"]);
+
+                  concern.text = ((string)appo["worry"]);
+
+             
+                  Debug.Log("예약날짜: " + (string)appo["appDay1"]);
+
+
+              }
+
+              //LoadRequestList();
+
+
+              Debug.Log("예약정보 추가 완료.");
+          }
+
+      });
+
 
     }
 
 
-    }
+
+
+}
 
 
 

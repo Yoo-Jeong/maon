@@ -5,8 +5,21 @@ using UnityEngine.UI;
 using Photon.Pun;
 using Photon.Realtime;
 
+
+using System;
+
+
+using Firebase;
+using Firebase.Database;
+using Firebase.Extensions;
+
 public class EmotionCtrl : MonoBehaviourPunCallbacks //, IPunObservable
 {
+
+    // 라이브러리를 통해 불러온 FirebaseDatabase 관련객체를 선언해서 사용
+    public DatabaseReference reference { get; set; }
+
+
     public GameObject emotionCard;
     public GameObject re;
     public PhotonView PV;
@@ -25,10 +38,24 @@ public class EmotionCtrl : MonoBehaviourPunCallbacks //, IPunObservable
     public Text stateText;
 
 
+    public Text ClientDisplyName;
+    public string todayClientName;
+    public string todayClientUid;
+
+
+    public string currentCard;
+
+
     // Start is called before the first frame update
     void Start()
     {
+        FirebaseApp.DefaultInstance.Options.DatabaseUrl = new System.Uri("https://swuniverse-d9641-default-rtdb.firebaseio.com/");
+
+        // Database의 특정지점을 가리킬 수 있다, 그 중 RootReference를 가리킴
+        reference = FirebaseDatabase.DefaultInstance.RootReference;
+
         emotionCard.transform.localScale = new Vector3(0, 0, 0);
+
     }
 
 
@@ -147,6 +174,14 @@ public class EmotionCtrl : MonoBehaviourPunCallbacks //, IPunObservable
             Permission = UserDataPermission.Public
         };
         PlayFabClientAPI.UpdateUserData(request, (result) => print("데이터 저장 성공"), (error) => print("데이터 저장 실패"));*/
+
+        // 감정카드 선택하면 업데이트
+        Dictionary<string, object> emotionCard = new Dictionary<string, object>();
+        emotionCard["emotionCard"] = currentEmotion;
+        reference.Child("ClientUsers").Child(Auth_Manager.User.UserId).UpdateChildrenAsync(emotionCard);
+       
+
+
     }
 
 
@@ -159,17 +194,58 @@ public class EmotionCtrl : MonoBehaviourPunCallbacks //, IPunObservable
     [PunRPC]
     public void GetEmotionData()
     {
-       /* var request = new GetUserDataRequest() { PlayFabId = otherID };
+        FirebaseDatabase.DefaultInstance.GetReference("ClientUsers").Child(todayClientUid)
+                    .GetValueAsync().ContinueWithOnMainThread(task =>
+                    {
+                        if (task.IsFaulted)
+                        {
+                           // Handle the error...
+                           print("데이터베이스 읽기 실패...");
+                        }
 
-        PlayFabClientAPI.GetUserData(request, (result) =>
-           stateText.text = (
-             "김내담 님은 현재" + "\n"
-             + result.Data["감정"].Value + "을" + "\n"
-             + "느끼고 있습니다."),
+                       // 성공적으로 데이터를 가져왔으면
+                       if (task.IsCompleted)
+                        {
+                           // 데이터를 출력하고자 할때는 Snapshot 객체 사용함
+                           DataSnapshot snapshot = task.Result;
+                            print($"내담자 정보 레코드 개수 : {snapshot.ChildrenCount}"); //데이터 건수 출력
 
-           (error) => print("데이터 불러오기 실패"));*/
 
-        Invoke("WaitRe", 0.8f);
+                           /*            //좌측 상단 내담자 이름 표시.
+                                       ClientDisplyName.text = snapshot.Child("username").Value.ToString();
+
+
+                                       Debug.Log("내담자: " + snapshot.Child("userGroup").Value
+                                             + "\n uid: " + snapshot.Child("uid").Value
+                                             + "\n email: " + snapshot.Child("email").Value
+                                             + "\n username: " + snapshot.Child("username").Value
+                                             + "\n sex: " + snapshot.Child("sex").Value
+                                             + "\n birth: " + snapshot.Child("birth").Value
+                                             + "\n job: " + snapshot.Child("job").Value
+                                             + "\n meal: " + snapshot.Child("meal").Value
+                                             + "\n sleep: " + snapshot.Child("sleep").Value
+                                             + "\n exercise: " + snapshot.Child("exercise").Value
+                                             + "\n emotionCard: " + snapshot.Child("emotionCard").Value
+                                             );*/
+
+
+                            currentCard = (string)(snapshot.Child("emotionCard").Value);
+
+                            stateText.text = (todayClientName + " 님은 현재" + "\n" + "\n"
+                   + currentCard + " 의 감정을" + "\n" + "\n"
+                   + "느끼고 있습니다.");
+
+                            print("내담자 기본정보 불러오기 완료");
+                        }
+
+                    });
+
+
+
+        
+
+        WaitRe();
+
 
     }
 

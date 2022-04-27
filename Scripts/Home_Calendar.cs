@@ -19,12 +19,18 @@ public class Home_Calendar : MonoBehaviour
     private DateTime _dateTime;
     public static Home_Calendar _calendarInstance;
 
-
+    public Transform parent;
     GameObject item;
+
     public string year;
 
     private string today = DateTime.Now.Day.ToString();
     private string thisMonth = DateTime.Now.Month.ToString() + "월";
+
+    public List<Button> dateButton = new List<Button>();  //달력의 날짜 버튼들을 담을 버튼 리스트
+    public string seletedDateTime;                        //달력 날짜 버튼을 누르면 그 날짜를 담을 string타입 변수
+
+    public static int dayOfWeek;                          //누른 버튼의 요일정보를 담을 string타입 변수
 
     void Start()
     {
@@ -36,16 +42,16 @@ public class Home_Calendar : MonoBehaviour
 
         for (int i = 1; i < _totalDateNum; i++)
         {
-            item = GameObject.Instantiate(_item) as GameObject;
+            item = GameObject.Instantiate(_item, parent) as GameObject;
             item.name = "Item" + (i + 1).ToString();
-            item.transform.SetParent(_item.transform.parent);
             item.transform.localScale = Vector3.one;
             item.transform.localRotation = Quaternion.identity;
             item.transform.localPosition = new Vector3((i % 7) * 96 + startPos.x, startPos.y - (i / 7) * 60, startPos.z);
 
-            
-
+                  
             _dateItems.Add(item);
+
+            dateButton.Add(item.GetComponent<Button>()); //날짜 프리팹에 있는 버튼컴포넌트를 리스트에 추가
 
 
         }
@@ -55,6 +61,26 @@ public class Home_Calendar : MonoBehaviour
         CreateCalendar();
 
     }
+
+    //날짜 버튼을 누르면 선택한 날짜의 정보를 저장하는 함수.
+    public void GetSeletedDateTime(string year, string month, string date)
+    {
+        //클릭한 버튼의 날짜가 나오길 원했는데 -1이 되는 문제가 있어 +1을 계산해준다.
+        var number = int.Parse(date) + 1;  //string인 date를 int로 바꾸어 +1한 값을 number에 넣는다.
+        date = number.ToString();          //number를 string타입으로 바꾸어 date에 넣는다.
+
+        //년도, 월, 날짜가 정상적으로 전달됐는지 확인하기 위함.
+        seletedDateTime = year + month + date;
+        Debug.Log(seletedDateTime);
+
+        //매개변수로 전달받은 year, month, date값을 가지고 DateTime으로 변환해서 DateTime형인 dateTime에 넣는다.
+        DateTime dateTime = Convert.ToDateTime(year + "/" + month + "/" + date);
+
+        dayOfWeek = GetDays(dateTime.DayOfWeek); //요일을 구하기 위한 함수 실행.
+        Debug.Log(dayOfWeek); //확인을 위한 출력.
+
+    }
+
 
     void CreateCalendar()
     {
@@ -67,6 +93,17 @@ public class Home_Calendar : MonoBehaviour
             Text label = _dateItems[i].GetComponentInChildren<Text>();
             _dateItems[i].SetActive(false);
 
+
+            string month = _dateTime.Month.ToString();           //달력의 월을 string타입 변수 month에 저장
+            // month가 1자리수면 앞에 "0"삽입(예:4를 04로 바꾼다.)
+            if (month.Length < 2)
+            {
+                month = month.Insert(0, "0");
+            }
+            //dateButton[i] 버튼을(달력 날짜버튼) 누르면 GetSeletedDateTime(string year, string month, string date) 함수 실행.
+            dateButton[i].onClick.AddListener(() => { GetSeletedDateTime(_dateTime.Year.ToString(), month, label.text); });
+
+
             if (i >= index)
             {
                 DateTime thatDay = firstDay.AddDays(date);
@@ -77,7 +114,7 @@ public class Home_Calendar : MonoBehaviour
                     label.text = (date + 1).ToString();
                     date++;
 
-                    
+
                 }
             }
 
@@ -111,6 +148,17 @@ public class Home_Calendar : MonoBehaviour
             Text label = _dateItems[i].GetComponentInChildren<Text>();
             _dateItems[i].SetActive(false);
 
+
+            string month = _dateTime.Month.ToString();           //달력의 월을 string타입 변수 month에 저장
+            // month가 1자리수면 앞에 "0"삽입(예:4를 04로 바꾼다.)
+            if (month.Length < 2)
+            {
+                month = month.Insert(0, "0");
+            }
+            //dateButton[i] 버튼을(달력 날짜버튼) 누르면 GetSeletedDateTime(string year, string month, string date) 함수 실행.
+            dateButton[i].onClick.AddListener(() => { GetSeletedDateTime(_dateTime.Year.ToString(), month, label.text); });
+
+
             if (i >= index)
             {
                 DateTime thatDay = firstDay.AddDays(date);
@@ -122,6 +170,7 @@ public class Home_Calendar : MonoBehaviour
 
                     label.text = (date + 1).ToString();
                     date++;
+
                 }
             }
 
@@ -141,6 +190,7 @@ public class Home_Calendar : MonoBehaviour
     }
 
 
+    //요일을 구하는 함수.
     int GetDays(DayOfWeek day)
     {
         switch (day)

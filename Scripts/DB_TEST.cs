@@ -138,19 +138,20 @@ public class DB_TEST : MonoBehaviour
     class CounselorAppo
     {
         // 내담자uid, 거절사유, 고민내용, 내담자 후기, 상담날짜, 상담시간, 신청인(내담자)이름
-        public string clientUid, refuse, worry, feedback, appDay, appTime, client;
+        public string clientUid, refuse, worry, feedback, appDay1, appDay2, appTime, client;
 
         // 수락상태, 0:무반응 1:수락 2:거절
         public int progress;
 
         public CounselorAppo(string clientUid, string refuse, string worry, string feedback,
-            string appDay, string appTime, string client, int progress)
+            string appDay1, string appDay2, string appTime, string client, int progress)
         {
             this.clientUid = clientUid;
             this.refuse = refuse;
             this.worry = worry;
             this.feedback = feedback;
-            this.appDay = appDay;
+            this.appDay1 = appDay1;
+            this.appDay2 = appDay2;
             this.appTime = appTime;
             this.client = client;
             this.progress = progress;
@@ -217,7 +218,7 @@ public class DB_TEST : MonoBehaviour
              false);
 
         // 상담사 예약정보
-        CounselorAppo counselorAppo = new CounselorAppo("uid", "", "", "", "", "", "", 0);
+        CounselorAppo counselorAppo = new CounselorAppo("uid", "", "", "", "", "", "", "", 0);
 
         // 상담사 가능 시간
         CounselorTime counselorTime = new CounselorTime("9:00-10:00", "10:00-11:00", "11:00-12:00", "12:00-13:00"

@@ -160,7 +160,8 @@ public class Enter_Manager : MonoBehaviourPunCallbacks
         Debug.Log("상담소 이동 성공");
 
         // 모든 사용자들이 상담소 씬을 로드하게 함
-        PhotonNetwork.LoadLevel("Center_Scene");
+        //PhotonNetwork.LoadLevel("Center_Scene");
+        PhotonNetwork.LoadLevel("Client_CenterToonShader_Scene 2");
     }
 
     // 방 퇴장
@@ -169,8 +170,6 @@ public class Enter_Manager : MonoBehaviourPunCallbacks
         PhotonNetwork.Disconnect();
     }
         
-
-    
 
 
 }

@@ -3,123 +3,76 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+
+// 캔버스를 제어하기 위한 CanvasMng_Home 클래스.
 public class CanvasMng_Home : MonoBehaviour
 {
+    // 캔버스 변수들.
+    public Canvas home, Reservation, ReservationProfile, popup, counsel, myPage, myPageChange;
+    public GameObject confirm, complete;
 
-    public Canvas home, counsel;
-    public Canvas Cprofile, Reservation, popup, myPage, myPageChange;
 
-    public Image checkPopup, completePopup;
-    public GameObject checkPopupObj;
+    // 비밀번호 일치 체크 확인을 위한 변수들.
+    public InputField PasswordInput, PasswordCheckInput;
+    public string password, passwordCheck;
+    public GameObject PasswordOK; //비밀번호가 일치하면 체크표시를 보여줄 오브젝트
 
-    public GameObject ReservationObj, CprofileObj;
 
     // Start is called before the first frame update
     void Start()
     {
-        home.enabled = true;
-        counsel.enabled = false;
-        Reservation.enabled = false;
-        Cprofile.enabled = false;
-        popup.enabled = false;
-        myPage.enabled = false;
-        myPageChange.enabled = false;
+
+        OpenHomeCanvas();
+
+        confirm.SetActive(false);
+        complete.SetActive(false);
 
         MyPageChange.isOpenInfo = false;
 
     }
 
-    // Update is called once per frame
-    void Update()
+    // 홈 화면 캔버스를 켜는 함수.
+    public void OpenHomeCanvas()
     {
-        
+        Debug.Log("홈 화면 오픈");
+
+        home.enabled = true;
+        counsel.enabled = false;
+        Reservation.enabled = false;
+        ReservationProfile.enabled = false;
+        popup.enabled = false;
+        myPage.enabled = false;
+        myPageChange.enabled = false;
+
+        MyPageChange.isOpenInfo = false;
     }
 
-    public void openCounselCan()
+
+    // 상담메뉴 화면 캔버스를 켜는 함수.
+    public void OpenCounselCanvs()
     {
         home.enabled = false;
+        Reservation.enabled = false;
+        ReservationProfile.enabled = false;
+        popup.enabled = false;
         counsel.enabled = true;
-        Reservation.enabled = false;
-        Cprofile.enabled = false;
-        popup.enabled = false;
         myPage.enabled = false;
         myPageChange.enabled = false;
 
         MyPageChange.isOpenInfo = false;
     }
 
-    public void openHomeCan()
-    {
-        home.enabled = true;
-        counsel.enabled = false;
-        Reservation.enabled = false;
+    
+  
 
-        CprofileObj.SetActive(false);
-        Cprofile.enabled = false;
-        popup.enabled = false;
-        myPage.enabled = false;
-        myPageChange.enabled = false;
-
-        MyPageChange.isOpenInfo = false;
-    }
-
-    public void Popup()
+    // 예약메뉴 화면 캔버스를 켜는 함수.
+    public void OpenReservationCanvs()
     {
         home.enabled = false;
-        counsel.enabled = false;
-
-        Reservation.enabled = false;
-        Cprofile.enabled = true;
-
-        popup.enabled = true;
-        myPage.enabled = false;
-        myPageChange.enabled = false;
-
-        checkPopupObj.SetActive(true);
-        checkPopup.enabled = true;
-        completePopup.enabled = false;
-
-        MyPageChange.isOpenInfo = false;
-    }
-
-    public void ReserBtn()
-    {
-     
-        checkPopup.enabled = false;
-        checkPopupObj.SetActive(false);
-        completePopup.enabled = true;
-
-        MyPageChange.isOpenInfo = false;
-    }
-
- 
-
-    public void CprofileCan()
-    {
-        home.enabled = false;
-        counsel.enabled = false;
-
-
-        CprofileObj.SetActive(true);
-        Cprofile.enabled = true;
-        ReservationObj.SetActive(false);
-        Reservation.enabled = false;
-        popup.enabled = false;
-        myPage.enabled = false;
-        myPageChange.enabled = false;
-
-        MyPageChange.isOpenInfo = false;
-    }
-
-    public void ReservationCan()
-    {
-        home.enabled = false;
-        counsel.enabled = false;
-
-        ReservationObj.SetActive(true);
         Reservation.enabled = true;
-        Cprofile.enabled = false;
+        ReservationProfile.enabled = false;
         popup.enabled = false;
+        counsel.enabled = false;
         myPage.enabled = false;
         myPageChange.enabled = false;
 
@@ -127,16 +80,82 @@ public class CanvasMng_Home : MonoBehaviour
     }
 
 
+    // 예약메뉴 상담사 프로필 화면 캔버스를 켜는 함수.
+    public void OpenReservationProfileCanvas()
+    {
+        Debug.Log("예약메뉴 상담사 프로필 화면 오픈");
+
+        home.enabled = false;
+        ReservationProfile.enabled = true;
+        Reservation.enabled = false;
+        popup.enabled = false;
+        counsel.enabled = false;
+        myPage.enabled = false;
+        myPageChange.enabled = false;
+
+        MyPageChange.isOpenInfo = false;
+    }
+
+
+
+    // 팝업창 화면 캔버스를 켜는 함수.
+    public void OpenPopupCanvas()
+    {
+        home.enabled = false;
+        Reservation.enabled = false;
+        ReservationProfile.enabled = true;
+        popup.enabled = true;
+        counsel.enabled = false;
+        myPage.enabled = false;
+        myPageChange.enabled = false;
+
+        SetActiveConfirm();
+
+        MyPageChange.isOpenInfo = false;
+    }
+
+    // 예약신청 내용 확인 팝업창을 켜는 함수.
+    public void SetActiveConfirm()
+    {
+        confirm.SetActive(true);
+        complete.SetActive(false);
+    }
+
+    // 예약신청 내용 확인 팝업창을 켜는 함수.
+    public void SetActiveComplete()
+    {
+        confirm.SetActive(false);
+        complete.SetActive(true);
+    }
+
+
+    // 팝업창 화면 캔버스를 끄는 함수.
+    public void ClosePopupCanvas()
+    {
+        home.enabled = false;
+        Reservation.enabled = false;
+        ReservationProfile.enabled = true;
+        popup.enabled = false;
+        counsel.enabled = false;
+        myPage.enabled = false;
+        myPageChange.enabled = false;
+
+
+        MyPageChange.isOpenInfo = false;
+    }
+
+
+
+    // 내 정보메뉴 화면 캔버스를 켜는 함수.
     public void OpenMypageCanvas()
     {
-        myPage.enabled = true;
-
+       
         home.enabled = false;
-        counsel.enabled = false;
         Reservation.enabled = false;
-
-        Cprofile.enabled = false;
-        popup.enabled = false; 
+        ReservationProfile.enabled = false;
+        popup.enabled = false;
+        counsel.enabled = false;
+        myPage.enabled = true;
         myPageChange.enabled = false;
 
         MyPageChange.isOpenInfo = false;
@@ -144,23 +163,19 @@ public class CanvasMng_Home : MonoBehaviour
 
 
 
-    public  InputField PasswordInput, PasswordCheckInput;
-    public  string password, passwordCheck;
-    public  GameObject PasswordOK; //비밀번호가 일치하면 체크표시 보여줄 오브젝트
+   
+    // 내 정보메뉴 프로필 정보 변경 화면 캔버스를 켜는 함수.
     public void OpneMypageChangeCanvas()
     {
 
-        myPageChange.enabled = true;
-        myPage.enabled = false;
-
         home.enabled = false;
-        counsel.enabled = false;
         Reservation.enabled = false;
-
-        Cprofile.enabled = false;
+        ReservationProfile.enabled = false;
         popup.enabled = false;
-
-
+        counsel.enabled = false;
+        myPage.enabled = false;
+        myPageChange.enabled = true;
+        
 
         // 마이페이지 내 정보 변경 화면 켜짐(비밀번호 일치 체크 시작)
         MyPageChange.isOpenInfo = true;
@@ -174,7 +189,8 @@ public class CanvasMng_Home : MonoBehaviour
     }
 
 
-    // 비밀번호 일치 확인 함수
+
+    // 비밀번호 일치 확인 함수.
     public void PasswordCheck()
     {
         password = PasswordInput.text;
@@ -192,6 +208,8 @@ public class CanvasMng_Home : MonoBehaviour
             print("비밀번호가 일치합니다.");
         }
     }
+
+
 
 
 

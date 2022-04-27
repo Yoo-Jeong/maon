@@ -9,7 +9,6 @@ using UnityEngine.UI;
 
 public class Scene_Manager : MonoBehaviourPunCallbacks
 {
-
     public void click()
     {
         print("클릭");
@@ -40,80 +39,71 @@ public class Scene_Manager : MonoBehaviourPunCallbacks
 
     }
 
-    public void SceneChangeToSelect()
+    public void GoFirst()
+    {
+        SceneManager.LoadScene("First_Scene");
+    }
+
+    public void GoSelect()
     {
         SceneManager.LoadScene("Select_Scene");
     }
 
-    public void SceneChangeToLogIn()
+    public void GoLogIn()
     {
         SceneManager.LoadScene("LogIn_Scene");
           
     }
 
-    public void SceneChangeToRegister()
+
+    public void GoClient_Join()
     {
-        SceneManager.LoadScene("Register_Scene");
+        SceneManager.LoadScene("Client_Join_Scene");
     }
 
-    public void SceneChangeToHome()
+    public void GoCounselor_Join()
+    {
+        SceneManager.LoadScene("Counselor_Join_Scene");
+    }
+
+    public void GoCounselor_JoinFinish()
+    {
+        SceneManager.LoadScene("Counselor_JoinFinish_Scene");
+    }
+
+    public void GoClient_Home()
     {
         Screen.orientation = ScreenOrientation.Portrait;
-        SceneManager.LoadScene("Home_Scene");
+        SceneManager.LoadScene("Client_Home_Scene");
         
         Debug.Log("상담소 퇴장");
         PhotonNetwork.Disconnect();
        
-        Debug.Log("홈으로 이동");
+        Debug.Log("내담자 홈으로 이동");
         
 
     }
 
 
-    public void SceneChangeToCounsel()
+    public void GoCounselor_Home()
     {
         Screen.orientation = ScreenOrientation.Portrait;
-        SceneManager.LoadScene("Home_Scene");
+        SceneManager.LoadScene("Counselor_Home_Scene");
 
         Debug.Log("상담소 퇴장");
         PhotonNetwork.Disconnect();
 
-        Debug.Log("홈으로 이동");
+        Debug.Log("내담자 홈으로 이동");
 
 
     }
 
 
-    public void SceneChangeToReservationHome()
+    public void GoClient_Center()
     {
-        Screen.orientation = ScreenOrientation.Portrait;
-        SceneManager.LoadScene("ReservationHome_Scene");
+        SceneManager.LoadScene("Client_CenterToonShader_Scene 2");
 
-    }
-
-    public void SceneChangeToCenter()
-    {
-        SceneManager.LoadScene("Center_Scene");
-    }
-
-    public void SceneChangeToReservationCounselorProfile()
-    {
-        SceneManager.LoadScene("ReservationCounselorProfile_Scene");
-    }
-
-
-
-    public void destory()
-    {
-        GameObject.Destroy(GameObject.Find("PlayFabManager"));
-    }
-
-
-    public void mypageMenu()
-    {
-        GameObject menu = GameObject.Find("mypageMenu_Panel");
-        menu.SetActive(true);
-
+        Debug.Log("내담자 상담소 씬 이동");
     }
 
 

@@ -11,6 +11,8 @@ public class View_Controller : MonoBehaviour
     public GameObject openButton;
     public GameObject closeButton;
 
+    public bool isMyCamClose = true;
+
     public void CamButtonOpen()
     {
         CamOpen();
@@ -61,13 +63,25 @@ public class View_Controller : MonoBehaviour
 
     public void MyCamOpen()
     {
-        //내 캠 화면의 RectTransform 컴포넌트 추출
-        RectTransform camTran = mycamRawImage.GetComponent<RectTransform>();
 
-        //상담사 내 화면 사이즈를 280,140으로 설정
-        camTran.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 280);
-        camTran.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 140);
-        Debug.Log("내 화면 활성화  " + camTran.rect);
+        if (isMyCamClose)
+        {
+
+            //내 캠 화면의 RectTransform 컴포넌트 추출
+            RectTransform camTran = mycamRawImage.GetComponent<RectTransform>();
+
+            //상담사 내 화면 사이즈를 280,140으로 설정
+            camTran.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 280);
+            camTran.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, 140);
+            Debug.Log("내 화면 활성화  " + camTran.rect);
+
+            isMyCamClose = false;
+        }
+        else
+        {
+            MyCamClose();
+            isMyCamClose = true;
+        }
     }
 
 

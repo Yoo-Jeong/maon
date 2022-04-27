@@ -138,7 +138,7 @@ public class Register_Manager : MonoBehaviour
         if (RegiOK == true)
         {
             print("테스트2");
-            SceneManager.LoadScene("Scenes/LogIn_Scene");  //회원가입에 성공했을 때 씬이 넘어가고 싶은데 작동 안함
+            SceneManager.LoadScene("LogIn_Scene");  //회원가입에 성공했을 때 씬이 넘어가고 싶은데 작동 안함
             print("테스트3");
 
             print(RegiOK);
