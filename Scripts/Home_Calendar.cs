@@ -30,7 +30,7 @@ public class Home_Calendar : MonoBehaviour
     public List<Button> dateButton = new List<Button>();  //달력의 날짜 버튼들을 담을 버튼 리스트
     public string seletedDateTime;                        //달력 날짜 버튼을 누르면 그 날짜를 담을 string타입 변수
 
-    public static int dayOfWeek;                          //누른 버튼의 요일정보를 담을 string타입 변수
+    public static int dayOfWeek;                          //누른 버튼의 요일정보를 담을 int타입 변수
 
     void Start()
     {
