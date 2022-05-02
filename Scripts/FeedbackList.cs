@@ -57,7 +57,7 @@ public class FeedbackList : MonoBehaviour
 
     public void LoadAppoData()
     {
-        FirebaseDatabase.DefaultInstance.GetReference("ClientUsers").Child(Auth_Manager.User.UserId)
+        FirebaseDatabase.DefaultInstance.GetReference("ClientUsers").Child(Auth_Manager.user.UserId)
       .Child("appointment").GetValueAsync().ContinueWithOnMainThread(task =>
       {
           if (task.IsCompleted)
@@ -174,7 +174,7 @@ public class FeedbackList : MonoBehaviour
         try
         {
             
-            reference.Child("ClientUsers").Child(Auth_Manager.User.UserId).Child("appointment").Child(appointmentAppDay2[num]).UpdateChildrenAsync(feedbackSave);
+            reference.Child("ClientUsers").Child(Auth_Manager.user.UserId).Child("appointment").Child(appointmentAppDay2[num]).UpdateChildrenAsync(feedbackSave);
             reference.Child("CounselorUsers").Child("대인관계").Child(uid).Child("appointment").Child(appointmentAppDay2[num]).UpdateChildrenAsync(feedbackSave);
 
             print("피드백 작성 완료.");

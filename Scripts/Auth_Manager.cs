@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
+
 using Firebase;
 using Firebase.Auth;
 using Firebase.Extensions;
@@ -11,106 +12,150 @@ using Firebase.Database;
 
 
 public class Auth_Manager : MonoBehaviour
-{
-    //public Text LogText;
-
-    public bool IsFirebaseReady { get; private set; }
-    public bool IsSignInOnProgress { get; private set; }
-
-    //로그인 필드
-    public InputField emailField;
-    public InputField passwordField;
-    public Button LogInButton;
-
-    public static FirebaseApp firebaseApp;
-    public static FirebaseAuth firebaseAuth;
-
-    //인증을 관리할 객체
-    Firebase.Auth.FirebaseAuth auth;
-    public static FirebaseUser User;
-
-    string client = "내담자";
-
+{ 
+    static FirebaseAuth auth;         //인증을 관리할 객체
+    public static FirebaseUser user;  //전역 인증 객체
 
     // 라이브러리를 통해 불러온 FirebaseDatabase 관련객체를 선언해서 사용
     public DatabaseReference reference { get; set; }
 
+   
+    //로그인 UI
+    public Canvas authCanvas;
+    public InputField emailField;
+    public InputField passwordField;
+    public Button loginBtn, logoutBtn;
+
+    private static Auth_Manager instance = null;
+
+
+    void Awake()
+    {
+        if (null == instance)
+        {
+            //이 클래스 인스턴스가 탄생했을 때 전역변수 instance에 Auth_Manager 인스턴스가 담겨있지 않다면, 자신을 넣어준다
+            instance = this;
+
+            Debug.Log("인증객체 생성");
+            
+            //씬 전환이 되더라도 파괴되지 않게 한다
+            DontDestroyOnLoad(this.gameObject);
+
+            
+        }
+        else
+        {
+            //만약 씬 이동이 되었는데 그 씬에도 Hierarchy에 Auth_Manager가 존재할 수도 있다
+            //그럴 경우엔 이전 씬에서 사용하던 인스턴스를 계속 사용해준다
+            //이미 전역변수인 instance에 인스턴스가 존재한다면 자신(새로운 씬의 Auth_Manager)을 삭제해준다
+            Destroy(this.gameObject);
+        }
+    }
+
     public void Start()
     {
+           
+        instance.emailField.Select();   //처음은 이메일 Input Field를 선택하도록 한다.
 
-        //객체 초기화
-        auth = Firebase.Auth.FirebaseAuth.DefaultInstance;
+        InitializeFirebase();           //파이어베이스 인증관련 초기화
+        InitUI();                       //로그인관련 UI 초기화
+    }
 
-        FirebaseApp.DefaultInstance.Options.DatabaseUrl =
-      new System.Uri("https://swuniverse-d9641-default-rtdb.firebaseio.com/");
-
-
-        // Database의 특정지점을 가리킬 수 있다, 그 중 RootReference를 가리킴
-        reference = FirebaseDatabase.DefaultInstance.RootReference;
-
+    public void Update()
+    {
+        ClickKey();
+    }
 
 
-
-        if (LogInButton != null)
+    //Auth_Manager 인스턴스에 접근할 수 있는 프로퍼티
+    public static Auth_Manager Instance
+    {
+        get
         {
-            LogInButton.interactable = false;
-
-            FirebaseApp.CheckAndFixDependenciesAsync().ContinueWithOnMainThread(task =>
+            if (null == instance)
             {
-                var result = task.Result;
-
-                if (result != DependencyStatus.Available)
-                {
-                    Debug.LogError(result.ToString());
-                    IsFirebaseReady = false;
-                }
-                else
-                {
-                    IsFirebaseReady = true;
-
-                    firebaseApp = FirebaseApp.DefaultInstance;
-                    firebaseAuth = FirebaseAuth.DefaultInstance;
-                }
-
-                LogInButton.interactable = IsFirebaseReady;
-            });
+                return null;
+            }
+            return instance;
         }
     }
 
 
-    //이메일 로그인
-    public void LogIn()
+    void InitializeFirebase()
+    {       
+        auth = Firebase.Auth.FirebaseAuth.DefaultInstance;    //인증 객체 초기화
+        auth.StateChanged += AuthStateChanged;                //유저의 로그인 정보에 변경이 생기면 실행되도록 이벤트를 걸어준다(이벤트 핸들러)
+        
+
+        Debug.Log("파이어베이스 인증관련 초기화 완료");
+    }
+
+
+    //게임오브젝트가 다시 생성됐을때 인풋필드와 버튼 찾아서 넣기
+    public void InitUI()
     {
-        //if (!IsFirebaseReady || IsSignInOnProgress || User != null) { return; }
+        authCanvas = instance.authCanvas;
+        emailField = instance.emailField;
+        passwordField = instance.passwordField;
+        loginBtn = instance.loginBtn;
+        loginBtn.onClick.AddListener(() => { LogInWithEmail(emailField.text, passwordField.text); });
+        logoutBtn.onClick.AddListener(Logout);
 
-        //IsSignInOnProgress = true;
-        //LogInButton.interactable = false;
+        Debug.Log("Auth_Manager 관련 인풋필드 버튼 초기화 완료");
+    }
 
-        firebaseAuth.SignInWithEmailAndPasswordAsync(emailField.text, passwordField.text)
-            .ContinueWithOnMainThread(task =>
+
+    //유저의 로그인 정보에 변경이 생기면 실행되는 이벤트 핸들러 구현
+    void AuthStateChanged(object sender, System.EventArgs eventArgs)
+    {
+        if (auth.CurrentUser != user)
+        {
+            bool signedIn = user != auth.CurrentUser && auth.CurrentUser != null;
+
+            if (!signedIn && user != null)
             {
-                //Debug.Log($"Sign in status : {task.Status}");
+                Debug.Log("로그아웃 성공 " + user.UserId);
+                SceneManager.LoadScene("LogIn_Scene");
 
-                // IsSignInOnProgress = false;
-                //LogInButton.interactable = true;
+                emailField.text = null;
+                passwordField.text = null;
 
+                authCanvas.enabled = true;
+
+                instance.emailField.Select();   //이메일 Input Field를 선택하도록 한다
+          
+            }
+
+            user = auth.CurrentUser;
+            if (signedIn)
+            {
+                Debug.Log("로그인 성공! : " + user.Email + " / Uid: " + user.UserId);
+                CheckUserGroup(); //내담자면 내담자의 홈 씬을, 상담사면 상담사의 홈 씬을 불러온다.
+
+                authCanvas.enabled = false;
+            }
+        }
+    }
+
+
+
+    //이메일 로그인 함수
+    public void LogInWithEmail(string email, string password)
+    {
+        auth.SignInWithEmailAndPasswordAsync(email, password)
+            .ContinueWithOnMainThread(task =>
+            {             
                 if (task.IsFaulted)
                 {
-                    Debug.LogError(task.Exception);
+                    Debug.LogError("로그인 실패: " + task.Exception);
                 }
                 else if (task.IsCanceled)
                 {
-                    Debug.LogError("로그인 실패");
-                    //LogText.text = "취소되었습니다.";
+                    Debug.LogError("로그인 실패");             
                 }
                 else
                 {
-                    User = task.Result;
-                    //LogText.text = "UID : " + User.UserId;
-                    Debug.Log("로그인 성공! " + "UID: " + User.UserId + "  이메일 : " + User.Email);
-
-                    CheckUserGroup(); //내담자면 내담자의 홈 씬을, 상담사면 상담사의 홈 씬을 불러온다.
-
+                    user = task.Result;          
 
                 }
             }
@@ -118,11 +163,26 @@ public class Auth_Manager : MonoBehaviour
     }
 
 
+
+    //로그아웃 함수
+    public void Logout()
+    {
+        auth.SignOut();
+    }
+
+
+
     //유저 그룹 확인하는 함수.
     public void CheckUserGroup()
     {
+        FirebaseApp.DefaultInstance.Options.DatabaseUrl = new System.Uri("https://swuniverse-d9641-default-rtdb.firebaseio.com/");
+        // Database의 특정지점을 가리킬 수 있다, 그 중 RootReference를 가리킴
+        reference = FirebaseDatabase.DefaultInstance.RootReference;
+
+        string client = "내담자";
+
         // RDB에서 데이터 읽기.
-        FirebaseDatabase.DefaultInstance.GetReference("ClientUsers").Child(User.UserId)
+        FirebaseDatabase.DefaultInstance.GetReference("ClientUsers").Child(user.UserId)
                 .GetValueAsync().ContinueWithOnMainThread(task =>
                 {
                     if (task.IsFaulted)
@@ -143,8 +203,9 @@ public class Auth_Manager : MonoBehaviour
 
                         //내담자 로그인에 성공하면 내담자 홈 화면으로 이동
                         if ((string)snapshot.Child("userGroup").Value == client)
-                        {
+                        {          
                             SceneManager.LoadScene("Client_Home_Scene");
+                           
                         }
                         else
                         {
@@ -159,23 +220,33 @@ public class Auth_Manager : MonoBehaviour
 
 
 
+    //tap키 누르면 패스워드 필드로 이동, enter키 누르면 로그인버튼이 클릭되는 함수
+    public void ClickKey() {
 
-
-    public void LogOut()
-    {
-        firebaseAuth.SignOut();
-
-        //LogText.text = "로그아웃";
-        Debug.Log("로그아웃 되었습니다.");
-        Debug.Log(User.UserId);
-        //User = null;
-        //Debug.Log(User.UserId);
+        if (Input.GetKeyDown(KeyCode.Tab) && Input.GetKey(KeyCode.LeftShift))
+        {
+            // Tab + LeftShift는 위의 emailField 객체를 선택
+            instance.emailField.Select();
+            
+        }
+        else if (Input.GetKeyDown(KeyCode.Tab))
+        {
+            // Tab키는 아래의 passwordField 객체를 선택
+            instance.passwordField.Select();
+            
+        }
+        else if (Input.GetKeyDown(KeyCode.Return))
+        {
+            // 엔터키를 치면 로그인 버튼을 클릭
+            loginBtn.onClick.Invoke();
+            Debug.Log("로그인 버튼 눌림!");
+        }
+     
     }
 
 
 
-
-    // 테스트용 간편 회원가입
+    // 테스트용 간편 회원가입(실제 사용x)
     public void RegisterTest()
     {
         // 이메일과 비밀번호로 회원가입

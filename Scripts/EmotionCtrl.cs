@@ -178,7 +178,7 @@ public class EmotionCtrl : MonoBehaviourPunCallbacks //, IPunObservable
         // 감정카드 선택하면 업데이트
         Dictionary<string, object> emotionCard = new Dictionary<string, object>();
         emotionCard["emotionCard"] = currentEmotion;
-        reference.Child("ClientUsers").Child(Auth_Manager.User.UserId).UpdateChildrenAsync(emotionCard);
+        reference.Child("ClientUsers").Child(Auth_Manager.user.UserId).UpdateChildrenAsync(emotionCard);
        
 
 

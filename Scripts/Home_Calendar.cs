@@ -38,9 +38,8 @@ public class Home_Calendar : MonoBehaviour
         _calendarInstance = this;
         Vector3 startPos = _item.transform.localPosition;
         _dateItems.Clear();
-        _dateItems.Add(_item);
-
-        for (int i = 1; i < _totalDateNum; i++)
+  
+        for (int i = 0; i < _totalDateNum; i++)
         {
             item = GameObject.Instantiate(_item, parent) as GameObject;
             item.name = "Item" + (i + 1).ToString();
@@ -65,19 +64,20 @@ public class Home_Calendar : MonoBehaviour
     //날짜 버튼을 누르면 선택한 날짜의 정보를 저장하는 함수.
     public void GetSeletedDateTime(string year, string month, string date)
     {
-        //클릭한 버튼의 날짜가 나오길 원했는데 -1이 되는 문제가 있어 +1을 계산해준다.
-        var number = int.Parse(date) + 1;  //string인 date를 int로 바꾸어 +1한 값을 number에 넣는다.
-        date = number.ToString();          //number를 string타입으로 바꾸어 date에 넣는다.
+        // date가 1자리수면 앞에 "0"삽입(예:4를 04로 바꾼다.)
+        if (date.Length < 2)
+        {
+            date = date.Insert(0, "0");
+        }
 
         //년도, 월, 날짜가 정상적으로 전달됐는지 확인하기 위함.
         seletedDateTime = year + month + date;
-        Debug.Log(seletedDateTime);
 
         //매개변수로 전달받은 year, month, date값을 가지고 DateTime으로 변환해서 DateTime형인 dateTime에 넣는다.
         DateTime dateTime = Convert.ToDateTime(year + "/" + month + "/" + date);
 
         dayOfWeek = GetDays(dateTime.DayOfWeek); //요일을 구하기 위한 함수 실행.
-        Debug.Log(dayOfWeek); //확인을 위한 출력.
+        Debug.Log( "날짜: " + seletedDateTime + " / 요일: " + dayOfWeek); //확인을 위한 출력.
 
     }
 
@@ -98,17 +98,13 @@ public class Home_Calendar : MonoBehaviour
         {
             month = month.Insert(0, "0");
         }
-
-     
+   
 
         int date = 0;
         for (int i = 0; i < _totalDateNum; i++)
         {
             Text label = _dateItems[i].GetComponentInChildren<Text>();
-            _dateItems[i].SetActive(false);
-
-            //dateButton[i] 버튼을(달력 날짜버튼) 누르면 GetSeletedDateTime(string year, string month, string date) 함수 실행.
-            dateButton[i].onClick.AddListener(() => { GetSeletedDateTime(_dateTime.Year.ToString(), month, label.text); });
+            _dateItems[i].SetActive(false);        
 
             if (i >= index)
             {
@@ -120,6 +116,8 @@ public class Home_Calendar : MonoBehaviour
                     label.text = (date + 1).ToString();
                     date++;
 
+                    //dateButton[i] 버튼을(달력 날짜버튼) 누르면 GetSeletedDateTime(string year, string month, string date) 함수 실행.
+                    dateButton[i].onClick.AddListener(() => { GetSeletedDateTime(_dateTime.Year.ToString(), month, label.text); });
 
                 }
             }
@@ -136,14 +134,11 @@ public class Home_Calendar : MonoBehaviour
 
         }
         _todayText.text = DateTime.Now.ToString("yyyy.MM.dd.");
-        //_todayText.text = _dateTime.ToString("yyyy.MM.dd.");
-        
-
-        //print("현재 달: " + thisMonth + "   달력 달: " + _monthNumText.text);
+     
     }
 
 
-    void ReCreateCalendar()
+    void ReCreateCalendar(string reMonth)
     {
         DateTime firstDay = _dateTime.AddDays(-(_dateTime.Day - 1));
         int index = GetDays(firstDay.DayOfWeek);
@@ -151,24 +146,19 @@ public class Home_Calendar : MonoBehaviour
         string month = _monthNumText.text;           //달력의 월을 string타입 변수 month에 저장
 
         // 맨 뒤에 글자 "월"을 자른다 (예: 4월을 4로 바꾼다.)
-        month = month.Substring(0, month.Length - 1);
+        reMonth = reMonth.Substring(0, month.Length - 1);
 
         // month가 1자리수면 앞에 "0"삽입(예:4를 04로 바꾼다.)
-        if (month.Length < 2)
+        if (reMonth.Length < 2)
         {
-            month = month.Insert(0, "0");
+            reMonth = reMonth.Insert(0, "0");
         }
-
 
         int date = 0;
         for (int i = 0; i < _totalDateNum; i++)
         {
             Text label = _dateItems[i].GetComponentInChildren<Text>();
             _dateItems[i].SetActive(false);
-
-            //dateButton[i] 버튼을(달력 날짜버튼) 누르면 GetSeletedDateTime(string year, string month, string date) 함수 실행.
-            dateButton[i].onClick.AddListener(() => { GetSeletedDateTime(_dateTime.Year.ToString(), month, label.text); });
-
 
             if (i >= index)
             {
@@ -181,6 +171,10 @@ public class Home_Calendar : MonoBehaviour
 
                     label.text = (date + 1).ToString();
                     date++;
+
+
+                    //dateButton[i] 버튼을(달력 날짜버튼) 누르면 GetSeletedDateTime(string year, string month, string date) 함수 실행.
+                    dateButton[i].onClick.AddListener(() => { GetSeletedDateTime(_dateTime.Year.ToString(), reMonth, label.text); });
 
                 }
             }
@@ -233,7 +227,8 @@ public class Home_Calendar : MonoBehaviour
     {
         //print("현재 달: " + thisMonth + "   달력 달: " + _monthNumText.text);
         _dateTime = _dateTime.AddMonths(-1);
-        ReCreateCalendar();
+        ReCreateCalendar(_dateTime.AddMonths(0).Month.ToString());
+        
 
     }
 
@@ -241,7 +236,7 @@ public class Home_Calendar : MonoBehaviour
     {
         //print("현재 달: " + thisMonth + "   달력 달: " + _monthNumText.text);
         _dateTime = _dateTime.AddMonths(1);
-        ReCreateCalendar();
+        ReCreateCalendar(_dateTime.AddMonths(0).Month.ToString());
 
     }
 

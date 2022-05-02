@@ -178,7 +178,7 @@ public class CounselorLoad : MonoBehaviour
     {
         print("프로필 확인 버튼 클릭");
 
-        clientName = User_Data.myName; //내담자(나)의 이름 저장.
+        clientName = User_Data.username; //내담자(나)의 이름 저장.
 
 
         //선택된 상담사의 정보만 seleted[]배열에 저장
@@ -323,6 +323,13 @@ public class CounselorLoad : MonoBehaviour
             print("선택 날짜: " + day + "일");
 
         }
+
+        // seletedMonth가 1자리수면 앞에 "0"삽입(예:4를 04로 바꾼다.)
+        if (day.Length < 2)
+        {
+            day = day.Insert(0, "0");
+        }
+
 
         // seletedMonth가 1자리수면 앞에 "0"삽입(예:4를 04로 바꾼다.)
         if (seletedMonth.Length < 3)
@@ -530,7 +537,7 @@ public class CounselorLoad : MonoBehaviour
         // RDB에 내담자 데이터 저장
         ClientAppo clientAppo = new ClientAppo(
               seleted[1]                       //상담사uid
-            , Auth_Manager.User.UserId         //내담자uid
+            , Auth_Manager.user.UserId         //내담자uid
             , ""                               //거절사유
             , confirmWorry.text                //고민내용
             , ""                               //내담자 후기(피드백)
@@ -541,14 +548,13 @@ public class CounselorLoad : MonoBehaviour
             , 0                                //수락상태, 0:무반응 1:수락 2:거절 
             , seleted[2]                       //상담사 이름
             , seleted[8]                       //상담사 성별
-            , clientName                       //내담자 이름
-            , "");                             //감정카드
+            , clientName);                       //내담자 이름                         
 
 
 
         // 상담사 하위에 예약신청 정보 저장
         CounselorAppo counselorAppo = new CounselorAppo(
-              Auth_Manager.User.UserId         //내담자uid
+              Auth_Manager.user.UserId         //내담자uid
             , seleted[1]                       //상담사uid
             , ""                               //거절사유
             , confirmWorry.text                //고민내용
@@ -569,7 +575,7 @@ public class CounselorLoad : MonoBehaviour
 
         // 지정된 경로로 json데이터를 삽입
         reference.Child("ClientUsers")
-            .Child(Auth_Manager.User.UserId)
+            .Child(Auth_Manager.user.UserId)
             .Child("appointment")
             .Child(appDay2)
             .SetRawJsonValueAsync(json);
@@ -590,7 +596,7 @@ public class CounselorLoad : MonoBehaviour
         isAppo["appointmentcheck"] = true;
 
         reference.Child("ClientUsers")
-            .Child(Auth_Manager.User.UserId)
+            .Child(Auth_Manager.user.UserId)
             .UpdateChildrenAsync(isAppo);
 
         reference.Child("CounselorUsers")
@@ -693,9 +699,9 @@ public class CounselorLoad : MonoBehaviour
 
             , counselorName          //상담사 이름
             , counselorSex           //상담사 성별
-            , clientName             //내담자 이름
+            , clientName;             //내담자 이름
 
-            , emotionCard;           //감정카드
+            
 
 
         public int progress;         //수락상태, 0:무반응 1:수락 2:거절
@@ -714,8 +720,7 @@ public class CounselorLoad : MonoBehaviour
             , int progress
             , string counselorName
             , string counselorSex
-            , string clientName
-            , string emotionCard)
+            , string clientName)
 
         {
             this.counselorUid = counselorUid;
@@ -732,8 +737,6 @@ public class CounselorLoad : MonoBehaviour
             this.counselorName = counselorName;
             this.counselorSex = counselorSex;
             this.clientName = clientName;
-
-            this.emotionCard = emotionCard;
 
         }
 

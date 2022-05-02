@@ -9,7 +9,6 @@ using System;
 
 public class FeedbackItem : MonoBehaviour
 {
-
     public GameObject openObj;
 
     public Image imageBox;
@@ -36,7 +35,6 @@ public class FeedbackItem : MonoBehaviour
 
             openObj.SetActive(true);
 
-
             isClose = false;
         }
         else
@@ -49,13 +47,11 @@ public class FeedbackItem : MonoBehaviour
 
             openObj.SetActive(false);
 
-
             isClose = true;
 
         }
 
     }
-
 
 
     public void ClickSave()

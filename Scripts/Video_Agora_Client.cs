@@ -1,80 +1,51 @@
-﻿using System.Collections;
+﻿
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using agora_gaming_rtc;
 using agora_utilities;
-//using Firebase;
-//using Firebase.Firestore;
-//using Firebase.Extensions;
-using System.Threading.Tasks;
-using System;
-using Object = UnityEngine.Object;
 
 using Photon.Pun;
 using Photon.Realtime;
 
-
-//토큰서버에서 토큰을 가져온다. !!로컬서버라 나(유정)이 토큰서버를 실행하고 있어야 돌아감!!
-public class Video_TokenAgora : MonoBehaviour
+public class Video_Agora_Client : MonoBehaviour
 {
-    //FirebaseFirestore db;
-
     VideoSurface myView;
     VideoSurface remoteView;
 
     [SerializeField]
     private string APP_ID = "6b17d6a455dc4642a36f39abbba84659";
+
+    [SerializeField]
+    private string TOKEN = "";
+
+    [SerializeField]
+    private string CHANNEL_NAME = "swuniverse";
     public Text logText;
     private Logger logger;
-    private IRtcEngine mRtcEngine = null;
-    private const float Offset = 100;
-    private static string channelName = "swuniverse";
-    private static string channelToken = "";
-    //private static string tokenBase = "http://localhost:8080";
-    //private static string tokenBase = "http://3Bears.iptime.org:18080";
-    private static string tokenBase = "https://maon-server.run.goorm.io";
-    private CONNECTION_STATE_TYPE state = CONNECTION_STATE_TYPE.CONNECTION_STATE_DISCONNECTED;
- 
+    private IRtcEngine mRtcEngine;
+
+
 
     //상담사 캐릭터 애니메이션
     public Animator animator;
 
+
     // Use this for initialization
     void Start()
     {
-        //db = FirebaseFirestore.DefaultInstance;
-
         CheckAppId();
-        InitEngine();    
-        JoinChannel();
+        Debug.Log(" CheckAppId(); 완료 " + APP_ID);
+        InitEngine();
+        Debug.Log(" InitEngine(); 완료 ");
 
+        JoinChannel();
+        Debug.Log(" JoinChannel(); 완료 ");
 
         //OwnerTake();
         //animator = GetComponent<Animator>();
     }
-
-    
-
-    void RenewOrJoinToken(string newToken)
-    {
-        Video_TokenAgora.channelToken = newToken;
-        if (state == CONNECTION_STATE_TYPE.CONNECTION_STATE_DISCONNECTED
-            || state == CONNECTION_STATE_TYPE.CONNECTION_STATE_DISCONNECTED
-            || state == CONNECTION_STATE_TYPE.CONNECTION_STATE_FAILED
-        )
-        {
-            // 연결되어 있지 않은 경우 채널 참가
-            JoinChannel();
-        }
-        else
-        {
-            // 이미 연결되어 있는 경우 토큰 업데이트
-            UpdateToken();
-        }
-    }
-
-    
 
     // Update is called once per frame
     void Update()
@@ -83,15 +54,12 @@ public class Video_TokenAgora : MonoBehaviour
         PermissionHelper.RequestCameraPermission();
     }
 
-    void UpdateToken()
-    {
-        mRtcEngine.RenewToken(Video_TokenAgora.channelToken);
-    }
+
 
     void CheckAppId()
     {
         logger = new Logger(logText);
-        logger.DebugAssert(APP_ID.Length > 10, "appID를 입력해주세요.");
+        logger.DebugAssert(APP_ID.Length > 10, "appId를 입력해주세요.");
     }
 
     void InitEngine()
@@ -111,9 +79,6 @@ public class Video_TokenAgora : MonoBehaviour
         mRtcEngine.OnUserJoined += OnUserJoinedHandler;
         mRtcEngine.OnUserOffline += OnUserOfflineHandler;
 
-        //Set the token expiration handler
-        mRtcEngine.OnTokenPrivilegeWillExpire += OnTokenPrivilegeWillExpireHandler;
-        mRtcEngine.OnConnectionStateChanged += OnConnectionStateChangedHandler;
 
 
         //마이크 볼륨을 확인하기 위함.
@@ -122,24 +87,17 @@ public class Video_TokenAgora : MonoBehaviour
 
     }
 
+
+
     void JoinChannel()
     {
-        if (string.IsNullOrEmpty(channelToken))
-        {
-            StartCoroutine(HelperClass.FetchToken(tokenBase, channelName, 0, this.RenewOrJoinToken));
-            return;
-        }
-        mRtcEngine.JoinChannelByKey(channelToken, channelName, "", 0);
-
-   
+        mRtcEngine.JoinChannelByKey(TOKEN, CHANNEL_NAME, "", 0);
     }
 
     void OnJoinChannelSuccessHandler(string channelName, uint uid, int elapsed)
     {
         logger.UpdateLog(string.Format("sdk 버전: ${0}", IRtcEngine.GetSdkVersion()));
         logger.UpdateLog(string.Format("채널입장 성공 channelName: {0}, uid: {1}, elapsed: {2}", channelName, uid, elapsed));
-        logger.UpdateLog(string.Format("새로운 Token: {0}", Video_TokenAgora.channelToken));
-        // HelperClass.FetchToken(tokenBase, channelName, 0, this.RenewOrJoinToken);      
 
         //내담자 자신의 웹캠 화면 
         GameObject go = GameObject.Find("MyView_RawImage");
@@ -161,21 +119,8 @@ public class Video_TokenAgora : MonoBehaviour
 
     void OnLeaveChannelHandler(RtcStats stats)
     {
-        logger.UpdateLog("OnLeaveChannelSuccess");
-        Debug.Log("상담소 퇴장 완료");
+        logger.UpdateLog("채널퇴장 성공");
         DestroyVideoView(0);
-    }
-
-    //앱이나 에디터가 닫힐 때 인스턴스를 삭제
-    void OnApplicationQuit()
-    {
-        Debug.Log("에디터 닫음  : OnApplicationQuit");
-        if (mRtcEngine != null)
-        {
-            mRtcEngine.LeaveChannel();
-            mRtcEngine.DisableVideoObserver();
-            IRtcEngine.Destroy();
-        }
     }
 
     void OnUserJoinedHandler(uint uid, int elapsed)
@@ -188,17 +133,6 @@ public class Video_TokenAgora : MonoBehaviour
     {
         logger.UpdateLog(string.Format("다른 유저 퇴장 uid: ${0}, reason: ${1}", uid, (int)reason));
         DestroyVideoView(uid);
-    }
-
-    void OnTokenPrivilegeWillExpireHandler(string token)
-    {
-        StartCoroutine(HelperClass.FetchToken(tokenBase, channelName, 0, this.RenewOrJoinToken));
-    }
-
-    void OnConnectionStateChangedHandler(CONNECTION_STATE_TYPE state, CONNECTION_CHANGED_REASON_TYPE reason)
-    {
-        this.state = state;
-        logger.UpdateLog(string.Format("ConnectionState changed {0}, reason: ${1}", state, reason));
     }
 
     void OnSDKWarningHandler(int warn, string msg)
@@ -228,7 +162,6 @@ public class Video_TokenAgora : MonoBehaviour
 
     private void makeVideoView(uint uid)
     {
-       
         GameObject go = GameObject.Find("RemoteView_RawImage");
         if (go)
         {
@@ -243,8 +176,8 @@ public class Video_TokenAgora : MonoBehaviour
         remoteView.SetForUser(uid);
         remoteView.SetEnable(true);
         remoteView.SetVideoSurfaceType(AgoraVideoSurfaceType.RawImage);
-    }
 
+    }
 
 
     //마이크 볼륨을 확인해서 말하는 중인지를 알려주는 함수
@@ -252,38 +185,40 @@ public class Video_TokenAgora : MonoBehaviour
     {
         if (speakerNumber == 0 || speakers == null)
         {
-            //Debug.Log(string.Format("onVolumeIndication only local {0}", totalVolume));
+            Debug.Log(string.Format("onVolumeIndication only local {0}", totalVolume));
         }
 
         for (int idx = 0; idx < speakerNumber; idx++)
         {
             string volumeIndicationMessage = string.Format("{0} onVolumeIndication {1} {2}",
                 speakerNumber, speakers[idx].uid, speakers[idx].volume);
-            //Debug.Log(volumeIndicationMessage);
+            Debug.Log(volumeIndicationMessage);
 
-           
-            if (speakerNumber != 1 || speakers[0].uid != 0)
+            if (speakers[1].volume > 20)
             {
-                if (speakers[0].volume > 50)
-                {
-                    
-                    Debug.Log(speakerNumber + " / " + speakers[0].uid
-                        + " 상담사가 말하는 중입니다." + "  볼륨 크기: " + speakers[0].volume);
-                    PlayTalk();
-                }
-                else
-                {
-                    //Debug.Log(speakerNumber + " / " + speakers[0].uid + " 상담사가 말하는 중이 아닙니다.");
-                    StopTalk();
-
-                }
+                Debug.Log("상담사가 말하는 중입니다.");
+                PlayTalk();
             }
+            else
+            {
+                Debug.Log("상담사가 말하는 중이 아닙니다.");
+                StopTalk();
 
-            
+            }
         }
     }
 
-
+    //앱이나 에디터가 닫힐 때 인스턴스를 삭제
+    void OnApplicationQuit()
+    {
+        Debug.Log("에디터 닫음  : OnApplicationQuit");
+        if (mRtcEngine != null)
+        {
+            mRtcEngine.LeaveChannel();
+            mRtcEngine.DisableVideoObserver();
+            IRtcEngine.Destroy();
+        }
+    }
 
     //상담사캐릭터 애니메이션관련 시작
     //포톤 마스터 권한
@@ -359,7 +294,5 @@ public class Video_TokenAgora : MonoBehaviour
 
 
 
-
-
-
 }
+

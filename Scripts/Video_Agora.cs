@@ -189,7 +189,7 @@ public class Video_Agora : MonoBehaviour
                 speakerNumber, speakers[idx].uid, speakers[idx].volume);
             Debug.Log(volumeIndicationMessage);
 
-            if (speakers[0].volume > 20)
+            if (speakers[1].volume > 20)
             {
                 Debug.Log("상담사가 말하는 중입니다.");
                 PlayTalk();
@@ -203,6 +203,18 @@ public class Video_Agora : MonoBehaviour
         }
     }
 
+
+    //앱이나 에디터가 닫힐 때 인스턴스를 삭제
+    void OnApplicationQuit()
+    {
+        Debug.Log("에디터 닫음  : OnApplicationQuit");
+        if (mRtcEngine != null)
+        {
+            mRtcEngine.LeaveChannel();
+            mRtcEngine.DisableVideoObserver();
+            IRtcEngine.Destroy();
+        }
+    }
 
 
     //상담사캐릭터 애니메이션관련 시작
