@@ -36,8 +36,8 @@ public class ProfileCheck : MonoBehaviour
         // Database의 특정지점을 가리킬 수 있다, 그 중 RootReference를 가리킴
         reference = FirebaseDatabase.DefaultInstance.RootReference;
 
-        todayClientUid = GameObject.FindWithTag("DataMngForCounselor").GetComponent<DataMngForCounselor>().todayCounselData[0];
-        todayClientName = GameObject.FindWithTag("DataMngForCounselor").GetComponent<DataMngForCounselor>().todayCounselData[1];
+        todayClientUid = DataMngForCounselor.todayCounselData[0];
+        todayClientName = DataMngForCounselor.todayCounselData[1];
 
         //좌측 상단 내담자 이름 표시.
         ClientDisplyName.text = "[" + todayClientName + "]";
@@ -135,28 +135,6 @@ public class ProfileCheck : MonoBehaviour
     }
 
 
-    /*public void GetProfileData()
-    {
 
-        var request = new GetUserDataRequest() { PlayFabId = otherID };
-
-        //플레이어 데이터 전부 불러오기
-        //PlayFabClientAPI.GetUserData(request, (result) =>
-        //{ foreach (var eachData in result.Data) LogText.text += eachData.Key + " : " + eachData.Value.Value + "\n"; },
-
-        PlayFabClientAPI.GetUserData(request, (result) =>
-         LogText.text = (
-           "● 이름: " + result.Data["이름"].Value + "\n"
-         + "● 성별: " + result.Data["성별"].Value + "\n"
-         + "● 생년월일: " + result.Data["생년월일"].Value + "\n"
-         + "● 직업: " + result.Data["직업"].Value + "\n"
-
-         + "● 생활 패턴" + "\n"
-         + "   -식사           " + result.Data["식사"].Value + "\n"
-         + "   -수면           " + result.Data["수면"].Value + "\n"
-         + "   -운동           " + result.Data["운동"].Value + "\n"),
-
-         (error) => print("데이터 불러오기 실패"));
-    }*/
 }
 

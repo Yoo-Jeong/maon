@@ -56,12 +56,24 @@ public class EmotionCtrl_counselor : MonoBehaviourPunCallbacks
         // Database의 특정지점을 가리킬 수 있다, 그 중 RootReference를 가리킴
         reference = FirebaseDatabase.DefaultInstance.RootReference;
 
-        todayClientUid = GameObject.FindWithTag("DataMngForCounselor").GetComponent<DataMngForCounselor>().todayCounselData[0];
-        todayClientName = GameObject.FindWithTag("DataMngForCounselor").GetComponent<DataMngForCounselor>().todayCounselData[1];
+        todayClientUid = DataMngForCounselor.todayCounselData[0];
+        todayClientName = DataMngForCounselor.todayCounselData[1];
 
+        var userRef = FirebaseDatabase.DefaultInstance.GetReference("ClientUsers").Child(todayClientUid);
+        userRef.ChildChanged += HandleChildChanged;
 
     }
 
+    void HandleChildChanged(object sender, ChildChangedEventArgs args)
+    {
+        if (args.DatabaseError != null)
+        {
+            Debug.LogError(args.DatabaseError.Message);
+            return;
+        }
+        Debug.Log(" ChildChanged 이벤트핸들러 ");
+        GetEmotionData();
+    }
 
     public void BtnClick()
     {

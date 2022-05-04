@@ -101,7 +101,7 @@ public class Scene_Manager : MonoBehaviourPunCallbacks
 
     public void GoClient_Center()
     {
-        SceneManager.LoadScene("Client_CenterToonShader_Scene 2");
+        SceneManager.LoadScene("Client_Center_Scene");
 
         Debug.Log("내담자 상담소 씬 이동");
     }

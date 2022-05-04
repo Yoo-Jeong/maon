@@ -100,6 +100,23 @@ public class DataMngForCounselor : MonoBehaviour
     }
 
 
+
+    //상담사 유저 하위에 있는 내용에 대한 변경을 읽고 수신 대기하는 이벤트핸들러 구현
+    void HandleChildAdded(object sender, ChildChangedEventArgs args)
+    {
+        if (args.DatabaseError != null)
+        {
+            Debug.LogError(args.DatabaseError.Message);
+            return;
+        }
+        Debug.Log(" ChildAdded 이벤트핸들러 ");
+
+        LoadMyAppoData(myMajor);
+    }
+
+
+
+
     public void LoadMyData()
     {
            
@@ -141,6 +158,7 @@ public class DataMngForCounselor : MonoBehaviour
                                //이벤트리스너 연결
                                var userRef = FirebaseDatabase.DefaultInstance.GetReference("CounselorUsers").Child(major).Child(Auth_Manager.user.UserId);
                                userRef.ChildChanged += HandleChildChanged;          //상담사 유저 하위에 있는 내용에 대한 변경을 읽고 수신 대기
+                               userRef.Child("appointment").ChildAdded += HandleChildAdded;
 
                                myMajor = major;
 
@@ -168,18 +186,18 @@ public class DataMngForCounselor : MonoBehaviour
 
                                isAppointment = (bool)snapshot.Child("appointmentcheck").Value;
 
-                               //만약 예약이 있다면 예약 목록 불러오기 실행.
+                       /*        //만약 예약이 있다면 예약 목록 불러오기 실행.
                                if (isAppointment)
                                {
                                    Debug.Log(isAppointment);
                                    Debug.Log(major);
-                                   LoadMyAppoData(major);
+                                   //LoadMyAppoData(major);
                                    print("상담 예약이 있습니다.");
                                }
                                else
                                {
                                    print("상담 예약이 없습니다.");
-                               }
+                               }*/
 
                                print("내 기본정보 불러오기 완료");
                            }
@@ -382,7 +400,7 @@ public class DataMngForCounselor : MonoBehaviour
     public List<GameObject> acceptedCloneList = new List<GameObject>();    //생성된 프리팹을 담을 리스트.
     public Text[] newAcceptedData;                                         // 프리팹 안의 텍스트타입 게임오브젝트를 담을 배열.
 
-    public string[] todayCounselData;      //오늘 상담의 내담자 정보를 저장할 배열.
+    public static string[] todayCounselData;      //오늘 상담의 내담자 정보를 저장할 배열.
 
     public void AcceptedCounsel(int num)
     {

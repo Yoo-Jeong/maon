@@ -24,7 +24,7 @@ public class Auth_Manager : MonoBehaviour
     public Canvas authCanvas;
     public InputField emailField;
     public InputField passwordField;
-    public Button loginBtn, logoutBtn;
+    public Button loginBtn, logoutBtn, logoutBtn2;
 
     private static Auth_Manager instance = null;
 
@@ -100,6 +100,7 @@ public class Auth_Manager : MonoBehaviour
         loginBtn = instance.loginBtn;
         loginBtn.onClick.AddListener(() => { LogInWithEmail(emailField.text, passwordField.text); });
         logoutBtn.onClick.AddListener(Logout);
+        logoutBtn2.onClick.AddListener(Logout);
 
         Debug.Log("Auth_Manager 관련 인풋필드 버튼 초기화 완료");
     }

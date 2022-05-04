@@ -25,7 +25,7 @@ public class FeedbackList : MonoBehaviour
     public static List<string> appointmentCounselorPushKey = new List<string>();
 
     
-    public static List<string> appointmentCounselorInCharge = new List<string>();
+    public static List<string> MyAppoCounselorName = new List<string>();
     public static List<string> appointmentAppDay1 = new List<string>();
     public List<string> appointmentAppDay2 = new List<string>();
     public static List<string> appointmentAppTime = new List<string>();
@@ -37,6 +37,12 @@ public class FeedbackList : MonoBehaviour
     // 라이브러리를 통해 불러온 FirebaseDatabase 관련객체를 선언해서 사용
     public DatabaseReference reference { get; set; }
 
+
+
+    public void Awake()
+    {
+        ClearLists();
+    }
 
     // Start is called before the first frame update
     void Start()
@@ -75,7 +81,7 @@ public class FeedbackList : MonoBehaviour
                   IDictionary appo = (IDictionary)data.Value;
 
                   appointmentCounselorUid.Add((string)appo["counselorUid"]);
-                  appointmentCounselorInCharge.Add((string)appo["counselorName"]);
+                  MyAppoCounselorName.Add((string)appo["counselorName"]);
                   appointmentAppDay1.Add((string)appo["appDay1"]);
                   appointmentAppDay2.Add((string)appo["appDay2"]);
                   appointmentAppTime.Add((string)appo["appTime"]);
@@ -104,38 +110,63 @@ public class FeedbackList : MonoBehaviour
     public Text[] newFeedbackData;
     public List<Button> newFeedbackButton = new List<Button>();
 
+    public List<Text> newFeedbackProcess = new List<Text>();
+    public List<Text> newFeedbackName = new List<Text>();
+    public List<Text> newFeedbackRequestDay = new List<Text>();
+    public List<Text> newFeedbackAppDay1 = new List<Text>();
+    public List<Text> newFeedbackAppTIme = new List<Text>();
+
     // 피드백 프리팹을 생성하는 함수.
     public void CreatekFeedbackList()
     {
 
-        print("예약 갯수" + appointmentCounselorInCharge.Count);
+        print("예약 갯수" + MyAppoCounselorName.Count);
         print("생성 시작");
 
         clone = Instantiate(feedbackPrefab, feedbackParent);       // feedbackPrefab의 하위로 feedbackPrefab 객체 생성
         feedbackPrefabList.Add(clone);                             // 프리팹 리스트 feedbackPrefabList에 복제된 프리팹 추가
-        print("생성 완료" + appointmentCounselorInCharge.Count);
+        print("생성 완료" + MyAppoCounselorName.Count);
 
 
 
-        for (int i = 0; i < appointmentCounselorInCharge.Count; i++)
+        for (int i = 0; i <= MyAppoCounselorName.Count; i++)
         {
             int temp = i;
 
             print("텍스트 완료 1 : " + i + " / " + temp);
+            /*
+                        newFeedbackData = feedbackPrefabList[temp].GetComponentsInChildren<Text>();
 
-            newFeedbackData = feedbackPrefab.GetComponentsInChildren<Text>();
+                        newFeedbackData[0].text = "작성 전";
+                        newFeedbackData[1].text = MyAppoCounselorName[i];
+                        newFeedbackData[2].text = User_Data.MyAppoRequestDay[i];
+                        newFeedbackData[3].text = appointmentAppDay1[i];
+                        newFeedbackData[4].text = appointmentAppTime[i];*/
 
-            newFeedbackData[0].text = "작성 전";
-            newFeedbackData[1].text = appointmentCounselorInCharge[i];
-            newFeedbackData[2].text = appointmentAppDay1[i];
-            newFeedbackData[3].text = appointmentAppDay1[i];
-            newFeedbackData[4].text = appointmentAppTime[i];
+            newFeedbackProcess.Add(feedbackPrefabList[temp].transform.GetChild(1).GetComponentInChildren<Text>());
+            newFeedbackName.Add(feedbackPrefabList[temp].transform.GetChild(2).GetComponentInChildren<Text>());
+            newFeedbackRequestDay.Add(feedbackPrefabList[temp].transform.GetChild(3).GetComponentInChildren<Text>());
+            newFeedbackAppDay1.Add(feedbackPrefabList[temp].transform.GetChild(4).GetComponentInChildren<Text>());
+            newFeedbackAppTIme.Add(feedbackPrefabList[temp].transform.GetChild(5).GetComponentInChildren<Text>());
+
 
             print("텍스트 완료 2 : " + i + " / " + temp + "/ " + appointmentAppTime[i]);
 
-            feedbackPrefab.SetActive(true);
+            feedbackPrefabList[temp].transform.GetChild(7).GetComponentInChildren<InputField>().text = appointmentFeedback[temp];
 
-            print("텍스트 완료 3 : " + i + " / " + temp + appointmentCounselorInCharge[i]);
+            feedbackPrefabList[temp].SetActive(true);
+
+            if (appointmentFeedback[temp] == "")
+            {
+                newFeedbackProcess[temp].text = "작성 전";
+            }
+            else { newFeedbackProcess[temp].text = "작성완료"; }
+
+
+
+
+
+            print("텍스트 완료 3 : " + i + " / " + temp + MyAppoCounselorName[i]);
 
 
             print("버튼 넣기 시작");
@@ -177,8 +208,9 @@ public class FeedbackList : MonoBehaviour
             reference.Child("ClientUsers").Child(Auth_Manager.user.UserId).Child("appointment").Child(appointmentAppDay2[num]).UpdateChildrenAsync(feedbackSave);
             reference.Child("CounselorUsers").Child("대인관계").Child(uid).Child("appointment").Child(appointmentAppDay2[num]).UpdateChildrenAsync(feedbackSave);
 
-            print("피드백 작성 완료.");
 
+            newFeedbackProcess[num].text = "작성완료";
+            print("피드백 작성 완료.");
         }
         catch (NullReferenceException ex)
         {
@@ -189,7 +221,17 @@ public class FeedbackList : MonoBehaviour
 
     }
 
+    public void ClearLists()
+    {
+        MyAppoCounselorName.Clear();
+        appointmentAppDay1.Clear();
+        appointmentAppDay2.Clear();
+        appointmentAppTime.Clear();
+        appointmentFeedback.Clear();
+        appointmentWorry.Clear();
 
+
+    }
 
 }
 

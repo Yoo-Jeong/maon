@@ -17,10 +17,14 @@ public class CanvasMng_Home : MonoBehaviour
     public string password, passwordCheck;
     public GameObject PasswordOK; //비밀번호가 일치하면 체크표시를 보여줄 오브젝트
 
+    public GameObject miniMenu;  //우측상단 이름 옆 버튼을 누르면 나오는 패널
+    public bool isOpenMini;      
 
     // Start is called before the first frame update
     void Start()
     {
+        isOpenMini = false;
+        miniMenu.SetActive(false);
 
         OpenHomeCanvas();
 
@@ -31,11 +35,27 @@ public class CanvasMng_Home : MonoBehaviour
 
     }
 
+    //우측상단 이름 옆 버튼 클릭
+    public void ClickNameBtn()
+    {
+        if (isOpenMini)
+        {
+            miniMenu.SetActive(false);
+            isOpenMini = false;
+        }
+        else
+        {
+            miniMenu.SetActive(true);
+            isOpenMini = true;
+        }
+    }
+
+
+
     // 홈 화면 캔버스를 켜는 함수.
     public void OpenHomeCanvas()
     {
-        Debug.Log("홈 화면 오픈");
-
+      
         home.enabled = true;
         counsel.enabled = false;
         Reservation.enabled = false;
@@ -45,6 +65,7 @@ public class CanvasMng_Home : MonoBehaviour
         myPageChange.enabled = false;
 
         MyPageChange.isOpenInfo = false;
+        Debug.Log("홈 화면 오픈");
     }
 
 

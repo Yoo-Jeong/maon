@@ -591,7 +591,7 @@ public class CounselorLoad : MonoBehaviour
         Debug.Log("예약 완료");
 
 
-        // 예약하면 appointmentcheck true로 업데이트
+     /*   // 예약하면 appointmentcheck true로 업데이트
         Dictionary<string, object> isAppo = new Dictionary<string, object>();
         isAppo["appointmentcheck"] = true;
 
@@ -602,7 +602,7 @@ public class CounselorLoad : MonoBehaviour
         reference.Child("CounselorUsers")
             .Child(seleted[0])
             .Child(seleted[1])
-            .UpdateChildrenAsync(isAppo);
+            .UpdateChildrenAsync(isAppo);*/
 
 
 
