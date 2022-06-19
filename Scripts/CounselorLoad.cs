@@ -23,16 +23,23 @@ public class CounselorLoad : MonoBehaviour
     // 날짜 선택을 위한 변수들 선언.
     public Text calendarMonth;              // 달력의 달을 표시한 Text타입 변수(선택날짜를 알기 위해 필요)
 
-    public string appDay1, appDay2;         // 선택한 날짜를 담을 변수, RDB저장 경로를 위한 날짜를 담을 변수
+    public static string appDay1;         // 선택한 날짜를 담을 변수
+    public string appDay2;                //RDB저장 경로를 위한 날짜를 담을 변수
 
 
     // 전문분야 선택 토글 관련 변수들 선언.
-    public Toggle familyToggle, relationshipToggle; // 전문분야 토글
-    private Text relationshipText;                  // 전문분야 토글의 자식 텍스트
+    public ToggleGroup majorToggleGroup;
+    public Toggle familyToggle, myselfToggle, relationshipToggle, loveToggle, jobToggle, courseToggle; // 전문분야 토글
+    private Text familyText, myselfText, relationshipText, loveText, jobText, courseText;              // 전문분야 토글의 자식 텍스트
 
 
     // 전문분야에 따라 상담사의 정보를 저장할 Counselors타입 변수 선언.
+    public Counselors family;            //전문분야가 가족인 상담사들
+    public Counselors myself;           //전문분야가 나 자신인 상담사들
     public Counselors relationship;     //전문분야가 대인관계인 상담사들
+    public Counselors love;             //전문분야가 연애인 상담사들
+    public Counselors job;              //전문분야가 직장인 상담사들
+    public Counselors course;           //전문분야가 진로/취업인 상담사들
 
 
     // 상담사 프리팹 관련 변수들 선언.
@@ -42,13 +49,16 @@ public class CounselorLoad : MonoBehaviour
     public List<GameObject> counselorCloneList = new List<GameObject>();    // 복제된 프리팹들을(counselorClone) 담을 리스트
 
     public List<RawImage> profileImgList = new List<RawImage>();            // counselorClone프리팹들의 자식RawImage를 담을 리스트
+    public Texture baseTexture;                                             // 상담사 프로필 이미지가 없을때 적용할 텍스쳐
     public List<Button> btnList = new List<Button>();                       // 복제된 프리팹들의 자식 버튼을 담을 리스트
 
     public Text[] newCounselorDataShort;                                    // 복제된 프리팹의 자식 Text타입 게임오브젝트를 담을 배열
 
 
+    public GameObject toggleParent;
     // 시간 선택 토글 변수들 선언.
-    public Toggle nine, ten, eleven, twelve, thirteen, fourteen, fifteen, sixteen, seventeen;
+    public ToggleGroup timeToggleGroup;
+    public static Toggle[] timeToggle = new Toggle[9];
 
 
     // 선택된 상담사 관련 변수들 선언.
@@ -76,9 +86,8 @@ public class CounselorLoad : MonoBehaviour
 
     public string clientName;         //내담자 이름
 
-
-
-
+    public Button reservationBtn;
+ 
 
     // Start is called before the first frame update
     void Start()
@@ -88,74 +97,157 @@ public class CounselorLoad : MonoBehaviour
         // Database의 특정지점을 가리킬 수 있다, 그 중 RootReference를 가리킴
         reference = FirebaseDatabase.DefaultInstance.RootReference;
 
-
+        family = new Counselors("가족");
+        myself = new Counselors("나자신");
         relationship = new Counselors("대인관계");
+        love = new Counselors("연애");
+        job = new Counselors("직장");
+        course = new Counselors("진로취업");
 
 
+        InitUI(); //ui 초기화
         SetFunction_UI();
 
-        // 토글 텍스트 색 변경을 위해 컴포넌트를 가져옴
-        relationshipText = relationshipToggle.GetComponentInChildren<Text>();
-        relationshipText.color = Color.black; // 초기 토글 텍스트 색
 
-        nineText = nine.GetComponentInChildren<Text>();
-        nineText.color = Color.black;
-
-
-
+      
 
     } // Start().
 
 
-
-
-    public void Function_RelationshipToggle(bool _bool)
+    //전문분야 토글이 켜져있으면 끄기
+    public void CleanToggle()
     {
-        Debug.Log("대인관계 선택 : " + _bool);
-
-        if (_bool == true)
+        if (majorToggleGroup.AnyTogglesOn())
         {
-            relationshipText.color = Color.white;     // 토글 텍스트 색 변경.
-            relationshipText.text = "<b>대인관계</b>"; // 토글 텍스트 볼드처리.
+            majorToggleGroup.SetAllTogglesOff();
+        }
+    }
 
-            SelectDay(); // 선택한 날짜를 저장하는 함수 실행.
+    //전문분야 토글이 켜져있으면 끄기
+    public void CleanTimeToggle()
+    {
+        if (timeToggleGroup.AnyTogglesOn())
+        {
+            timeToggleGroup.SetAllTogglesOff();
+        }
+    }
 
-            if (Home_Calendar.dayOfWeek == 1)
+
+    //전문분야 string과 Counselors클래스를 매개변수로 받아서 가능한 요일에따라 상담사 프리팹을 생성하는 함수.
+    public void CreatMajor(string majorString, Counselors majorClass)
+    {
+        Debug.Log(majorString + " 선택 : ");
+
+        if (majorClass != null)
+        {
+
+            if (Calendar_Reservation.dayOfWeek == 1)
             {
-                Debug.Log(Home_Calendar.dayOfWeek + ":월요일 / " + "대인관계");
-                CreatPrefabs(relationship, relationship.Monday);
+                Debug.Log(Calendar_Reservation.dayOfWeek + ":월요일 / " + majorString);
+                CreatPrefabs(majorClass, majorClass.Monday);
 
             }
-            else if (Home_Calendar.dayOfWeek == 2)
+            else if (Calendar_Reservation.dayOfWeek == 2)
             {
-                Debug.Log(Home_Calendar.dayOfWeek + ":화요일 / " + "대인관계");
-                CreatPrefabs(relationship, relationship.Tuesday);
+                Debug.Log(Calendar_Reservation.dayOfWeek + ":화요일 / " + majorString);
+                CreatPrefabs(majorClass, majorClass.Tuesday);
             }
-            else if (Home_Calendar.dayOfWeek == 3)
+            else if (Calendar_Reservation.dayOfWeek == 3)
             {
-                Debug.Log(Home_Calendar.dayOfWeek + ":수요일 / " + "대인관계");
-                CreatPrefabs(relationship, relationship.Wednesday);
+                Debug.Log(Calendar_Reservation.dayOfWeek + ":수요일 / " + majorString);
+                CreatPrefabs(majorClass, majorClass.Wednesday);
             }
-            else if (Home_Calendar.dayOfWeek == 4)
+            else if (Calendar_Reservation.dayOfWeek == 4)
             {
-                Debug.Log(Home_Calendar.dayOfWeek + ":목요일 / " + "대인관계");
-                CreatPrefabs(relationship, relationship.Thursday);
+                Debug.Log(Calendar_Reservation.dayOfWeek + ":목요일 / " + majorString);
+                CreatPrefabs(majorClass, majorClass.Thursday);
             }
-            else if (Home_Calendar.dayOfWeek == 5)
+            else if (Calendar_Reservation.dayOfWeek == 5)
             {
-                Debug.Log(Home_Calendar.dayOfWeek + ":금요일 / " + "대인관계");
-                CreatPrefabs(relationship, relationship.Friday);
+                Debug.Log(Calendar_Reservation.dayOfWeek + ":금요일 / " + majorString);
+                CreatPrefabs(majorClass, majorClass.Friday);
             }
-            else if (Home_Calendar.dayOfWeek == 6)
+            else if (Calendar_Reservation.dayOfWeek == 6)
             {
-                Debug.Log(Home_Calendar.dayOfWeek + ":토요일 / " + "대인관계");
-                CreatPrefabs(relationship, relationship.Saturday);
+                Debug.Log(Calendar_Reservation.dayOfWeek + ":토요일 / " + majorString);
+                CreatPrefabs(majorClass, majorClass.Saturday);
+            }
+            else if (Calendar_Reservation.dayOfWeek == 0)
+            {
+                Debug.Log(Calendar_Reservation.dayOfWeek + ":일요일 / " + majorString);
+                CreatPrefabs(majorClass, majorClass.Sunday);
             }
             else
             {
-                Debug.Log(Home_Calendar.dayOfWeek + ":일요일 / " + "대인관계");
-                CreatPrefabs(relationship, relationship.Saturday);
+                Debug.Log(majorString + " 전문분야 상담사가 없습니다.");
             }
+
+        }
+        else
+        {
+            Debug.Log("상담사 클래스 매개변수 null");
+        }
+
+    }
+
+
+    // 가족 토글On
+    public void Function_familyToggle(bool _bool)
+    {
+        if (_bool == true)
+        {
+            familyText.color = Color.white;     // 토글 텍스트 색 변경.
+            familyText.text = "<b>가족</b>";     // 토글 텍스트 볼드처리.
+
+            CreatMajor("가족", family);
+
+        }
+        else
+        {
+            familyText.color = Color.black;
+            familyText.text = "가족";
+
+            DestroyPrefabs(family);
+
+        }
+
+
+    } // Function_familyToggle(bool _bool).
+
+
+    // 나 자신 토글On
+    public void Function_myselfToggle(bool _bool)
+    {
+        if (_bool == true)
+        {
+            myselfText.color = Color.white;         // 토글 텍스트 색 변경.
+            myselfText.text = "<b>나 자신</b>";     // 토글 텍스트 볼드처리.
+
+            CreatMajor("나 자신", myself);
+        }
+        else
+        {
+            myselfText.color = Color.black;
+            myselfText.text = "나 자신";
+
+            DestroyPrefabs(myself);
+        }
+
+    } // Function_myselfToggle(bool _bool).
+
+
+    // 대인관계 토글On
+    public void Function_RelationshipToggle(bool _bool)
+    {
+        if (_bool == true)
+        {
+
+            relationshipText.color = Color.white;     // 토글 텍스트 색 변경.
+            relationshipText.text = "<b>대인관계</b>"; // 토글 텍스트 볼드처리.
+
+            CreatMajor("대인관계", relationship);
+
+            
 
         }
         else
@@ -165,11 +257,77 @@ public class CounselorLoad : MonoBehaviour
 
             DestroyPrefabs(relationship);
 
+           
+
         }
 
+    
 
     } // Function_RelationshipToggle(bool _bool).
 
+
+
+    // 연애 토글On
+    public void Function_loveToggle(bool _bool)
+    {
+        if (_bool == true)
+        {
+            loveText.color = Color.white;     // 토글 텍스트 색 변경.
+            loveText.text = "<b>연애</b>"; // 토글 텍스트 볼드처리.
+
+            CreatMajor("연애", love);
+        }
+        else
+        {
+            loveText.color = Color.black;
+            loveText.text = "연애";
+
+            DestroyPrefabs(love);
+        }
+
+    } // Function_loveToggle(bool _bool).
+
+
+    // 직장 토글On
+    public void Function_jobToggle(bool _bool)
+    {
+        if (_bool == true)
+        {
+            jobText.color = Color.white;     // 토글 텍스트 색 변경.
+            jobText.text = "<b>직장</b>"; // 토글 텍스트 볼드처리.
+
+            CreatMajor("직장", job);
+        }
+        else
+        {
+            jobText.color = Color.black;
+            jobText.text = "직장";
+
+            DestroyPrefabs(job);
+        }
+
+    } // Function_jobToggle(bool _bool).
+
+
+    // 진로/취업 토글On
+    public void Function_courseToggle(bool _bool)
+    {
+        if (_bool == true)
+        {
+            courseText.color = Color.white;     // 토글 텍스트 색 변경.
+            courseText.text = "<b>진로/취업</b>";    // 토글 텍스트 볼드처리.
+
+            CreatMajor("진로/취업", course);
+        }
+        else
+        {
+            courseText.color = Color.black;
+            courseText.text = "진로/취업";
+
+            DestroyPrefabs(course);
+        }
+
+    } // Function_courseToggle(bool _bool).
 
 
     /* Counselors타입 변수counselors와 int타입 변수num을 받아와
@@ -177,9 +335,8 @@ public class CounselorLoad : MonoBehaviour
     public void InputSeletedData(Counselors counselors, int num)
     {
         print("프로필 확인 버튼 클릭");
-
+   
         clientName = User_Data.username; //내담자(나)의 이름 저장.
-
 
         //선택된 상담사의 정보만 seleted[]배열에 저장
         seleted[0] = counselors.major;
@@ -191,6 +348,8 @@ public class CounselorLoad : MonoBehaviour
         seleted[6] = counselors.counselorsCareer2[num];
         seleted[7] = counselors.counselorsCareer3[num];
         seleted[8] = counselors.counselorsSex[num];
+
+        
 
         //선택된 상담사의 전문분야를 표시할 Text타입 변수 seletedMajorText에 선택된 상담사의 전문분야 할당.
         seletedMajorText.text = seleted[0];
@@ -212,26 +371,14 @@ public class CounselorLoad : MonoBehaviour
         seletedCareerText[1].text = seleted[6];
         seletedCareerText[2].text = seleted[7];
 
+        SelectDay();
+
+        counselors.LoadCounselorTime(counselors.major, seleted[1]);
+
+
 
     } // InputSeletedData(Counselors counselors, int num) end.
 
-
-    private void Function_familyToggle(bool _bool)
-    {
-        Debug.Log("가족 선택 : " + _bool);
-
-
-        if (_bool == true)
-        {
-
-        }
-        else
-        {
-
-        }
-
-
-    } // Function_familyToggle(bool _bool) end.
 
     //선택된 상담사의 프로필이미지(ReservationProfileCanvas): 웹url에서 이미지를 가져와 RawImage에 적용시키는 함수.
     IEnumerator GetTexture(string url)
@@ -242,7 +389,7 @@ public class CounselorLoad : MonoBehaviour
         if (www.isNetworkError || www.isHttpError)
         {
             Debug.Log(www.error);
-            seletedProfileImg.texture = null;
+            seletedProfileImg.texture = baseTexture;
         }
         else
         {
@@ -261,49 +408,143 @@ public class CounselorLoad : MonoBehaviour
         if (www.isNetworkError || www.isHttpError)
         {
             Debug.Log(www.error);
-            profileImgList[num].texture = null;
+          /*  if (num <= profileImgList.Count)
+            {
+                profileImgList[num].texture = baseTexture;
+            }*/
         }
         else
         {
-            profileImgList[num].texture = ((DownloadHandlerTexture)www.downloadHandler).texture;
+            if (num <= profileImgList.Count)
+            {
+                profileImgList[num].texture = ((DownloadHandlerTexture)www.downloadHandler).texture;
+            }
 
         }
     }
 
+
+
+    public void InitUI()
+    {
+        /*    nine = toggleParent.transform.GetChild(0).GetComponent<Toggle>();      
+            ten = toggleParent.transform.GetChild(1).GetComponent<Toggle>();
+            eleven = toggleParent.transform.GetChild(2).GetComponent<Toggle>();
+            twelve = toggleParent.transform.GetChild(3).GetComponent<Toggle>();
+            thirteen = toggleParent.transform.GetChild(4).GetComponent<Toggle>();
+            fourteen = toggleParent.transform.GetChild(5).GetComponent<Toggle>();
+            fifteen = toggleParent.transform.GetChild(6).GetComponent<Toggle>();
+            sixteen = toggleParent.transform.GetChild(7).GetComponent<Toggle>();
+            seventeen = toggleParent.transform.GetChild(8).GetComponent<Toggle>();*/
+
+        for (int i = 0; i < timeToggle.Length; i++)
+        {
+            int tmep = i;
+            timeToggle[tmep] = toggleParent.transform.GetChild(tmep).GetComponent<Toggle>();    
+        }
+
+        // 토글 텍스트 색 변경을 위해 컴포넌트를 가져옴
+        familyText = familyToggle.GetComponentInChildren<Text>();
+        myselfText = myselfToggle.GetComponentInChildren<Text>();
+        relationshipText = relationshipToggle.GetComponentInChildren<Text>();
+        loveText = loveToggle.GetComponentInChildren<Text>();
+        jobText = jobToggle.GetComponentInChildren<Text>();
+        courseText = courseToggle.GetComponentInChildren<Text>();
+
+        familyText.color = Color.black; // 초기 토글 텍스트 색
+        myselfText.color = Color.black;
+        relationshipText.color = Color.black;
+        loveText.color = Color.black;
+        jobText.color = Color.black;
+        courseText.color = Color.black;
+
+        nineText = timeToggle[0].GetComponentInChildren<Text>();
+        tenText = timeToggle[1].GetComponentInChildren<Text>();
+        elevenText = timeToggle[2].GetComponentInChildren<Text>();
+        twelveText = timeToggle[3].GetComponentInChildren<Text>();
+        thirteenText = timeToggle[4].GetComponentInChildren<Text>();
+        fourteenText = timeToggle[5].GetComponentInChildren<Text>();
+        fifteenText = timeToggle[6].GetComponentInChildren<Text>();
+        sixteenText = timeToggle[7].GetComponentInChildren<Text>();
+        seventeenText = timeToggle[8].GetComponentInChildren<Text>();
+
+        nineText.color = Color.black;
+        tenText.color = Color.black;
+        elevenText.color = Color.black;
+        twelveText.color = Color.black;
+        thirteenText.color = Color.black;
+        fourteenText.color = Color.black;
+        fifteenText.color = Color.black;
+        sixteenText.color = Color.black;
+        seventeenText.color = Color.black;
+
+
+    }
 
 
     private void SetFunction_UI()
     {
         //Reset
         ResetFunction_UI();
-        relationshipToggle.onValueChanged.AddListener(Function_RelationshipToggle);
-        familyToggle.onValueChanged.AddListener(Function_familyToggle);
-        nine.onValueChanged.AddListener(nine_Toggle);
 
-        ten.onValueChanged.AddListener(ten_Toggle);
-        eleven.onValueChanged.AddListener(eleven_Toggle);
-        twelve.onValueChanged.AddListener(twelve_Toggle);
-        thirteen.onValueChanged.AddListener(thirteen_Toggle);
-        fourteen.onValueChanged.AddListener(fourteen_Toggle);
-        fifteen.onValueChanged.AddListener(fifteen_Toggle);
-        sixteen.onValueChanged.AddListener(sixteen_Toggle);
-        seventeen.onValueChanged.AddListener(seventeen_Toggle);
+        familyToggle.onValueChanged.AddListener(Function_familyToggle);
+        myselfToggle.onValueChanged.AddListener(Function_myselfToggle);
+        relationshipToggle.onValueChanged.AddListener(Function_RelationshipToggle);
+        loveToggle.onValueChanged.AddListener(Function_loveToggle);
+        jobToggle.onValueChanged.AddListener(Function_jobToggle);
+        courseToggle.onValueChanged.AddListener(Function_courseToggle);
+
+        /*
+                nine.onValueChanged.AddListener(nine_Toggle);
+                ten.onValueChanged.AddListener(ten_Toggle);
+                eleven.onValueChanged.AddListener(eleven_Toggle);
+                twelve.onValueChanged.AddListener(twelve_Toggle);
+                thirteen.onValueChanged.AddListener(thirteen_Toggle);
+                fourteen.onValueChanged.AddListener(fourteen_Toggle);
+                fifteen.onValueChanged.AddListener(fifteen_Toggle);
+                sixteen.onValueChanged.AddListener(sixteen_Toggle);
+                seventeen.onValueChanged.AddListener(seventeen_Toggle);*/
+
+        timeToggle[0].onValueChanged.AddListener(nine_Toggle);
+        timeToggle[1].onValueChanged.AddListener(ten_Toggle);
+        timeToggle[2].onValueChanged.AddListener(eleven_Toggle);
+        timeToggle[3].onValueChanged.AddListener(twelve_Toggle);
+        timeToggle[4].onValueChanged.AddListener(thirteen_Toggle);
+        timeToggle[5].onValueChanged.AddListener(fourteen_Toggle);
+        timeToggle[6].onValueChanged.AddListener(fifteen_Toggle);
+        timeToggle[7].onValueChanged.AddListener(sixteen_Toggle);
+        timeToggle[8].onValueChanged.AddListener(seventeen_Toggle);
+
     }
 
     private void ResetFunction_UI()
     {
-        relationshipToggle.onValueChanged.RemoveAllListeners();
         familyToggle.onValueChanged.RemoveAllListeners();
-        nine.onValueChanged.RemoveAllListeners();
+        myselfToggle.onValueChanged.RemoveAllListeners();
+        relationshipToggle.onValueChanged.RemoveAllListeners();
+        loveToggle.onValueChanged.RemoveAllListeners();
+        jobToggle.onValueChanged.RemoveAllListeners();
+        courseToggle.onValueChanged.RemoveAllListeners();
 
-        ten.onValueChanged.RemoveAllListeners();
-        eleven.onValueChanged.RemoveAllListeners();
-        twelve.onValueChanged.RemoveAllListeners();
-        thirteen.onValueChanged.RemoveAllListeners();
-        fourteen.onValueChanged.RemoveAllListeners();
-        fifteen.onValueChanged.RemoveAllListeners();
-        sixteen.onValueChanged.RemoveAllListeners();
-        seventeen.onValueChanged.RemoveAllListeners();
+        /*  nine.onValueChanged.RemoveAllListeners();
+          ten.onValueChanged.RemoveAllListeners();
+          eleven.onValueChanged.RemoveAllListeners();
+          twelve.onValueChanged.RemoveAllListeners();
+          thirteen.onValueChanged.RemoveAllListeners();
+          fourteen.onValueChanged.RemoveAllListeners();
+          fifteen.onValueChanged.RemoveAllListeners();
+          sixteen.onValueChanged.RemoveAllListeners();
+          seventeen.onValueChanged.RemoveAllListeners();*/
+
+        timeToggle[0].onValueChanged.RemoveAllListeners();
+        timeToggle[1].onValueChanged.RemoveAllListeners();
+        timeToggle[2].onValueChanged.RemoveAllListeners();
+        timeToggle[3].onValueChanged.RemoveAllListeners();
+        timeToggle[4].onValueChanged.RemoveAllListeners();
+        timeToggle[5].onValueChanged.RemoveAllListeners();
+        timeToggle[6].onValueChanged.RemoveAllListeners();
+        timeToggle[7].onValueChanged.RemoveAllListeners();
+        timeToggle[8].onValueChanged.RemoveAllListeners();
     }
 
 
@@ -311,7 +552,7 @@ public class CounselorLoad : MonoBehaviour
     public void SelectDay()
     {
         string seletedMonth = calendarMonth.text;    //선택한 날짜의 달을 담을 string타입 변수
-        string day = DayBtn.thisDay;
+        string day = DayPrefab.thisDay;
 
         if (day == null)
         {
@@ -350,20 +591,21 @@ public class CounselorLoad : MonoBehaviour
 
 
 
-    private Text nineText;
+    private Text nineText, tenText, elevenText, twelveText, thirteenText, fourteenText, fifteenText, sixteenText, seventeenText;
     private void nine_Toggle(bool _bool)
     {
         Debug.Log("9시 - 10시 : " + _bool);
 
         if (_bool == true)
         {
-            print(nine.GetComponentInChildren<Text>().text);
-            selectedTime.text = nine.GetComponentInChildren<Text>().text;
+            print(timeToggle[0].GetComponentInChildren<Text>().text);
+            selectedTime.text = timeToggle[0].GetComponentInChildren<Text>().text;
             selectedTime.color = Color.black;
 
             // 토글 텍스트 색 변경
             nineText.color = Color.white;
             nineText.text = "<b>9:00 - 10:00</b>";
+        
 
         }
         else
@@ -375,6 +617,7 @@ public class CounselorLoad : MonoBehaviour
             // 토글 텍스트 색 변경
             nineText.color = Color.black;
             nineText.text = "9:00 - 10:00";
+        
         }
     }
 
@@ -384,14 +627,22 @@ public class CounselorLoad : MonoBehaviour
 
         if (_bool == true)
         {
-            print(ten.GetComponentInChildren<Text>().text);
-            selectedTime.text = ten.GetComponentInChildren<Text>().text;
+            print(timeToggle[1].GetComponentInChildren<Text>().text);
+            selectedTime.text = timeToggle[1].GetComponentInChildren<Text>().text;
             selectedTime.color = Color.black;
+
+            // 토글 텍스트 색 변경
+            tenText.color = Color.white;
+            tenText.text = "<b>10:00 - 11:00</b>";
         }
         else
         {
             selectedTime.text = "시간을 선택하세요.";
             selectedTime.color = Color.grey;
+
+            // 토글 텍스트 색 변경
+            tenText.color = Color.black;
+            tenText.text = "10:00 - 11:00";
         }
     }
 
@@ -401,14 +652,22 @@ public class CounselorLoad : MonoBehaviour
 
         if (_bool == true)
         {
-            print(eleven.GetComponentInChildren<Text>().text);
-            selectedTime.text = eleven.GetComponentInChildren<Text>().text;
+            print(timeToggle[2].GetComponentInChildren<Text>().text);
+            selectedTime.text = timeToggle[2].GetComponentInChildren<Text>().text;
             selectedTime.color = Color.black;
+
+            // 토글 텍스트 색 변경
+            elevenText.color = Color.white;
+            elevenText.text = "<b>11:00 - 12:00</b>";
         }
         else
         {
             selectedTime.text = "시간을 선택하세요.";
             selectedTime.color = Color.grey;
+
+            // 토글 텍스트 색 변경
+            elevenText.color = Color.black;
+            elevenText.text = "11:00 - 12:00";
         }
     }
 
@@ -418,14 +677,21 @@ public class CounselorLoad : MonoBehaviour
 
         if (_bool == true)
         {
-            print(twelve.GetComponentInChildren<Text>().text);
-            selectedTime.text = twelve.GetComponentInChildren<Text>().text;
+            print(timeToggle[3].GetComponentInChildren<Text>().text);
+            selectedTime.text = timeToggle[3].GetComponentInChildren<Text>().text;
             selectedTime.color = Color.black;
+
+            // 토글 텍스트 색 변경
+            twelveText.color = Color.white;
+            twelveText.text = "<b>12:00 - 13:00</b>";
         }
         else
         {
             selectedTime.text = "시간을 선택하세요.";
             selectedTime.color = Color.grey;
+
+            twelveText.color = Color.black;
+            twelveText.text = "12:00 - 13:00";
         }
     }
 
@@ -435,14 +701,22 @@ public class CounselorLoad : MonoBehaviour
 
         if (_bool == true)
         {
-            print(thirteen.GetComponentInChildren<Text>().text);
-            selectedTime.text = thirteen.GetComponentInChildren<Text>().text;
+            print(timeToggle[4].GetComponentInChildren<Text>().text);
+            selectedTime.text = timeToggle[4].GetComponentInChildren<Text>().text;
             selectedTime.color = Color.black;
+
+            // 토글 텍스트 색 변경
+            thirteenText.color = Color.white;
+            thirteenText.text = "<b>13:00 - 14:00</b>";
         }
         else
         {
             selectedTime.text = "시간을 선택하세요.";
             selectedTime.color = Color.grey;
+
+            // 토글 텍스트 색 변경
+            thirteenText.color = Color.black;
+            thirteenText.text = "13:00 - 14:00";
         }
     }
 
@@ -452,14 +726,22 @@ public class CounselorLoad : MonoBehaviour
 
         if (_bool == true)
         {
-            print(fourteen.GetComponentInChildren<Text>().text);
-            selectedTime.text = fourteen.GetComponentInChildren<Text>().text;
+            print(timeToggle[5].GetComponentInChildren<Text>().text);
+            selectedTime.text = timeToggle[5].GetComponentInChildren<Text>().text;
             selectedTime.color = Color.black;
+
+            // 토글 텍스트 색 변경
+            fourteenText.color = Color.white;
+            fourteenText.text = "<b>14:00 - 15:00</b>";
         }
         else
         {
             selectedTime.text = "시간을 선택하세요.";
             selectedTime.color = Color.grey;
+
+            // 토글 텍스트 색 변경
+            fourteenText.color = Color.black;
+            fourteenText.text = "14:00 - 15:00";
         }
     }
 
@@ -470,14 +752,22 @@ public class CounselorLoad : MonoBehaviour
 
         if (_bool == true)
         {
-            print(fifteen.GetComponentInChildren<Text>().text);
-            selectedTime.text = fifteen.GetComponentInChildren<Text>().text;
+            print(timeToggle[6].GetComponentInChildren<Text>().text);
+            selectedTime.text = timeToggle[6].GetComponentInChildren<Text>().text;
             selectedTime.color = Color.black;
+
+            // 토글 텍스트 색 변경
+            fifteenText.color = Color.white;
+            fifteenText.text = "<b>15:00 - 16:00</b>";
         }
         else
         {
             selectedTime.text = "시간을 선택하세요.";
             selectedTime.color = Color.grey;
+
+            // 토글 텍스트 색 변경
+            fifteenText.color = Color.black;
+            fifteenText.text = "15:00 - 16:00";
         }
     }
 
@@ -487,14 +777,22 @@ public class CounselorLoad : MonoBehaviour
 
         if (_bool == true)
         {
-            print(sixteen.GetComponentInChildren<Text>().text);
-            selectedTime.text = sixteen.GetComponentInChildren<Text>().text;
+            print(timeToggle[7].GetComponentInChildren<Text>().text);
+            selectedTime.text = timeToggle[7].GetComponentInChildren<Text>().text;
             selectedTime.color = Color.black;
+
+            // 토글 텍스트 색 변경
+            sixteenText.color = Color.white;
+            sixteenText.text = "<b>16:00 - 17:00</b>";
         }
         else
         {
             selectedTime.text = "시간을 선택하세요.";
             selectedTime.color = Color.grey;
+
+            // 토글 텍스트 색 변경
+            sixteenText.color = Color.black;
+            sixteenText.text = "16:00 - 17:00";
         }
     }
 
@@ -504,14 +802,22 @@ public class CounselorLoad : MonoBehaviour
 
         if (_bool == true)
         {
-            print(seventeen.GetComponentInChildren<Text>().text);
-            selectedTime.text = seventeen.GetComponentInChildren<Text>().text;
+            print(timeToggle[8].GetComponentInChildren<Text>().text);
+            selectedTime.text = timeToggle[8].GetComponentInChildren<Text>().text;
             selectedTime.color = Color.black;
+
+            // 토글 텍스트 색 변경
+            seventeenText.color = Color.white;
+            seventeenText.text = "<b>17:00 - 18:00</b>";
         }
         else
         {
             selectedTime.text = "시간을 선택하세요.";
             selectedTime.color = Color.grey;
+
+            // 토글 텍스트 색 변경
+            seventeenText.color = Color.black;
+            seventeenText.text = "17:00 - 18:00";
         }
     }
 
@@ -548,8 +854,15 @@ public class CounselorLoad : MonoBehaviour
             , 0                                //수락상태, 0:무반응 1:수락 2:거절 
             , seleted[2]                       //상담사 이름
             , seleted[8]                       //상담사 성별
-            , clientName);                       //내담자 이름                         
-
+            , seletedMajorText.text            //상담사 전문분야
+            , clientName                       //내담자 이름
+            , ""                               //감정카드1                           
+            , ""                               //감정카드2     
+            , ""                               //감정카드3     
+            , ""                               //욕구카드1     
+            , ""                               //욕구카드2   
+            , ""                               //욕구카드3
+            , "");                             //감정일기
 
 
         // 상담사 하위에 예약신청 정보 저장
@@ -591,18 +904,18 @@ public class CounselorLoad : MonoBehaviour
         Debug.Log("예약 완료");
 
 
-     /*   // 예약하면 appointmentcheck true로 업데이트
-        Dictionary<string, object> isAppo = new Dictionary<string, object>();
-        isAppo["appointmentcheck"] = true;
+        /*   // 예약하면 appointmentcheck true로 업데이트
+           Dictionary<string, object> isAppo = new Dictionary<string, object>();
+           isAppo["appointmentcheck"] = true;
 
-        reference.Child("ClientUsers")
-            .Child(Auth_Manager.user.UserId)
-            .UpdateChildrenAsync(isAppo);
+           reference.Child("ClientUsers")
+               .Child(Auth_Manager.user.UserId)
+               .UpdateChildrenAsync(isAppo);
 
-        reference.Child("CounselorUsers")
-            .Child(seleted[0])
-            .Child(seleted[1])
-            .UpdateChildrenAsync(isAppo);*/
+           reference.Child("CounselorUsers")
+               .Child(seleted[0])
+               .Child(seleted[1])
+               .UpdateChildrenAsync(isAppo);*/
 
 
 
@@ -613,53 +926,60 @@ public class CounselorLoad : MonoBehaviour
     // Counselors객체와 요일리스트를 매개변수로 받아와서 상담사목록 프리팹을 생성하는 함수.
     public void CreatPrefabs(Counselors counselors, List<bool> week)
     {
-        // CounselorList클래스의 대인관계전문 상담사이름의 수만큼 반복한다.
-        for (int i = 0; i < counselors.counselorsUsername.Count; i++)
+        if (counselors != null)
         {
-            if (week[i])
+            // CounselorList클래스의 대인관계전문 상담사이름의 수만큼 반복한다.
+            for (int i = 0; i < counselors.counselorsUsername.Count; i++)
             {
-                print("리스트 저장 완료2/ " + " i=" + i + "/ 데이터 : " + counselors.counselorsUsername[i]);
+                int temp = i; // i값 복사해서 사용. for문 안의 람다식에서 그대로 i를 사용하면 i가 전부 같은 값이 되어버림!!(클로저 때문에)
 
                 counselorClone = Instantiate(counselorPrefab, parent);   // parent위치에 counselorPrefab을 counselorClone으로 생성
                 counselorCloneList.Add(counselorClone);                 // 생성된 클론프리팹을 counselorCloneList에 추가
-                counselorClone.SetActive(true);
-
-
-                // 텍스트 배열 newCounselorDataShort는 생성된 counselorClone프리팹의 Text타입인 자식 객체들
-                newCounselorDataShort = counselorClone.GetComponentsInChildren<Text>();
-                newCounselorDataShort[0].text = counselors.counselorsUsername[i];  // newCounselorDataShort[0]의 텍스트는 상담사 이름
-                newCounselorDataShort[1].text = counselors.counselorsIntro[i];     // newCounselorDataShort[1]의 텍스트는 한 줄 소개
-                newCounselorDataShort[2].text = counselors.major;                  // newCounselorDataShort[2]의 텍스트는 전문분야
-
 
                 // 버튼 리스트 btnList에 counselorClone프리팹 하위에있는 Button(1개임) 추가
                 btnList.Add(counselorClone.GetComponentInChildren<Button>());
 
-
-                // 프리팹 안에 들어있는 프로필확인 버튼이 클릭 되었을때 실행 될 내용들.
-                int temp = i; // i값 복사해서 사용. for문 안의 람다식에서 그대로 i를 사용하면 i가 전부 같은 값이 되어버림!!(클로저 때문에)
-
                 // profileImg 리스트에 counselorClone 프리팹 하위에 있는 RawImage 추가
                 profileImgList.Add(counselorClone.GetComponentInChildren<RawImage>());
-                StartCoroutine(GetTexturePrefab(counselors.counselorsPic[temp], temp)); // 웹url에서 이미지를 가져와 RawImage에 적용시키는 함수실행.
-                print("이미지 경로 : " + counselors.counselorsPic[temp]);
-
-                // btnLis의 temp번째 버튼이 눌렸을때(onClick) OpenReservationProfileCanvas()함수 실행(상세 프로필화면으로 이동)
-                btnList[temp].onClick.AddListener(() => { GameObject.FindWithTag("CanvasMng").GetComponent<CanvasMng_Home>().OpenReservationProfileCanvas(); });
-
-                // btnLis의 temp번째 버튼이 눌렸을때(onClick) InputData(temp)함수 실행(상세 프로필 화면에 있는 텍스트를 해당 프리팹의 데이터로 변경)
-                btnList[temp].onClick.AddListener(() => { InputSeletedData(counselors, temp); });
 
 
-                counselorClone.transform.position = new Vector3(1450, 367, 0);
+                if (week[i])
+                {
+                    print("리스트 저장 완료2/ " + " i=" + i + "/ 데이터 : " + counselors.counselorsUsername[i]);
 
-                print(counselors.major + "상담사 프리팹 생성" + i + week[i]);
+                    counselorCloneList[temp].SetActive(true);
 
+                    // 텍스트 배열 newCounselorDataShort는 생성된 counselorClone프리팹의 Text타입인 자식 객체들
+                    newCounselorDataShort = counselorClone.GetComponentsInChildren<Text>();
+                    newCounselorDataShort[0].text = counselors.counselorsUsername[i];  // newCounselorDataShort[0]의 텍스트는 상담사 이름
+                    newCounselorDataShort[1].text = counselors.counselorsIntro[i];     // newCounselorDataShort[1]의 텍스트는 한 줄 소개
+                    newCounselorDataShort[2].text = counselors.major;                  // newCounselorDataShort[2]의 텍스트는 전문분야
+
+                    StartCoroutine(GetTexturePrefab(counselors.counselorsPic[temp], temp)); // 웹url에서 이미지를 가져와 RawImage에 적용시키는 함수실행.
+                    Debug.Log("이미지 경로 : " + counselors.counselorsPic[temp]);
+
+                    // btnLis의 temp번째 버튼이 눌렸을때(onClick) OpenReservationProfileCanvas()함수 실행(상세 프로필화면으로 이동)
+                    btnList[temp].onClick.AddListener(() => { GameObject.FindWithTag("CanvasMng").GetComponent<CanvasMng_Home>().OpenReservationProfileCanvas(); });
+
+                    // btnLis의 temp번째 버튼이 눌렸을때(onClick) InputData(temp)함수 실행(상세 프로필 화면에 있는 텍스트를 해당 프리팹의 데이터로 변경)
+                    btnList[temp].onClick.AddListener(() => { InputSeletedData(counselors, temp); });
+
+
+                    counselorClone.transform.position = new Vector3(1450, 367, 0);
+
+                    print(counselors.major + "상담사 프리팹 생성 / " + i + week[i]);
+
+                }
+                else
+                {
+                    counselorCloneList[temp].SetActive(false);
+                    print(counselors.counselorsUsername[i] + " 상담사는 가능한 요일이 아닙니다 / " + week[i]);
+                }
             }
-            else
-            {
-                print(counselors.counselorsUsername + "상담사는 가능한 요일이 아닙니다" + week[i]);
-            }
+        }
+        else
+        {
+            Debug.Log(counselors.major + " 전문분야 상담사가 없습니다.");
         }
     } // CreatPrefabs(Counselors counselors, List<bool> week) end.
 
@@ -667,18 +987,31 @@ public class CounselorLoad : MonoBehaviour
     // Counselors객체를 매개변수로 받아와서 상담사목록 프리팹을 파괴하는 함수.
     public void DestroyPrefabs(Counselors counselors)
     {
-        for (int i = counselors.counselorsUsername.Count - 1; i >= 0; i--)
+        if (counselors != null)
         {
-            Destroy(counselorCloneList[i]);
-            counselorCloneList.Remove(counselorCloneList[i]);
+            for (int i = counselorCloneList.Count - 1; i >= 0; i--)
+            {
+                int temp = i;
 
-            btnList.Remove(btnList[i]);
+                counselorCloneList[temp].SetActive(true);
 
-            profileImgList.Remove(profileImgList[i]);
+                Destroy(counselorCloneList[temp]);
+                counselorCloneList.Remove(counselorCloneList[temp]);
 
-            print(counselors.major + "제거" + i);
+
+                Destroy(btnList[temp]);
+                btnList.Remove(btnList[temp]);
+
+                Destroy(profileImgList[temp]);
+                profileImgList.Remove(profileImgList[temp]);
+
+                print(counselors.major + "제거" + temp);
+            }
         }
-
+        else
+        {
+            Debug.Log("널..");
+        }
     } // DestroyPrefabs(Counselors counselors) end.
 
 
@@ -699,9 +1032,18 @@ public class CounselorLoad : MonoBehaviour
 
             , counselorName          //상담사 이름
             , counselorSex           //상담사 성별
-            , clientName;             //내담자 이름
+            , counselorMajor         //상담사 전문분야
+            , clientName             //내담자 이름
 
-            
+            , emotion1               //감정카드1
+            , emotion2               //감정카드2
+            , emotion3               //감정카드3
+            , need1                  //욕구카드1
+            , need2                  //욕구카드2
+            , need3                 //욕구카드3
+            , diary;                  //감정일기
+
+
 
 
         public int progress;         //수락상태, 0:무반응 1:수락 2:거절
@@ -720,7 +1062,15 @@ public class CounselorLoad : MonoBehaviour
             , int progress
             , string counselorName
             , string counselorSex
-            , string clientName)
+            , string counselorMajor
+            , string clientName
+            , string emotion1
+            , string emotion2
+            , string emotion3
+            , string need1
+            , string need2
+            , string need3
+            , string diary)
 
         {
             this.counselorUid = counselorUid;
@@ -736,7 +1086,18 @@ public class CounselorLoad : MonoBehaviour
 
             this.counselorName = counselorName;
             this.counselorSex = counselorSex;
+            this.counselorMajor = counselorMajor;
             this.clientName = clientName;
+
+            this.emotion1 = emotion1;
+            this.emotion2 = emotion2;
+            this.emotion3 = emotion3;
+
+            this.need1 = need1;
+            this.need2 = need2;
+            this.need3 = need3;
+
+            this.diary = diary;
 
         }
 

@@ -104,6 +104,7 @@ public class Counselors
                     }
 
                     LoadCounselorDay(major);
+  
 
                     //콘솔창 확인용 반복문
                     for (int i = 0; i < counselorsUsername.Count; i++)
@@ -164,10 +165,16 @@ public class Counselors
                         Sunday.Add((bool)snapshot.Child("Sunday").Value);
 
 
+                       
+
                         Debug.Log("가능요일 저장 완료");
                     }
 
                 });
+
+            
+
+
         }
 
     } // LoadCounselorDay(string major) end.
@@ -175,57 +182,86 @@ public class Counselors
 
 
     // 상담사의 전문분야를 의미하는 string타입 매개변수 major와 상담사uid를 받아와서 상담사의 가능시간을 파이어베이스RDB에서 불러오는 함수.
-    public void LoadCounselorTime(string major, string uid)
+    public void LoadCounselorTime(string major, string counselorUid)
     {
-            // 데이터 한번 읽기 시작.
-            FirebaseDatabase.DefaultInstance.GetReference("CounselorUsers").Child(major)
-                .Child(uid).Child("counselorTime").GetValueAsync().ContinueWithOnMainThread(task =>
+        
+
+        // 데이터 한번 읽기 시작.
+        FirebaseDatabase.DefaultInstance.GetReference("CounselorUsers").Child(major)
+            .Child(counselorUid).Child("counselorTime").GetValueAsync().ContinueWithOnMainThread(task =>
+            {
+                if (task.IsFaulted)
                 {
-                    if (task.IsFaulted)
+                    Debug.Log("가능 시간 데이터베이스 읽기 실패...");
+                }
+
+                if (task.IsCompleted)
+                {
+                    DataSnapshot snapshot = task.Result;
+
+                    string TimeJson = task.Result.GetRawJsonValue();
+
+                    Debug.Log("가능시간 snapshot.ChildrenCount: " + snapshot.ChildrenCount);
+
+                    Debug.Log("9:00-10:00: " + snapshot.Child("nine").Value
+                  + "\n10:00-11:00: " + snapshot.Child("ten").Value
+                  + "\n11:00-12:00: " + snapshot.Child("eleven").Value
+                  + "\n12:00-13:00: " + snapshot.Child("twelve").Value
+                  + "\n13:00-14:00: " + snapshot.Child("thirteen").Value
+                  + "\n14:00-15:00: " + snapshot.Child("fourteen").Value
+                  + "\n15:00-16:00: " + snapshot.Child("fifteen").Value
+                  + "\n16:00-17:00: " + snapshot.Child("sixteen").Value
+                  + "\n17:00-18:00: " + snapshot.Child("seventeen").Value
+                  );
+
+
+                    CounselorTime[0] = (string)snapshot.Child("nine").Value;
+                    CounselorTime[1] = (string)snapshot.Child("ten").Value;
+                    CounselorTime[2] = (string)snapshot.Child("eleven").Value;
+                    CounselorTime[3] = (string)snapshot.Child("twelve").Value;
+                    CounselorTime[4] = (string)snapshot.Child("thirteen").Value;
+                    CounselorTime[5] = (string)snapshot.Child("fourteen").Value;
+                    CounselorTime[6] = (string)snapshot.Child("fifteen").Value;
+                    CounselorTime[7] = (string)snapshot.Child("sixteen").Value;
+                    CounselorTime[8] = (string)snapshot.Child("seventeen").Value;
+
+
+                    Debug.Log("9:00-10:00: " + CounselorTime[0]
+                + "\n10:00-11:00: " + CounselorTime[1]
+                + "\n11:00-12:00: " + CounselorTime[2]
+                + "\n12:00-13:00: " + CounselorTime[3]
+                + "\n13:00-14:00: " + CounselorTime[4]
+                + "\n14:00-15:00: " + CounselorTime[5]
+                + "\n15:00-16:00: " + CounselorTime[6]
+                + "\n16:00-17:00: " + CounselorTime[7]
+                + "\n17:00-18:00: " + CounselorTime[8]
+                );
+
+
+                    for (int i = 0; i < CounselorTime.Length; i++)
                     {
-                        Debug.Log("가능 시간 데이터베이스 읽기 실패...");
+                        int temp = i;
+                        if (CounselorTime[temp] == "" || CounselorTime[temp] == null)
+                        {
+                            CounselorLoad.timeToggle[temp].interactable = false;
+                        }
+                        else
+                        {
+                            CounselorLoad.timeToggle[temp].interactable = true;
+                        }
+
+                        Debug.Log(CounselorTime[temp]);
                     }
 
-                    if (task.IsCompleted)
-                    {                        
-                        DataSnapshot snapshot = task.Result;
 
-                        string TimeJson = task.Result.GetRawJsonValue();
+                    Debug.Log("가능시간 저장 완료");
 
-                        Debug.Log("가능시간 snapshot.ChildrenCount: " + snapshot.ChildrenCount);
+                }
 
-                        Debug.Log("9:00-10:00: " + snapshot.Child("nine").Value
-                      + "\n10:00-11:00: " + snapshot.Child("ten").Value
-                      + "\n11:00-12:00: " + snapshot.Child("eleven").Value
-                      + "\n12:00-13:00: " + snapshot.Child("twelve").Value
-                      + "\n13:00-14:00: " + snapshot.Child("thirteen").Value
-                      + "\n14:00-15:00: " + snapshot.Child("fourteen").Value
-                      + "\n15:00-16:00: " + snapshot.Child("fifteen").Value
-                      + "\n16:00-17:00: " + snapshot.Child("sixteen").Value
-                      + "\n17:00-18:00: " + snapshot.Child("seventeen").Value
-                      );
-
-                        
-                        CounselorTime[0] = (string)snapshot.Child("nine").Value;
-                        CounselorTime[1] = (string)snapshot.Child("ten").Value;
-                        CounselorTime[2] = (string)snapshot.Child("eleven").Value;
-                        CounselorTime[3] = (string)snapshot.Child("twelve").Value;
-                        CounselorTime[4] = (string)snapshot.Child("thirteen").Value;
-                        CounselorTime[5] = (string)snapshot.Child("fourteen").Value;
-                        CounselorTime[6] = (string)snapshot.Child("fifteen").Value;
-                        CounselorTime[7] = (string)snapshot.Child("sixteen").Value;
-                        CounselorTime[8] = (string)snapshot.Child("seventeen").Value;
+            });
 
 
-                        Debug.Log("가능시간 저장 완료");
-
-                    }
-
-                });
-       
 
     } // LoadCounselorTime(string major) end.
-
-
 
 }// CounselorsData() end.
