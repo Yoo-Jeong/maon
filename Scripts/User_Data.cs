@@ -15,6 +15,10 @@ using System.Threading.Tasks;
 public class User_Data : MonoBehaviour
 {
 
+    // 라이브러리를 통해 불러온 FirebaseDatabase 관련객체를 선언해서 사용
+    public DatabaseReference reference { get; set; }
+
+
     //내담자 유저의 기본정보를 저장할 string타입 변수들
     public static string userGroup, uid, email, username, sex, birth, job, meal, sleep, exercise, emotionCard;
     public static bool appointmentcheck;                                //내담자 유저의 예약여부 판단을 저장할 bool타입 변수
@@ -29,7 +33,9 @@ public class User_Data : MonoBehaviour
     //마이페이지 텍스트 배열
     public Text[] mypageInfo = new Text[8];
 
-    public GameObject Yapp, Napp, Yapp_Counsel, Napp_Counsel;
+    public  GameObject Yapp, Napp;
+    public GameObject Yapp_HomeCounsel, Napp_HomeCounsel;
+    public GameObject Yapp_Counsel, Napp_Counsel;
 
     public string todayYear;
     public string todayMonth;
@@ -41,32 +47,34 @@ public class User_Data : MonoBehaviour
     // 내담자 상담예약 정보 관련 리스트.
     public List<string> MyAppoCounselorUid = new List<string>();
     public static List<string> MyAppoCounselorName = new List<string>();
+    public static List<string> MyAppoCounselorMajor = new List<string>();
     public static List<string> MyAppoCounselorSex = new List<string>();
     public static List<string> MyAppoRequestDay = new List<string>();
     public static List<string> MyAppoAppDay1 = new List<string>();
     public static List<string> MyAppoAppDay2 = new List<string>();
-    public List<string> MyAppoAppTime = new List<string>();
-    public List<string> MyAppoWorry = new List<string>();
-    public List<long> MyAppoProgress = new List<long>();
+    public static List<string> MyAppoAppTime = new List<string>();
+    public static List<string> MyAppoWorry = new List<string>();
+    //public List<long> MyAppoProgress = new List<long>();
+    public static List<long> MyAppoProgress = new List<long>();
     public static List<string> MyAppoRefuse = new List<string>();
     public static List<string> MyAppoFeedback = new List<string>();
 
 
     // 오늘 예약 정보를 담을 배열
-    public static string[] todayCounsel = new string[10];
-
+    public static string[] todayCounsel = new string[9];
 
     int temp;
 
-
-    public Button logoutBtn;
-
-    // 라이브러리를 통해 불러온 FirebaseDatabase 관련객체를 선언해서 사용
-    public DatabaseReference reference { get; set; }
-
+    public Button logoutBtn, logoutMiniBtn;
 
     DateTime today, appoday;
-    
+
+    public Button enterBtn; //상담소 입장 버튼
+    public Image enterBtnIcon;
+
+
+    public Text noReser;
+
 
     public void Awake()
     {
@@ -75,6 +83,8 @@ public class User_Data : MonoBehaviour
 
         Yapp.SetActive(false);
         Napp.SetActive(true);
+        Yapp_HomeCounsel.SetActive(false);
+        Napp_HomeCounsel.SetActive(true);
         Yapp_Counsel.SetActive(false);
         Napp_Counsel.SetActive(false);
 
@@ -90,18 +100,23 @@ public class User_Data : MonoBehaviour
     public void Start()
     {
         
-        //LoadMyInfo();
+        LoadMyInfo();
 
         //이벤트리스너 연결
         var userRef = FirebaseDatabase.DefaultInstance.GetReference("ClientUsers").Child(Auth_Manager.user.UserId);
-        userRef.Child("appointment").ChildChanged += HandleChildChanged;                         //내담자 유저 하위에 있는 내용에 대한 변경을 읽고 수신 대기
-        userRef.Child("appointment").ChildAdded += HandleChildAdded;    //내담자 유저의 하위에 있는 appointment에 대한 목록 추가를 읽고 수신 대기
+
+        userRef.ChildChanged += HandleChildChanged;
+
+        //userRef.Child("appointment").ChildChanged += HandleChildChanged;   //내담자 유저 하위에 있는 내용에 대한 변경을 읽고 수신 대기
+        userRef.Child("appointment").ChildAdded += HandleChildAdded;       //내담자 유저의 하위에 있는 appointment에 대한 목록 추가를 읽고 수신 대기
 
         userRef.Child("appointment").Child(todayString2).ValueChanged += HandleValueChanged;
-
         userRef.Child("appointment").ChildRemoved += HandleChildRemoved;
 
         logoutBtn.onClick.AddListener(Auth_Manager.Instance.Logout); //로그아웃 버튼
+        logoutMiniBtn.onClick.AddListener(Auth_Manager.Instance.Logout);
+
+
 
     }
 
@@ -113,7 +128,10 @@ public class User_Data : MonoBehaviour
             return;
         }
         Debug.Log(" ChildChanged 이벤트핸들러 ");
+        //LoadMyAppoData();
+        LoadMyInfo();
         LoadMyAppoData();
+     
     }
 
 
@@ -126,6 +144,8 @@ public class User_Data : MonoBehaviour
         }
         Debug.Log(" ChildAdded 이벤트핸들러 ");
         LoadMyAppoData();
+
+        
     }
 
 
@@ -139,8 +159,8 @@ public class User_Data : MonoBehaviour
         // Do something with the data in args.Snapshot
         Debug.Log(" ValueChanged 이벤트핸들러 ");
 
-        LoadMyInfo();
-
+        //LoadMyInfo();
+  
     }
 
     void HandleChildRemoved(object sender, ChildChangedEventArgs args)
@@ -152,11 +172,15 @@ public class User_Data : MonoBehaviour
         }
 
         Debug.Log(" ChildRemoved 이벤트핸들러 ");
+        //LoadMyAppoData();
     }
 
 
-        public void LoadMyInfo()
+    public void LoadMyInfo()
     {
+
+        ClearLists();
+
         FirebaseApp.DefaultInstance.Options.DatabaseUrl = new System.Uri("https://swuniverse-d9641-default-rtdb.firebaseio.com/");
 
         // Database의 특정지점을 가리킬 수 있다, 그 중 RootReference를 가리킴
@@ -192,7 +216,7 @@ public class User_Data : MonoBehaviour
                                 + "\n수면시간 : " + snapshot.Child("sleep").Value
                                 + "\n운동 횟수 : " + snapshot.Child("exercise").Value
                                 + "\n예약 여부 판단: " + snapshot.Child("appointmentcheck").Value
-                                + "\n감정카드 : " + snapshot.Child("emotionCard").Value
+                   
                                );
 
 
@@ -207,7 +231,7 @@ public class User_Data : MonoBehaviour
                         sleep = (string)snapshot.Child("sleep").Value;
                         exercise = (string)snapshot.Child("exercise").Value;
                         appointmentcheck = (bool)snapshot.Child("appointmentcheck").Value;
-                        emotionCard = (string)snapshot.Child("emotionCard").Value;
+                     
 
                         mypageInfo[0].text = username;
                         mypageInfo[1].text = email;
@@ -243,7 +267,7 @@ public class User_Data : MonoBehaviour
         if (appointmentcheck == true)
         {
             Debug.Log("예약 일정이 있습니다.");
-            LoadMyAppoData();
+            //LoadMyAppoData();
         }
         else // 예약이 없으면 예약없는 화면 표시
         {
@@ -272,38 +296,46 @@ public class User_Data : MonoBehaviour
           if (task.IsCompleted)
           {
               DataSnapshot snapshot = task.Result;
-            
-              foreach (DataSnapshot data in snapshot.Children)
+
+              Debug.Log("예약 갯수: " + snapshot.ChildrenCount);
+              if (snapshot.ChildrenCount > MyAppoCounselorUid.Count)
               {
-                  IDictionary appo = (IDictionary)data.Value;
+                  ClearLists();
 
-                  MyAppoCounselorUid.Add((string)appo["counselorUid"]);
-                  MyAppoCounselorName.Add((string)appo["counselorName"]);
-                  MyAppoCounselorSex.Add((string)appo["counselorSex"]);
+                  foreach (DataSnapshot data in snapshot.Children)
+                  {
+                      IDictionary appo = (IDictionary)data.Value;
 
-                  MyAppoRequestDay.Add((string)appo["requestDay"]);
+                      MyAppoCounselorUid.Add((string)appo["counselorUid"]);
+                      MyAppoCounselorName.Add((string)appo["counselorName"]);
+                      MyAppoCounselorSex.Add((string)appo["counselorSex"]);
+                      MyAppoCounselorMajor.Add((string)appo["counselorMajor"]);
 
-                  MyAppoAppDay1.Add((string)appo["appDay1"]);
-                  MyAppoAppDay2.Add((string)appo["appDay2"]);
-                  MyAppoAppTime.Add((string)appo["appTime"]);
+                      MyAppoRequestDay.Add((string)appo["requestDay"]);
 
-                  MyAppoWorry.Add((string)appo["worry"]);
-                  MyAppoProgress.Add((long)appo["progress"]);
-                  MyAppoRefuse.Add((string)appo["refuse"]);
-                  MyAppoFeedback.Add((string)appo["feedback"]);
+                      MyAppoAppDay1.Add((string)appo["appDay1"]);
+                      MyAppoAppDay2.Add((string)appo["appDay2"]);
+                      MyAppoAppTime.Add((string)appo["appTime"]);
 
-                  
-                  todayCounsel[2] = ((string)appo["counselorSex"]);
-                  Debug.Log("오늘 상담사 :" + todayCounsel[2]);
+                      MyAppoWorry.Add((string)appo["worry"]);
+                      MyAppoProgress.Add((long)appo["progress"]);
+                      MyAppoRefuse.Add((string)appo["refuse"]);
+                      MyAppoFeedback.Add((string)appo["feedback"]);
+
+
+                      //todayCounsel[2] = ((string)appo["counselorSex"]);
+                      //Debug.Log("오늘 상담사 :" + todayCounsel[2]);
+                  }
+
+                  CreatRequestPrefabs();
+
+                  compareCounselDay();
+
+                
+
+                  Debug.Log("예약정보 추가 완료.");
               }
-
-              CreatRequestPrefabs();
-
-              compareCounselDay();
-
-              Debug.Log("예약정보 추가 완료.");
           }
-
       });
 
     }
@@ -313,7 +345,7 @@ public class User_Data : MonoBehaviour
     {
         Debug.Log("실행 시작: compareCounselDay()");
 
-        for (int i = 0; i <= MyAppoAppDay1.Count; i++)
+        for (int i = 0; i < MyAppoAppDay1.Count; i++)
         {
             //오늘날짜와 상담날짜 비교
             today = DateTime.Now.Date;
@@ -324,12 +356,15 @@ public class User_Data : MonoBehaviour
             if (result == -1) //오늘 날짜보다 상담날짜가 더 빠르다면
             {
                 Debug.Log("예정된 상담이 있습니다. (오늘은 아님)" + MyAppoAppDay1[i] + "/ 진행상황" + MyAppoProgress[i] );
+                noReser.text = "예정된 상담이 없어요.";
+                Napp_Counsel.SetActive(true);
 
             } 
             else if ( result == 1)
             {
                 Debug.Log("예정된 상담이 없습니다." + MyAppoAppDay1[i] + "/ 진행상황" + MyAppoProgress[i]);
-
+                noReser.text = "예정된 상담이 없어요.";
+                Napp_Counsel.SetActive(true);
             }
             else
             {
@@ -339,15 +374,17 @@ public class User_Data : MonoBehaviour
                 if (MyAppoProgress[temp] == 1)
                 {
                     Debug.Log("/ 진행상황" + MyAppoProgress[temp]);
-             
+
                     todayCounsel[0] = MyAppoCounselorUid[temp];
                     todayCounsel[1] = MyAppoCounselorName[temp];
-                    //todayCounsel[2] = MyAppoCounselorSex[temp];
+                    todayCounsel[2] = MyAppoCounselorSex[temp];
                     todayCounsel[3] = MyAppoRequestDay[temp];
                     todayCounsel[4] = MyAppoAppDay1[temp];
                     todayCounsel[5] = MyAppoAppDay2[temp];
                     todayCounsel[6] = MyAppoAppTime[temp];
                     todayCounsel[7] = MyAppoWorry[temp];
+                    todayCounsel[8] = MyAppoCounselorMajor[temp];
+
                     //todayCounsel[9] = MyAppoRefuse[temp];
                     //todayCounsel[10] = MyAppoFeedback[temp];
 
@@ -364,19 +401,118 @@ public class User_Data : MonoBehaviour
 
                     Yapp.SetActive(true);
                     Napp.SetActive(false);
+                    Yapp_HomeCounsel.SetActive(true);
+                    Napp_HomeCounsel.SetActive(false);
                     Yapp_Counsel.SetActive(true);
                     Napp_Counsel.SetActive(false);
+
+                    enterBtn.GetComponentInChildren<Text>().text = "상담소 입장";
+                    enterBtn.interactable = true;
+                    enterBtnIcon.enabled = true;       
+
+
+                }
+                else if (MyAppoProgress[temp] == 0)
+                {
+                    todayCounsel[0] = MyAppoCounselorUid[temp];
+                    todayCounsel[1] = MyAppoCounselorName[temp];
+                    todayCounsel[2] = MyAppoCounselorSex[temp];
+                    todayCounsel[3] = MyAppoRequestDay[temp];
+                    todayCounsel[4] = MyAppoAppDay1[temp];
+                    todayCounsel[5] = MyAppoAppDay2[temp];
+                    todayCounsel[6] = MyAppoAppTime[temp];
+                    todayCounsel[7] = MyAppoWorry[temp];
+                    todayCounsel[8] = MyAppoCounselorMajor[temp];
+
+                    //todayCounsel[9] = MyAppoRefuse[temp];
+                    //todayCounsel[10] = MyAppoFeedback[temp];
+
+                    counselorName.text = todayCounsel[1];
+                    counselorName2.text = todayCounsel[1];
+                    counselorName3.text = todayCounsel[1];
+                    counselDay.text = todayCounsel[4];
+                    counselDay2.text = todayCounsel[4];
+                    counselDay3.text = todayCounsel[4];
+                    counselTime.text = todayCounsel[6];
+                    counselTime2.text = todayCounsel[6];
+                    counselTime3.text = todayCounsel[6];
+                    concern.text = todayCounsel[7];
+
+                    noReser.text = "예약 수락을 기다리고있어요.";
+
+                    Yapp.SetActive(false);
+                    Napp.SetActive(true);
+                    Yapp_HomeCounsel.SetActive(false);
+                    Napp_HomeCounsel.SetActive(true);
+                    Yapp_Counsel.SetActive(false);
+                    Napp_Counsel.SetActive(true);
+
+                }
+                else if (MyAppoProgress[temp] == 4)
+                {
+                    todayCounsel[0] = MyAppoCounselorUid[temp];
+                    todayCounsel[1] = MyAppoCounselorName[temp];
+                    todayCounsel[2] = MyAppoCounselorSex[temp];
+                    todayCounsel[3] = MyAppoRequestDay[temp];
+                    todayCounsel[4] = MyAppoAppDay1[temp];
+                    todayCounsel[5] = MyAppoAppDay2[temp];
+                    todayCounsel[6] = MyAppoAppTime[temp];
+                    todayCounsel[7] = MyAppoWorry[temp];
+                    todayCounsel[8] = MyAppoCounselorMajor[temp];
+
+                    //todayCounsel[9] = MyAppoRefuse[temp];
+                    //todayCounsel[10] = MyAppoFeedback[temp];
+
+                    counselorName.text = todayCounsel[1];
+                    counselorName2.text = todayCounsel[1];
+                    counselorName3.text = todayCounsel[1];
+                    counselDay.text = todayCounsel[4];
+                    counselDay2.text = todayCounsel[4];
+                    counselDay3.text = todayCounsel[4];
+                    counselTime.text = todayCounsel[6];
+                    counselTime2.text = todayCounsel[6];
+                    counselTime3.text = todayCounsel[6];
+                    concern.text = todayCounsel[7];
+
+                    noReser.text = "예정된 상담이 없어요.";
+
+                    Yapp.SetActive(true);
+                    Napp.SetActive(false);
+                    Yapp_HomeCounsel.SetActive(true);
+                    Napp_HomeCounsel.SetActive(false);
+                    Yapp_Counsel.SetActive(false);
+                    Napp_Counsel.SetActive(true);
+
+                    enterBtn.GetComponentInChildren<Text>().text = "오늘 상담이 종료되었습니다.";
+                    enterBtn.interactable = false;
+                    enterBtnIcon.enabled = false;
+
                 }
                 else
                 {
+                    
+
                     Debug.Log("/ 진행상황2 " + MyAppoProgress[temp]);
+
+                    noReser.text = "예정된 상담이 없어요.";
+
                     Yapp.SetActive(false);
                     Napp.SetActive(true);
+                    Yapp_HomeCounsel.SetActive(false);
+                    Napp_HomeCounsel.SetActive(true);
                     Yapp_Counsel.SetActive(false);
                     Napp_Counsel.SetActive(true);
+
+
+
                 }
+
             }
+          
         }
+
+        //예약이 있는 날짜를 이미지로 보여주기 
+        Calendar_Home.ShowAppoDate();
 
         Debug.Log("실행 완료: compareCounselDay()");
 
@@ -431,7 +567,7 @@ public class User_Data : MonoBehaviour
             newrequestCloneData[4].text = MyAppoAppTime[i];               // newrequestCloneData[4]의 텍스트는 상담시간
             
 
-            //requestCloneList[i].transform.GetChild(7).GetComponentInChildren<Text>().text = MyAppoWorry[i];
+            requestCloneList[i].transform.GetChild(7).GetComponentInChildren<Text>().text = MyAppoWorry[i];
            
         }
         Debug.Log("실행 완료 : CreatRequestPrefabs();");
@@ -448,6 +584,7 @@ public class User_Data : MonoBehaviour
         Debug.Log("리스트 초기화");
         MyAppoCounselorUid.Clear();
         MyAppoCounselorName.Clear();
+        MyAppoCounselorMajor.Clear();
         MyAppoRequestDay.Clear();
         MyAppoAppDay1.Clear();
         MyAppoAppDay2.Clear();
@@ -457,19 +594,21 @@ public class User_Data : MonoBehaviour
         MyAppoRefuse.Clear();
         MyAppoFeedback.Clear();
 
+   
 
         if (requestCloneList != null)
         {
-            for (int i = (requestCloneList.Count) - 1; i >= 0; i--)
-            {
-           
-                Destroy(requestCloneList[i]);
-                //Destroy(acceptBtnList[i]);
 
+            for (int i = (requestCloneList.Count) - 1; i >= 0; i--)
+            {        
+                Destroy(requestCloneList[i]);
+               
             }
-            //requestCloneList.Clear();
+           
         }
-        
+
+        requestCloneList.Clear();
+
     }
 
 

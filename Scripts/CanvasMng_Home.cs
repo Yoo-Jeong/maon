@@ -135,6 +135,23 @@ public class CanvasMng_Home : MonoBehaviour
         MyPageChange.isOpenInfo = false;
     }
 
+
+    // 팝업창 화면 캔버스를 켜고 예약완료.
+    public void OpenPopupFinalCanvas()
+    {
+        home.enabled = false;
+        Reservation.enabled = false;
+        ReservationProfile.enabled = true;
+        popup.enabled = true;
+        counsel.enabled = false;
+        myPage.enabled = false;
+        myPageChange.enabled = false;
+
+        SetActiveComplete();
+
+        MyPageChange.isOpenInfo = false;
+    }
+
     // 예약신청 내용 확인 팝업창을 켜는 함수.
     public void SetActiveConfirm()
     {
@@ -142,7 +159,7 @@ public class CanvasMng_Home : MonoBehaviour
         complete.SetActive(false);
     }
 
-    // 예약신청 내용 확인 팝업창을 켜는 함수.
+    // 예약신청 예약완료 팝업창을 켜는 함수.
     public void SetActiveComplete()
     {
         confirm.SetActive(false);

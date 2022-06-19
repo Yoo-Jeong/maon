@@ -13,7 +13,7 @@ using Firebase.Database;
 
 public class Auth_Manager : MonoBehaviour
 { 
-    static FirebaseAuth auth;         //인증을 관리할 객체
+    public static FirebaseAuth auth;         //인증을 관리할 객체
     public static FirebaseUser user;  //전역 인증 객체
 
     // 라이브러리를 통해 불러온 FirebaseDatabase 관련객체를 선언해서 사용
@@ -24,7 +24,11 @@ public class Auth_Manager : MonoBehaviour
     public Canvas authCanvas;
     public InputField emailField;
     public InputField passwordField;
-    public Button loginBtn, logoutBtn, logoutBtn2;
+
+    public Button loginBtn;
+    public Button logoutBtn;
+
+    public Button joinBtn;
 
     private static Auth_Manager instance = null;
 
@@ -53,10 +57,10 @@ public class Auth_Manager : MonoBehaviour
     }
 
     public void Start()
-    {
-           
+    {          
         instance.emailField.Select();   //처음은 이메일 Input Field를 선택하도록 한다.
 
+        authCanvas.enabled = true;
         InitializeFirebase();           //파이어베이스 인증관련 초기화
         InitUI();                       //로그인관련 UI 초기화
     }
@@ -100,7 +104,8 @@ public class Auth_Manager : MonoBehaviour
         loginBtn = instance.loginBtn;
         loginBtn.onClick.AddListener(() => { LogInWithEmail(emailField.text, passwordField.text); });
         logoutBtn.onClick.AddListener(Logout);
-        logoutBtn2.onClick.AddListener(Logout);
+
+        joinBtn.onClick.AddListener(GoJoin);
 
         Debug.Log("Auth_Manager 관련 인풋필드 버튼 초기화 완료");
     }
@@ -170,6 +175,8 @@ public class Auth_Manager : MonoBehaviour
     {
         auth.SignOut();
     }
+
+
 
 
 
@@ -245,6 +252,35 @@ public class Auth_Manager : MonoBehaviour
      
     }
 
+
+
+    public void OpenAuthCanvas()
+    {
+        authCanvas.enabled = true;
+    }
+
+    public void OnAuthCanvas()
+    {
+        emailField.text = null;
+        passwordField.text = null;
+
+        authCanvas.enabled = true;
+
+        instance.emailField.Select();   //이메일 Input Field를 선택하도록 한다
+    }
+
+   
+    public void OffAuthCanvas()
+    {
+        authCanvas.enabled = false;
+    }
+
+
+    public void GoJoin()
+    {
+        authCanvas.enabled = false;
+        SceneManager.LoadScene("Select_Scene");
+    }
 
 
     // 테스트용 간편 회원가입(실제 사용x)

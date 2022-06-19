@@ -41,7 +41,48 @@ public class Video_TokenAgora_Client : MonoBehaviour
     public Animator anim_f, anim_m;
     public GameObject char_f, char_m;
 
-    
+    //상담 레포트 도착안내 팝업
+    public GameObject reportPopup;
+
+    public GameObject netPopup;
+
+
+    public Slider sensitivity;  //볼륨 민감도 슬라이더
+    // 상담사 캐릭터가 말하는 애니메이션을 플레이하는 기준인 볼륨 크기
+    public float VolumeSensitivity = 30;
+    public float max = 200;
+    public float min = 30;
+
+
+    public void Start()
+    {
+        sensitivity.onValueChanged.AddListener(ChangeVolumeSensitivity);
+
+        netPopup.SetActive(false);
+
+        if (Application.internetReachability == NetworkReachability.NotReachable)
+        {
+            // 인터넷 연결이 안되었을 때 
+            Debug.Log("인터넷 연결 안됨");
+
+            netPopup.SetActive(true);
+
+        }
+        else if (Application.internetReachability == NetworkReachability.ReachableViaCarrierDataNetwork)
+        {
+            // 데이터로 연결이 되었을 때
+            Debug.Log("데이터로 연결됨");
+        }
+        else
+        {
+            // 와이파이로 연결이 되었을 때
+            Debug.Log("와이파이로 연결됨");
+
+        }
+
+    }
+
+
     public void ClickInterior()
     {
         CheckAppId();
@@ -181,6 +222,9 @@ public class Video_TokenAgora_Client : MonoBehaviour
     {
         logger.UpdateLog(string.Format("다른 유저 퇴장 uid: ${0}, reason: ${1}", uid, (int)reason));
         DestroyVideoView(uid);
+
+        OpenEndReport_popup(); //상담종료 레포트 전달
+
     }
 
     void OnTokenPrivilegeWillExpireHandler(string token)
@@ -255,9 +299,9 @@ public class Video_TokenAgora_Client : MonoBehaviour
             //Debug.Log(volumeIndicationMessage);
 
            
-            if (speakerNumber != 1 || speakers[0].uid != 0)
+            if (speakerNumber != 1 || speakers[0].uid != 0 )
             {
-                if (speakers[0].volume > 50)
+                if (speakers[0].volume > VolumeSensitivity)
                 {
                     
                     Debug.Log(speakerNumber + " / " + speakers[0].uid
@@ -276,6 +320,24 @@ public class Video_TokenAgora_Client : MonoBehaviour
         }
     }
 
+
+
+    //상담사 캐릭터가 말하는 애니메이션을 플레이하는 기준인 볼륨 민감도를 슬라이더로 조절하는 함수
+    public void ChangeVolumeSensitivity(float volume)
+    {
+        sensitivity.value = volume;
+        VolumeSensitivity = sensitivity.value;
+        Debug.Log("볼륨 조건: " + VolumeSensitivity);
+    }
+
+
+    private void ResetFunction_UI()
+    {
+        sensitivity.onValueChanged.RemoveAllListeners();
+        sensitivity.maxValue = max;
+        sensitivity.minValue = min;
+        sensitivity.wholeNumbers = true;
+    }
 
 
     //상담사캐릭터 애니메이션관련 시작
@@ -323,5 +385,13 @@ public class Video_TokenAgora_Client : MonoBehaviour
     }
 
 
+
+    public void OpenEndReport_popup()
+    {
+        Debug.Log("상담종료: 상담레포트를 전달합니다.");
+        reportPopup.SetActive(true);
+        View_Controller.counselPopup.enabled = true;
+     
+    }
 
 }
