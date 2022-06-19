@@ -16,7 +16,7 @@ using Photon.Realtime;
 
 
 //토큰서버에서 토큰을 가져온다. !!로컬서버라 나(유정)이 토큰서버를 실행하고 있어야 돌아감!!
-public class Video_TokenAgora_Client : MonoBehaviour
+public class Video_TokenAgora : MonoBehaviour
 {
     //FirebaseFirestore db;
 
@@ -38,21 +38,27 @@ public class Video_TokenAgora_Client : MonoBehaviour
  
 
     //상담사 캐릭터 애니메이션
-    public Animator anim_f, anim_m;
-    public GameObject char_f, char_m;
+    public Animator animator;
 
-    
-    public void ClickInterior()
+    // Use this for initialization
+    void Start()
     {
+        //db = FirebaseFirestore.DefaultInstance;
+
         CheckAppId();
-        InitEngine();
+        InitEngine();    
         JoinChannel();
+
+
+        //OwnerTake();
+        //animator = GetComponent<Animator>();
     }
 
+    
 
     void RenewOrJoinToken(string newToken)
     {
-        Video_TokenAgora_Client.channelToken = newToken;
+        Video_TokenAgora.channelToken = newToken;
         if (state == CONNECTION_STATE_TYPE.CONNECTION_STATE_DISCONNECTED
             || state == CONNECTION_STATE_TYPE.CONNECTION_STATE_DISCONNECTED
             || state == CONNECTION_STATE_TYPE.CONNECTION_STATE_FAILED
@@ -67,7 +73,8 @@ public class Video_TokenAgora_Client : MonoBehaviour
             UpdateToken();
         }
     }
-   
+
+    
 
     // Update is called once per frame
     void Update()
@@ -78,7 +85,7 @@ public class Video_TokenAgora_Client : MonoBehaviour
 
     void UpdateToken()
     {
-        mRtcEngine.RenewToken(Video_TokenAgora_Client.channelToken);
+        mRtcEngine.RenewToken(Video_TokenAgora.channelToken);
     }
 
     void CheckAppId()
@@ -131,7 +138,7 @@ public class Video_TokenAgora_Client : MonoBehaviour
     {
         logger.UpdateLog(string.Format("sdk 버전: ${0}", IRtcEngine.GetSdkVersion()));
         logger.UpdateLog(string.Format("채널입장 성공 channelName: {0}, uid: {1}, elapsed: {2}", channelName, uid, elapsed));
-        logger.UpdateLog(string.Format("새로운 Token: {0}", Video_TokenAgora_Client.channelToken));
+        logger.UpdateLog(string.Format("새로운 Token: {0}", Video_TokenAgora.channelToken));
         // HelperClass.FetchToken(tokenBase, channelName, 0, this.RenewOrJoinToken);      
 
         //내담자 자신의 웹캠 화면 
@@ -262,12 +269,12 @@ public class Video_TokenAgora_Client : MonoBehaviour
                     
                     Debug.Log(speakerNumber + " / " + speakers[0].uid
                         + " 상담사가 말하는 중입니다." + "  볼륨 크기: " + speakers[0].volume);
-                    PlayTalk(anim_f, anim_m);
+                    PlayTalk();
                 }
                 else
                 {
                     //Debug.Log(speakerNumber + " / " + speakers[0].uid + " 상담사가 말하는 중이 아닙니다.");
-                    StopTalk(anim_f, anim_m);
+                    StopTalk();
 
                 }
             }
@@ -282,45 +289,76 @@ public class Video_TokenAgora_Client : MonoBehaviour
     //포톤 마스터 권한
     public void OwnerTake()
     {
-        if (char_f.GetComponent<PhotonView>().Owner.ActorNumber == PhotonNetwork.LocalPlayer.ActorNumber)
+        if (this.GetComponent<PhotonView>().Owner.ActorNumber == PhotonNetwork.LocalPlayer.ActorNumber)
         {
             Debug.Log("소유자 입니다.");
         }
         else
         {
-            char_f.GetComponent<PhotonView>().TransferOwnership(PhotonNetwork.LocalPlayer.ActorNumber);
-            Debug.Log("소유권을 가져옵니다.");
-        }
-
-
-        if (char_m.GetComponent<PhotonView>().Owner.ActorNumber == PhotonNetwork.LocalPlayer.ActorNumber)
-        {
-            Debug.Log("소유자 입니다.");
-        }
-        else
-        {
-            char_m.GetComponent<PhotonView>().TransferOwnership(PhotonNetwork.LocalPlayer.ActorNumber);
+            this.GetComponent<PhotonView>().TransferOwnership(PhotonNetwork.LocalPlayer.ActorNumber);
             Debug.Log("소유권을 가져옵니다.");
         }
     }
 
-    
-
-
-    public void PlayTalk(Animator animF, Animator animM)
+    public void PlayNod()
     {
-      
+
+        Debug.Log("그렇군요 애니메이션 플레이");
+        //animator.SetTrigger("Nod");  //Trigger 동기화가 느려서 bool로 대체
+        animator.SetBool("nod", true);
+        Invoke("StopNod", 0.5f);
+    }
+
+    public void StopNod()
+    {
+        //Debug.Log("그렇군요 애니메이션 중단");
+        animator.SetBool("nod", false);
+    }
+
+
+    public void PlayThumbup()
+    {
+        Debug.Log("잘하셨어요 애니메이션 플레이");
+        animator.SetBool("thumbup", true);
+        Invoke("StopThumbup", 0.2f);
+    }
+
+
+    public void StopThumbup()
+    {
+        //Debug.Log("잘하셨어요 애니메이션 중단");
+        animator.SetBool("thumbup", false);
+    }
+
+
+    public void PlayFace_sad()
+    {
+        Debug.Log("속상해요 애니메이션 플레이");
+        animator.SetBool("face_sad", true);
+        Invoke("StopFace_sad", 0.2f);
+    }
+
+    public void StopFace_sad()
+    {
+        //Debug.Log("속상해요 애니메이션 중단");
+        animator.SetBool("face_sad", false);
+    }
+
+
+    public void PlayTalk()
+    {
         Debug.Log("Talk 애니메이션 플레이");
-        animF.SetBool("talk", true);
-        animM.SetBool("talk", true);
+        animator.SetBool("talk", true);
         Invoke("StopTalk", 0.2f);
     }
 
-    public void StopTalk(Animator animF, Animator animM)
+    public void StopTalk()
     {
-        animF.SetBool("talk", false);
-        animM.SetBool("talk", false);
+        animator.SetBool("talk", false);
     }
+
+
+
 
 
 

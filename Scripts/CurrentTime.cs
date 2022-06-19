@@ -12,10 +12,10 @@ public class CurrentTime : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Time_Text.text = DateTime.Now.ToString("tt hh : mm");
+        Time_Text.text = DateTime.Now.ToString("hh : mm tt");
         Date_Text.text = DateTime.Now.ToString("yyyy년 MM월 dd일 dddd");
 
-        Time_Text2.text = DateTime.Now.ToString("tt hh : mm");
+        Time_Text2.text = DateTime.Now.ToString("hh : mm tt");
         Date_Text2.text = DateTime.Now.ToString("yyyy년 MM월 dd일 dddd");
     }
 }

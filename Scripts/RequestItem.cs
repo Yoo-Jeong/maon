@@ -32,7 +32,7 @@ public class RequestItem : MonoBehaviour
             print("더보기 버튼 클릭");
 
             rect = (RectTransform)imageBox.transform;
-            rect.sizeDelta = new Vector2(1333, rect.sizeDelta.y + 85);
+            rect.sizeDelta = new Vector2(1538, rect.sizeDelta.y + 130);
 
             openObj.SetActive(true);
 
@@ -44,7 +44,7 @@ public class RequestItem : MonoBehaviour
             print("접기 버튼 클릭");
 
             rect = (RectTransform)imageBox.transform;
-            rect.sizeDelta = new Vector2(1333, rect.sizeDelta.y - 85);
+            rect.sizeDelta = new Vector2(1538, rect.sizeDelta.y - 130);
 
             openObj.SetActive(false);
 

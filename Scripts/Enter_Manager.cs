@@ -17,7 +17,6 @@ public class Enter_Manager : MonoBehaviourPunCallbacks
     public Text connectionInfoText; // 네트워크 정보를 표시할 텍스트
     public Button enterButton;       // 상담소 접속 버튼
 
-    public bool isEnter = false;
 
     // 홈 이동과 동시에 마스터 서버 접속 시도
     // called third
@@ -30,26 +29,23 @@ public class Enter_Manager : MonoBehaviourPunCallbacks
         // 설정한 정보를 가지고 마스터 서버 접속 시도
         // 마스터 서버: 포톤 클라우드 서버이자 매치메이킹을 위한 서버
 
-            // 마스터 서버로의 재접속 시도
+        // 마스터 서버로의 재접속 시도
         if (PhotonNetwork.IsConnected)
-            {
-                Debug.Log("만약 이미 연결되어있다면 연결종료");
-                PhotonNetwork.Disconnect();
-            }
-            else
-            {
-                Debug.Log("아니면 마스터 서버로의 재접속 시도");
-                PhotonNetwork.ConnectUsingSettings();
-            }
+        {
+            Debug.Log("만약 이미 연결되어있다면 연결종료");
+            PhotonNetwork.Disconnect();
+        }
+        else {
+            Debug.Log("아니면 마스터 서버로의 재접속 시도");
+            PhotonNetwork.ConnectUsingSettings();
+        }
+        
+        // 상담소 접속 버튼을 잠시 비활성화
+        enterButton.interactable = false;
 
-
-            // 상담소 접속 버튼을 잠시 비활성화
-            //enterButton.interactable = false;
-
-            Debug.Log("접속 시도 중 스타트");
-            // 접속을 시도 중임을 텍스트로 표시
-            connectionInfoText.text = "마스터 서버에 접속중...";
-     
+        Debug.Log("접속 시도 중 스타트");
+        // 접속을 시도 중임을 텍스트로 표시
+        connectionInfoText.text = "마스터 서버에 접속중...";
 
     }
 
@@ -98,20 +94,18 @@ public class Enter_Manager : MonoBehaviourPunCallbacks
     public override void OnConnectedToMaster()
     {
         // 상담소 접속 버튼을 활성화
-        //enterButton.interactable = true;
+        enterButton.interactable = true;
         // 접속 정보 표시
         connectionInfoText.text = "온라인 : 마스터 서버와 연결됨";
-
     }
 
     // 마스터 서버 접속 실패시 자동 실행
     public override void OnDisconnected(DisconnectCause cause)
     {
         // 상담소 접속 버튼을 비활성화
-        //enterButton.interactable = false;
-
+        enterButton.interactable = false;
         // 접속 정보 표시
-        //connectionInfoText.text = "오프라인 : 마스터 서버와 연결되지 않음\n접속 재시도 중...";
+        connectionInfoText.text = "오프라인 : 마스터 서버와 연결되지 않음\n접속 재시도 중...";
 
         if (PhotonNetwork.IsConnected)
         {
@@ -125,7 +119,7 @@ public class Enter_Manager : MonoBehaviourPunCallbacks
     public void Connect()
     {
         // 중복 접속 시도를 막기 위해 접속 버튼 잠시 비활성화
-        //enterButton.interactable = false;
+        enterButton.interactable = false;
 
         // 마스터 서버에 접속중이라면
         if (PhotonNetwork.IsConnected)
@@ -146,9 +140,6 @@ public class Enter_Manager : MonoBehaviourPunCallbacks
             }
             PhotonNetwork.ConnectUsingSettings();
         }
-
-
-
     }
 
     // (빈 방이 없어)랜덤 방 참가에 실패한 경우 자동 실행
@@ -179,11 +170,6 @@ public class Enter_Manager : MonoBehaviourPunCallbacks
         PhotonNetwork.Disconnect();
     }
         
-    public void ClickGoCenterBtn()
-    {
-        enterButton.interactable = false;
-        enterButton.GetComponentInChildren<Text>().text = "오늘 상담이 종료되었습니다.";
-        //enterButton.GetComponentInChildren<Image>().enabled = false;
-    }
+
 
 }

@@ -28,8 +28,10 @@ public class FeedbackItem : MonoBehaviour
 
         if (isClose)
         {
+            print("작성 버튼 클릭");
+
             rect = (RectTransform)imageBox.transform;
-            rect.sizeDelta = new Vector2(1327, rect.sizeDelta.y + 105);
+            rect.sizeDelta = new Vector2(1454, rect.sizeDelta.y + 130);
 
             openObj.SetActive(true);
 
@@ -37,8 +39,11 @@ public class FeedbackItem : MonoBehaviour
         }
         else
         {
+
+            print("닫기 버튼 클릭");
+
             rect = (RectTransform)imageBox.transform;
-            rect.sizeDelta = new Vector2(1327, rect.sizeDelta.y - 105);
+            rect.sizeDelta = new Vector2(1454, rect.sizeDelta.y - 130);
 
             openObj.SetActive(false);
 

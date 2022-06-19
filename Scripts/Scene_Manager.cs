@@ -16,7 +16,7 @@ public class Scene_Manager : MonoBehaviourPunCallbacks
 
     private void Start()
     {
-        Screen.SetResolution(1778, 1080, true);
+        Screen.SetResolution(1778, 1080, false);
 
         if(Application.internetReachability == NetworkReachability.NotReachable)
         {
@@ -68,15 +68,8 @@ public class Scene_Manager : MonoBehaviourPunCallbacks
 
     public void GoCounselor_JoinFinish()
     {
-        SceneManager.LoadScene("Scenes/Counselor_JoinFinish_Scene");
+        SceneManager.LoadScene("Counselor_JoinFinish_Scene");
     }
-
-    public void GoCounselor_CounselScene()
-    {
-        SceneManager.LoadScene("Counselor_Counsel_Scene");
-    }
-
-   
 
     public void GoClient_Home()
     {
