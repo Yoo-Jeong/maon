@@ -10,8 +10,7 @@ using System;
 using Firebase;
 using Firebase.Database;
 using Firebase.Extensions;
-
-
+using System.Linq;
 
 public class DataMngForCounselor : MonoBehaviour
 {
@@ -20,14 +19,14 @@ public class DataMngForCounselor : MonoBehaviour
     public DatabaseReference reference { get; set; }  
 
     string family = "가족";
-    string myself = "나 자신";
+    string myself = "나자신";
     string relationship = "대인관계";
     string romance = "연애";
     string work = "직장";
-    string career = "진로/취업";
+    string career = "진로취업";
   
 
-    public Text displayname;
+    public Text displayname1,displayname2;
     public string myMajor;
     public bool isAppointment;
     public int appoCount;
@@ -53,6 +52,8 @@ public class DataMngForCounselor : MonoBehaviour
 
 
     public Button logoutBtn;
+
+    public int apponum;  //예약 갯수를 저장할 int변수
 
   
 
@@ -81,8 +82,31 @@ public class DataMngForCounselor : MonoBehaviour
         isAppointment = false;
         LoadMyData();
 
+        
+
         logoutBtn.onClick.AddListener(Auth_Manager.Instance.Logout);
 
+        Invoke("AddListener", 3f);
+
+    }
+
+    public void AddListener()
+    {   
+        Debug.Log( "리스너 연결: " + myMajor);
+
+        //이벤트리스너 연결
+        var userRef = FirebaseDatabase.DefaultInstance.GetReference("CounselorUsers").Child(myMajor).Child(Auth_Manager.user.UserId);
+        userRef.ChildChanged += HandleChildChanged;
+
+        //ChildAdded 이벤트는 기존 하위 항목마다 한 번씩 발생한 후 지정된 경로에 하위 항목이 새로 추가될 때마다 다시 발생합니다.
+        //그래서 자꾸 여러번 반복이 되었던거였어요. 예약이 추가될때를 감지해야하긴해서 비효율적이지만 이렇게 연결을 시키고 ClearLists();해주었습니다.
+        //userRef.Child("appointment").ChildAdded += HandleChildAdded;
+        userRef.Child("appointment").ChildRemoved += HandleChildRemoved;
+
+        //for (int i = apponum; i >= 1; i--)
+        //{
+        //    ClearLists();
+        //}
     }
 
 
@@ -101,7 +125,7 @@ public class DataMngForCounselor : MonoBehaviour
 
 
 
-    //상담사 유저 하위에 있는 내용에 대한 변경을 읽고 수신 대기하는 이벤트핸들러 구현
+    //상담사 유저 하위에 있는 내용에 대한 추가를 읽고 수신 대기하는 이벤트핸들러 구현
     void HandleChildAdded(object sender, ChildChangedEventArgs args)
     {
         if (args.DatabaseError != null)
@@ -109,11 +133,29 @@ public class DataMngForCounselor : MonoBehaviour
             Debug.LogError(args.DatabaseError.Message);
             return;
         }
+        LoadMyAppoData(myMajor);
+        
         Debug.Log(" ChildAdded 이벤트핸들러 ");
 
-        LoadMyAppoData(myMajor);
+        Debug.Log(" ChildAdded 이벤트핸들러 : " + args.Snapshot.ChildrenCount);
+
+   
+        
+     
     }
 
+    //상담사 유저 하위에 있는 내용에 대한 삭제를 읽고 수신 대기하는 이벤트핸들러 구현
+    void HandleChildRemoved(object sender, ChildChangedEventArgs args)
+    {
+        if (args.DatabaseError != null)
+        {
+            Debug.LogError(args.DatabaseError.Message);
+            return;
+        }
+        LoadMyAppoData(myMajor);
+        Debug.Log(" ChildRemoved 이벤트핸들러 ");
+
+    }
 
 
 
@@ -155,43 +197,41 @@ public class DataMngForCounselor : MonoBehaviour
                             
                            if (snapshot.ChildrenCount > 0)
                            {
-                               //이벤트리스너 연결
-                               var userRef = FirebaseDatabase.DefaultInstance.GetReference("CounselorUsers").Child(major).Child(Auth_Manager.user.UserId);
-                               userRef.ChildChanged += HandleChildChanged;          //상담사 유저 하위에 있는 내용에 대한 변경을 읽고 수신 대기
-                               userRef.Child("appointment").ChildAdded += HandleChildAdded;
-
+                      
                                myMajor = major;
 
-                               //우측 상단 내담자 이름 표시.
-                               displayname.text = snapshot.Child("username").Value.ToString();
+                               //우측 상단 상담사 이름 표시.
+                               displayname1.text = snapshot.Child("username").Value.ToString();
+                               displayname2.text = snapshot.Child("username").Value.ToString();
+                               /*   Debug.Log("상담사: " + snapshot.Child("userGroup").Value
+                                        + "\n uid: " + snapshot.Child("uid").Value
+                                        + "\n email: " + snapshot.Child("email").Value
+                                        + "\n pic: " + snapshot.Child("pic").Value
+                                        + "\n username: " + snapshot.Child("username").Value
+                                        + "\n sex: " + snapshot.Child("sex").Value
+                                        + "\n intro: " + snapshot.Child("intro").Value
+                                        + "\n family: " + snapshot.Child("family").Value
+                                        + "\n myself: " + snapshot.Child("myself").Value
+                                        + "\n relationship: " + snapshot.Child("relationship").Value
+                                        + "\n romance: " + snapshot.Child("romance").Value
+                                        + "\n work: " + snapshot.Child("work").Value
+                                        + "\n career: " + snapshot.Child("career").Value
+                                        + "\n career1: " + snapshot.Child("career1").Value
+                                        + "\n career2: " + snapshot.Child("career2").Value
+                                        + "\n career3: " + snapshot.Child("career3").Value
+                                        //+ "\n appointmentcheck: " + snapshot.Child("appointmentcheck").Value
+                                        );*/
 
-                               Debug.Log("상담사: " + snapshot.Child("userGroup").Value
-                                     + "\n uid: " + snapshot.Child("uid").Value
-                                     + "\n email: " + snapshot.Child("email").Value
-                                     + "\n pic: " + snapshot.Child("pic").Value
-                                     + "\n username: " + snapshot.Child("username").Value
-                                     + "\n sex: " + snapshot.Child("sex").Value
-                                     + "\n intro: " + snapshot.Child("intro").Value
-                                     + "\n family: " + snapshot.Child("family").Value
-                                     + "\n myself: " + snapshot.Child("myself").Value
-                                     + "\n relationship: " + snapshot.Child("relationship").Value
-                                     + "\n romance: " + snapshot.Child("romance").Value
-                                     + "\n work: " + snapshot.Child("work").Value
-                                     + "\n career: " + snapshot.Child("career").Value
-                                     + "\n career1: " + snapshot.Child("career1").Value
-                                     + "\n career2: " + snapshot.Child("career2").Value
-                                     + "\n career3: " + snapshot.Child("career3").Value
-                                     + "\n appointmentcheck: " + snapshot.Child("appointmentcheck").Value
-                                     );
+                               //isAppointment = (bool)snapshot.Child("appointmentcheck").Value;
 
-                               isAppointment = (bool)snapshot.Child("appointmentcheck").Value;
-
-                       /*        //만약 예약이 있다면 예약 목록 불러오기 실행.
+                               LoadMyAppoData(myMajor);
+/*
+                             //만약 예약이 있다면 예약 목록 불러오기 실행.
                                if (isAppointment)
                                {
                                    Debug.Log(isAppointment);
                                    Debug.Log(major);
-                                   //LoadMyAppoData(major);
+                                   LoadMyAppoData(major);
                                    print("상담 예약이 있습니다.");
                                }
                                else
@@ -255,6 +295,9 @@ public class DataMngForCounselor : MonoBehaviour
                   MyAppoProgress.Add((long)appo["progress"]);
 
               }
+
+              apponum = MyAppoAppDay1.Count();
+              Debug.Log("총 예약 수" + apponum);
 
               LoadRequestList();
              
@@ -412,8 +455,8 @@ public class DataMngForCounselor : MonoBehaviour
        
         // 텍스트 배열 newAcceptedData 생성된 acceptedClone프리팹의 Text타입인 자식 객체들
         newAcceptedData = acceptedClone.GetComponentsInChildren<Text>();
-        newAcceptedData[0].text = "* 내담자: " + MyAppoClientname[num];  // newAcceptedData[0]의 텍스트는 신청인 이름
-        newAcceptedData[1].text = "* 상담 일시: " + MyAppoAppDay1[num] + "      " + MyAppoAppTime[num];  // newAcceptedData[1]의 텍스트는 상담 일시
+        newAcceptedData[0].text = MyAppoClientname[num];  // newAcceptedData[0]의 텍스트는 신청인 이름
+        newAcceptedData[1].text = MyAppoAppDay1[num] + "      " + MyAppoAppTime[num];  // newAcceptedData[1]의 텍스트는 상담 일시
 
 
         if (MyAppoAppDay1[num] == todayString)
