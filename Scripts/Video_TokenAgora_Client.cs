@@ -31,7 +31,6 @@ public class Video_TokenAgora_Client : MonoBehaviour
     private const float Offset = 100;
     private static string channelName = "swuniverse";
     private static string channelToken = "";
-
     private static string tokenBase = "https://maon-server.run.goorm.io";
     private CONNECTION_STATE_TYPE state = CONNECTION_STATE_TYPE.CONNECTION_STATE_DISCONNECTED;
  
