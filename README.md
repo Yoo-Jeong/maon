@@ -4,10 +4,6 @@
 
 * __[프로젝트 압축파일 다운로드 및 백업자료](https://drive.google.com/drive/folders/1hwKHY7TAKy1rX2O48Xn41Xy_zrT9-QzN?usp=sharing)__
 
----
 
-```
-maon
-```
 ---
 2022.04.06
