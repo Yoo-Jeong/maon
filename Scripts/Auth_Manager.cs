@@ -14,7 +14,7 @@ using Firebase.Database;
 public class Auth_Manager : MonoBehaviour
 { 
     public static FirebaseAuth auth;         //인증을 관리할 객체
-    public static FirebaseUser user;  //전역 인증 객체
+    public static FirebaseUser user;         //전역 인증 객체
 
     // 라이브러리를 통해 불러온 FirebaseDatabase 관련객체를 선언해서 사용
     public DatabaseReference reference { get; set; }
@@ -32,7 +32,10 @@ public class Auth_Manager : MonoBehaviour
 
     private static Auth_Manager instance = null;
 
-
+ 
+    /// <summary>
+    /// 
+    /// </summary>
     void Awake()
     {
         if (null == instance)
@@ -56,6 +59,9 @@ public class Auth_Manager : MonoBehaviour
         }
     }
 
+   /// <summary>
+   /// 
+   /// </summary>
     public void Start()
     {          
         instance.emailField.Select();   //처음은 이메일 Input Field를 선택하도록 한다.
@@ -65,12 +71,17 @@ public class Auth_Manager : MonoBehaviour
         InitUI();                       //로그인관련 UI 초기화
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
     public void Update()
     {
         ClickKey();
     }
 
-
+    /// <summary>
+    /// 
+    /// </summary>
     //Auth_Manager 인스턴스에 접근할 수 있는 프로퍼티
     public static Auth_Manager Instance
     {
@@ -84,7 +95,9 @@ public class Auth_Manager : MonoBehaviour
         }
     }
 
-
+    /// <summary>
+    /// 
+    /// </summary>
     void InitializeFirebase()
     {       
         auth = Firebase.Auth.FirebaseAuth.DefaultInstance;    //인증 객체 초기화
@@ -94,8 +107,9 @@ public class Auth_Manager : MonoBehaviour
         Debug.Log("파이어베이스 인증관련 초기화 완료");
     }
 
-
-    //게임오브젝트가 다시 생성됐을때 인풋필드와 버튼 찾아서 넣기
+    /// <summary>
+    /// 게임오브젝트가 다시 생성됐을때 인풋필드와 버튼 찾아서 넣는 함수.
+    /// </summary>
     public void InitUI()
     {
         authCanvas = instance.authCanvas;
@@ -110,8 +124,11 @@ public class Auth_Manager : MonoBehaviour
         Debug.Log("Auth_Manager 관련 인풋필드 버튼 초기화 완료");
     }
 
-
-    //유저의 로그인 정보에 변경이 생기면 실행되는 이벤트 핸들러 구현
+    /// <summary>
+    /// 유저의 로그인 정보에 변경이 생기면 실행되는 이벤트 핸들러 구현.
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="eventArgs"></param>
     void AuthStateChanged(object sender, System.EventArgs eventArgs)
     {
         if (auth.CurrentUser != user)
@@ -144,8 +161,13 @@ public class Auth_Manager : MonoBehaviour
     }
 
 
-
-    //이메일 로그인 함수
+    /**
+    * @brief 이메일 로그인 함수
+    * @details 이메일과 비밀번호를 인자로 받아 로그인한다.
+    * @param string email 이메일
+    * @param string password 비밀번호
+    * @return 반환
+    **/
     public void LogInWithEmail(string email, string password)
     {
         auth.SignInWithEmailAndPasswordAsync(email, password)
@@ -169,18 +191,17 @@ public class Auth_Manager : MonoBehaviour
     }
 
 
-
-    //로그아웃 함수
+    /// <summary>
+    /// 로그아웃 함수
+    /// </summary>
     public void Logout()
     {
         auth.SignOut();
     }
 
-
-
-
-
-    //유저 그룹 확인하는 함수.
+    /// <summary>
+    /// 유저 그룹 확인하는 함수.
+    /// </summary>
     public void CheckUserGroup()
     {
         FirebaseApp.DefaultInstance.Options.DatabaseUrl = new System.Uri("https://swuniverse-d9641-default-rtdb.firebaseio.com/");
@@ -227,8 +248,9 @@ public class Auth_Manager : MonoBehaviour
     }
 
 
-
-    //tap키 누르면 패스워드 필드로 이동, enter키 누르면 로그인버튼이 클릭되는 함수
+    /// <summary>
+    /// tap키 누르면 패스워드 필드로 이동, enter키 누르면 로그인버튼이 클릭되는 함수
+    /// </summary>
     public void ClickKey() {
 
         if (Input.GetKeyDown(KeyCode.Tab) && Input.GetKey(KeyCode.LeftShift))
@@ -259,6 +281,7 @@ public class Auth_Manager : MonoBehaviour
         authCanvas.enabled = true;
     }
 
+
     public void OnAuthCanvas()
     {
         emailField.text = null;
@@ -269,7 +292,7 @@ public class Auth_Manager : MonoBehaviour
         instance.emailField.Select();   //이메일 Input Field를 선택하도록 한다
     }
 
-   
+
     public void OffAuthCanvas()
     {
         authCanvas.enabled = false;
@@ -283,10 +306,12 @@ public class Auth_Manager : MonoBehaviour
     }
 
 
-    // 테스트용 간편 회원가입(실제 사용x)
+    /// <summary>
+    /// 테스트용 간편 회원가입(실제 사용x)
+    /// 이메일과 비밀번호로 회원가입
+    /// </summary>
     public void RegisterTest()
     {
-        // 이메일과 비밀번호로 회원가입
         auth.CreateUserWithEmailAndPasswordAsync(emailField.text, passwordField.text).ContinueWith(
             task =>
             {
