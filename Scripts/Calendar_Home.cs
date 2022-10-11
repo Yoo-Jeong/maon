@@ -75,6 +75,9 @@ public class Calendar_Home : MonoBehaviour
 
     }
 
+   /// <summary>
+    /// 
+    /// </summary>
     //날짜 버튼을 누르면 선택한 날짜의 정보를 저장하는 함수.
     public void GetSeletedDateTime(string year, string month, string date)
     {
@@ -97,7 +100,9 @@ public class Calendar_Home : MonoBehaviour
 
     }
 
-
+   /// <summary>
+    /// 
+    /// </summary>
     //날짜 토글이 on되면 선택한 날짜의 정보를 저장하는 함수.
     public void Function_dayToggle(bool _bool, int num)
     {
