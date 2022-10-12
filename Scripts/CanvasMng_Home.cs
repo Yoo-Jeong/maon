@@ -51,8 +51,9 @@ public class CanvasMng_Home : MonoBehaviour
     }
 
 
-
-    // 홈 화면 캔버스를 켜는 함수.
+    /// <summary>
+    /// 홈 화면 캔버스를 켜는 함수.
+    /// </summary>
     public void OpenHomeCanvas()
     {
       
@@ -69,7 +70,9 @@ public class CanvasMng_Home : MonoBehaviour
     }
 
 
-    // 상담메뉴 화면 캔버스를 켜는 함수.
+    /// <summary>
+    /// 상담메뉴 화면 캔버스를 켜는 함수.
+    /// </summary>
     public void OpenCounselCanvs()
     {
         home.enabled = false;
@@ -83,10 +86,11 @@ public class CanvasMng_Home : MonoBehaviour
         MyPageChange.isOpenInfo = false;
     }
 
-    
-  
 
-    // 예약메뉴 화면 캔버스를 켜는 함수.
+
+    /// <summary>
+    /// 예약메뉴 화면 캔버스를 켜는 함수.
+    /// </summary>
     public void OpenReservationCanvs()
     {
         home.enabled = false;
@@ -100,8 +104,9 @@ public class CanvasMng_Home : MonoBehaviour
         MyPageChange.isOpenInfo = false;
     }
 
-
-    // 예약메뉴 상담사 프로필 화면 캔버스를 켜는 함수.
+    /// <summary>
+    /// 예약메뉴 상담사 프로필 화면 캔버스를 켜는 함수.
+    /// </summary>
     public void OpenReservationProfileCanvas()
     {
         Debug.Log("예약메뉴 상담사 프로필 화면 오픈");
@@ -118,8 +123,9 @@ public class CanvasMng_Home : MonoBehaviour
     }
 
 
-
-    // 팝업창 화면 캔버스를 켜는 함수.
+    /// <summary>
+    /// 팝업창 화면 캔버스를 켜는 함수.
+    /// </summary>
     public void OpenPopupCanvas()
     {
         home.enabled = false;
@@ -136,7 +142,9 @@ public class CanvasMng_Home : MonoBehaviour
     }
 
 
-    // 팝업창 화면 캔버스를 켜고 예약완료.
+    /// <summary>
+    /// 팝업창 화면 캔버스를 켜고 예약완료.
+    /// </summary>
     public void OpenPopupFinalCanvas()
     {
         home.enabled = false;
@@ -152,22 +160,28 @@ public class CanvasMng_Home : MonoBehaviour
         MyPageChange.isOpenInfo = false;
     }
 
-    // 예약신청 내용 확인 팝업창을 켜는 함수.
+    /// <summary>
+    /// 예약신청 내용 확인 팝업창을 켜는 함수.
+    /// </summary>
     public void SetActiveConfirm()
     {
         confirm.SetActive(true);
         complete.SetActive(false);
     }
 
-    // 예약신청 예약완료 팝업창을 켜는 함수.
+
+    /// <summary>
+    /// 예약신청 예약완료 팝업창을 켜는 함수.
+    /// </summary>
     public void SetActiveComplete()
     {
         confirm.SetActive(false);
         complete.SetActive(true);
     }
 
-
-    // 팝업창 화면 캔버스를 끄는 함수.
+    /// <summary>
+    /// 팝업창 화면 캔버스를 끄는 함수.
+    /// </summary>
     public void ClosePopupCanvas()
     {
         home.enabled = false;
@@ -183,8 +197,9 @@ public class CanvasMng_Home : MonoBehaviour
     }
 
 
-
-    // 내 정보메뉴 화면 캔버스를 켜는 함수.
+    /// <summary>
+    /// 내 정보메뉴 화면 캔버스를 켜는 함수.
+    /// </summary>
     public void OpenMypageCanvas()
     {
        
@@ -201,8 +216,9 @@ public class CanvasMng_Home : MonoBehaviour
 
 
 
-   
-    // 내 정보메뉴 프로필 정보 변경 화면 캔버스를 켜는 함수.
+    /// <summary>
+    /// 내 정보메뉴 프로필 정보 변경 화면 캔버스를 켜는 함수.
+    /// </summary>
     public void OpneMypageChangeCanvas()
     {
 
@@ -227,8 +243,9 @@ public class CanvasMng_Home : MonoBehaviour
     }
 
 
-
-    // 비밀번호 일치 확인 함수.
+    /// <summary>
+    /// 비밀번호 일치 확인 함수.
+    /// </summary>
     public void PasswordCheck()
     {
         password = PasswordInput.text;
@@ -246,8 +263,6 @@ public class CanvasMng_Home : MonoBehaviour
             print("비밀번호가 일치합니다.");
         }
     }
-
-
 
 
 

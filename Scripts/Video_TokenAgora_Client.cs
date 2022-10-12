@@ -24,13 +24,15 @@ public class Video_TokenAgora_Client : MonoBehaviour
     VideoSurface remoteView;
 
     [SerializeField]
-    private string APP_ID = "";
+    private string APP_ID = "6b17d6a455dc4642a36f39abbba84659";
     public Text logText;
     private Logger logger;
     private IRtcEngine mRtcEngine = null;
     private const float Offset = 100;
     private static string channelName = "swuniverse";
     private static string channelToken = "";
+    //private static string tokenBase = "http://localhost:8080";
+    //private static string tokenBase = "http://3Bears.iptime.org:18080";
     private static string tokenBase = "https://maon-server.run.goorm.io";
     private CONNECTION_STATE_TYPE state = CONNECTION_STATE_TYPE.CONNECTION_STATE_DISCONNECTED;
  

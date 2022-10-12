@@ -66,7 +66,12 @@ public class Calendar_Reservation : MonoBehaviour
 
     }
 
-    //날짜 버튼을 누르면 선택한 날짜의 정보를 저장하는 함수.
+    /// <summary>
+    /// 날짜 버튼을 누르면 선택한 날짜의 정보를 저장하는 함수.
+    /// </summary>
+    /// <param name="year"></param>
+    /// <param name="month"></param>
+    /// <param name="date"></param>
     public void GetSeletedDateTime(string year, string month, string date)
     {
         // date가 1자리수면 앞에 "0"삽입(예:4를 04로 바꾼다.)
@@ -88,7 +93,11 @@ public class Calendar_Reservation : MonoBehaviour
 
     }
 
-    //날짜 토글이 on되면 선택한 날짜의 정보를 저장하는 함수.
+    /// <summary>
+    /// 날짜 토글이 on되면 선택한 날짜의 정보를 저장하는 함수.
+    /// </summary>
+    /// <param name="_bool"></param>
+    /// <param name="num"></param>
     public void Function_dayToggle(bool _bool, int num)
     {
         if (_bool)  //토글이 on이면
@@ -137,6 +146,9 @@ public class Calendar_Reservation : MonoBehaviour
 
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
     public void CreateCalendar()
     {
 
@@ -226,6 +238,10 @@ public class Calendar_Reservation : MonoBehaviour
     }
 
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="reMonth"></param>
     void ReCreateCalendar(string reMonth)
     {
 
@@ -308,8 +324,11 @@ public class Calendar_Reservation : MonoBehaviour
     }
 
 
-
-    //요일을 구하는 함수.
+    /// <summary>
+    /// 요일을 구하는 함수.
+    /// </summary>
+    /// <param name="day"></param>
+    /// <returns></returns>
     int GetDays(DayOfWeek day)
     {
         switch (day)

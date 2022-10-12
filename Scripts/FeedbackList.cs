@@ -157,7 +157,10 @@ public class FeedbackList : MonoBehaviour
     public List<Text> newFeedbackAppDay1 = new List<Text>();
     public List<Text> newFeedbackAppTIme = new List<Text>();
 
-    // 피드백 프리팹을 생성하는 함수.
+
+    /// <summary>
+    /// 피드백 프리팹을 생성하는 함수.
+    /// </summary>
     public void CreatekFeedbackList()
     {
         j = 0;
@@ -238,8 +241,13 @@ public class FeedbackList : MonoBehaviour
 
     public string uid;
 
-    // 피드백 프리팹 하위에 있는 저장 버튼을 누르면 실행되는 함수.
-    // 프리팹안의 저장 버튼에 연결되어 있다.
+
+    /// <summary>
+    /// 피드백 프리팹 하위에 있는 저장 버튼을 누르면 실행되는 함수.
+    /// 프리팹안의 저장 버튼에 연결되어 있다.
+    /// </summary>
+    /// <param name="num"></param>
+    /// <param name="numj"></param>
     public void InputFeedback(int num, int numj)
     {
         print("저장 버튼 클릭");
@@ -327,160 +335,4 @@ public class FeedbackList : MonoBehaviour
     }
 
 }
-
-
-/*// 이 아래는 사용하지 않음. 
-// ClientUsers-appointment-상담사uid-pushKey에 접근하기위해 상담사uid 데이터를 받아오는 함수.
-public void LoadAppoDataCounselorUid()
-{
-    FirebaseDatabase.DefaultInstance.GetReference("ClientUsers").Child(Auth_Manager.User.UserId)
-        .Child("appointment").GetValueAsync().ContinueWithOnMainThread(task =>
-        {
-            if (task.IsCompleted)
-            {
-                Debug.Log("completed");
-
-                DataSnapshot snapshot = task.Result;
-
-                foreach (DataSnapshot data in snapshot.Children)
-                {
-                    appointmentCounselorUid.Add((string)data.Key);
-                }
-
-            }
-        });
-
-}
-
-
-// 네비게이션에서 내 정보 버튼을 누르면 실행되는 함수.
-// ClientUsers-appointment-상담사uid-pushKey에 접근하기위해 LoadAppoDataCounselorUid()에서 얻은 상담사uid를 받아와 사용한다.
-public void LoadAppoDataPushKey()
-{
-    for (int i = 0; i < appointmentCounselorUid.Count; i++)
-    {
-        int temp = i;
-
-        FirebaseDatabase.DefaultInstance.GetReference("ClientUsers").Child(Auth_Manager.User.UserId)
-      .Child("appointment").Child(appointmentCounselorUid[i]).GetValueAsync().ContinueWithOnMainThread(task =>
-      {
-          if (task.IsCompleted)
-          {
-              Debug.Log("completed2");
-
-              DataSnapshot snapshot = task.Result;
-
-              string json = task.Result.GetRawJsonValue();
-
-              foreach (DataSnapshot data in snapshot.Children)
-              {
-
-                  appointmentCounselorPushKey.Add((string)data.Key);
-                  print(appointmentCounselorPushKey[temp]);
-
-
-                  IDictionary appo = (IDictionary)data.Value;
-
-                  appointmentCounselorInCharge.Add((string)appo["counselorInCharge"]);
-                  appointmentAppDay.Add((string)appo["appDay"]);
-                  appointmentAppTime.Add((string)appo["appTime"]);
-                  appointmentFeedback.Add((string)appo["feedback"]);
-                  appointmentWorry.Add((string)appo["worry"]);
-
-                  print(appointmentCounselorInCharge[temp]);
-
-                  CreatekFeedbackList(); // 피드백 프리팹을 생성하는 함수.
-
-
-              }
-
-          }
-
-      });
-
-
-    }
-
-}
-
-
-public string uid, pushkey;
-
-// 피드백 프리팹 하위에 있는 저장 버튼을 누르면 실행되는 함수.
-// 프리팹안의 저장 버튼에 연결되어 있다.
-public void InputFeedback(int num)
-{
-    print("저장 버튼 클릭");
-    print(num);
-
-    print(feedbackPrefabList[num].transform.GetChild(7).GetComponentInChildren<InputField>().text);
-
-
-    uid = appointmentCounselorUid[num];
-    pushkey = appointmentCounselorPushKey[num];
-    print("경로 완료 uid : " + uid + " / PushKey: " + pushkey);
-
-
-    Dictionary<string, object> feedbackSave = new Dictionary<string, object>
-    {
-        ["feedback"] = feedbackPrefabList[num].transform.GetChild(7).GetComponentInChildren<InputField>().text
-    };
-
-    print(feedbackSave.Keys);
-    print(reference);
-
-
-    try
-    {
-        print(feedbackSave.Keys + "밸류 : " + feedbackSave.Values + " 개수: " + feedbackSave.Count);
-
-        print("경로 확인 1" + appointmentCounselorUid[num] + " / PushKey: " + appointmentCounselorPushKey[num]);
-        print(feedbackSave.Keys);
-
-
-        reference.Child("CounselorUsers").Child("대인관계").Child(uid).Child("appointment").Child(Auth_Manager.User.UserId).Child(pushkey).UpdateChildrenAsync(feedbackSave);
-
-
-        print("경로 확인 2" + appointmentCounselorUid[num] + " / PushKey: " + appointmentCounselorPushKey[num]);
-
-    }
-    catch (NullReferenceException ex)
-    {
-        print(ex);
-
-        print("null... 널....");
-    }
-
-}*/
-
-
-/*{
-    "-N-SqsxFFxWCIOESEnRr":
-    {
-        "-N-Twut--ofzHRFQ6XEF":
-        {
-            "appDay":"2022.4.29."
-            ,"appTime":"16:00 - 17:00"
-            ,"counselorInCharge":"\uae40\uc0c1\ub2f4"
-            ,"counselorUid":"-N-SqsxFFxWCIOESEnRr"
-            ,"feedback":""
-            ,"progress":0
-            ,"refuse":""
-            ,"worry":"\uc0c1\ub2f4 \uc2e0\uccad"
-            }
-    }
-}
-
-
-{
-    "clientUid":null
-    ,"pushKey":null
-    ,"refuse":null
-    ,"worry":null
-    ,"feedback":null
-    ,"appDay":null
-    ,"appTime":null
-    ,"client":null
-    ,"progress":0
-    }*/
 

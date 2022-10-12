@@ -21,7 +21,7 @@ public class CounselorLoad : MonoBehaviour
 
 
     // 날짜 선택을 위한 변수들 선언.
-    public Text calendarMonth;              // 달력의 달을 표시한 Text타입 변수(선택날짜를 알기 위해 필요)
+    public Text calendarMonth;            // 달력의 달을 표시한 Text타입 변수(선택날짜를 알기 위해 필요)
 
     public static string appDay1;         // 선택한 날짜를 담을 변수
     public string appDay2;                //RDB저장 경로를 위한 날짜를 담을 변수
@@ -34,7 +34,7 @@ public class CounselorLoad : MonoBehaviour
 
 
     // 전문분야에 따라 상담사의 정보를 저장할 Counselors타입 변수 선언.
-    public Counselors family;            //전문분야가 가족인 상담사들
+    public Counselors family;           //전문분야가 가족인 상담사들
     public Counselors myself;           //전문분야가 나 자신인 상담사들
     public Counselors relationship;     //전문분야가 대인관계인 상담사들
     public Counselors love;             //전문분야가 연애인 상담사들
@@ -113,8 +113,9 @@ public class CounselorLoad : MonoBehaviour
 
     } // Start().
 
-
-    //전문분야 토글이 켜져있으면 끄기
+    /// <summary>
+    /// 전문분야 토글이 켜져있으면 끄는 함수.
+    /// </summary>
     public void CleanToggle()
     {
         if (majorToggleGroup.AnyTogglesOn())
@@ -123,7 +124,9 @@ public class CounselorLoad : MonoBehaviour
         }
     }
 
-    //전문분야 토글이 켜져있으면 끄기
+    /// <summary>
+    /// 전문분야 토글이 켜져있으면 끄는 함수.
+    /// </summary>
     public void CleanTimeToggle()
     {
         if (timeToggleGroup.AnyTogglesOn())
@@ -132,8 +135,11 @@ public class CounselorLoad : MonoBehaviour
         }
     }
 
-
-    //전문분야 string과 Counselors클래스를 매개변수로 받아서 가능한 요일에따라 상담사 프리팹을 생성하는 함수.
+    /// <summary>
+    /// 전문분야 string과 Counselors클래스를 매개변수로 받아서 가능한 요일에따라 상담사 프리팹을 생성하는 함수.
+    /// </summary>
+    /// <param name="majorString"></param>
+    /// <param name="majorClass"></param>
     public void CreatMajor(string majorString, Counselors majorClass)
     {
         Debug.Log(majorString + " 선택 : ");
@@ -191,13 +197,16 @@ public class CounselorLoad : MonoBehaviour
     }
 
 
-    // 가족 토글On
+    /// <summary>
+    /// 가족 토글On 하는 함수.
+    /// </summary>
+    /// <param name="_bool"></param>
     public void Function_familyToggle(bool _bool)
     {
         if (_bool == true)
         {
             familyText.color = Color.white;     // 토글 텍스트 색 변경.
-            familyText.text = "<b>가족</b>";     // 토글 텍스트 볼드처리.
+            familyText.text = "<b>가족</b>";    // 토글 텍스트 볼드처리.
 
             CreatMajor("가족", family);
 
@@ -215,7 +224,10 @@ public class CounselorLoad : MonoBehaviour
     } // Function_familyToggle(bool _bool).
 
 
-    // 나 자신 토글On
+    /// <summary>
+    /// 나 자신 토글On 하는 함수.
+    /// </summary>
+    /// <param name="_bool"></param>
     public void Function_myselfToggle(bool _bool)
     {
         if (_bool == true)
@@ -236,7 +248,10 @@ public class CounselorLoad : MonoBehaviour
     } // Function_myselfToggle(bool _bool).
 
 
-    // 대인관계 토글On
+    /// <summary>
+    /// 대인관계 토글On
+    /// </summary>
+    /// <param name="_bool"></param>
     public void Function_RelationshipToggle(bool _bool)
     {
         if (_bool == true)
@@ -246,28 +261,24 @@ public class CounselorLoad : MonoBehaviour
             relationshipText.text = "<b>대인관계</b>"; // 토글 텍스트 볼드처리.
 
             CreatMajor("대인관계", relationship);
-
-            
-
+           
         }
         else
         {
             relationshipText.color = Color.black;
             relationshipText.text = "대인관계";
 
-            DestroyPrefabs(relationship);
-
-           
+            DestroyPrefabs(relationship);  
 
         }
-
-    
 
     } // Function_RelationshipToggle(bool _bool).
 
 
-
-    // 연애 토글On
+    /// <summary>
+    /// 연애 토글On 하는 함수.
+    /// </summary>
+    /// <param name="_bool"></param>
     public void Function_loveToggle(bool _bool)
     {
         if (_bool == true)
@@ -288,13 +299,16 @@ public class CounselorLoad : MonoBehaviour
     } // Function_loveToggle(bool _bool).
 
 
-    // 직장 토글On
+    /// <summary>
+    /// 직장 토글On 하는 함수.
+    /// </summary>
+    /// <param name="_bool"></param>
     public void Function_jobToggle(bool _bool)
     {
         if (_bool == true)
         {
             jobText.color = Color.white;     // 토글 텍스트 색 변경.
-            jobText.text = "<b>직장</b>"; // 토글 텍스트 볼드처리.
+            jobText.text = "<b>직장</b>";    // 토글 텍스트 볼드처리.
 
             CreatMajor("직장", job);
         }
@@ -309,7 +323,10 @@ public class CounselorLoad : MonoBehaviour
     } // Function_jobToggle(bool _bool).
 
 
-    // 진로/취업 토글On
+    /// <summary>
+    /// 진로/취업 토글On 하는 함수.
+    /// </summary>
+    /// <param name="_bool"></param>
     public void Function_courseToggle(bool _bool)
     {
         if (_bool == true)
@@ -330,8 +347,12 @@ public class CounselorLoad : MonoBehaviour
     } // Function_courseToggle(bool _bool).
 
 
-    /* Counselors타입 변수counselors와 int타입 변수num을 받아와
-     선택된 상담사의 정보를 저장하고 상세 프로필 화면에 있는 텍스트값을 바꾸는 함수*/
+    /// <summary>
+    /// Counselors타입 변수counselors와 int타입 변수num을 받아와 
+    /// 선택된 상담사의 정보를 저장하고 상세 프로필 화면에 있는 텍스트값을 바꾸는 함수.
+    /// </summary>
+    /// <param name="counselors"></param>
+    /// <param name="num"></param>
     public void InputSeletedData(Counselors counselors, int num)
     {
         print("프로필 확인 버튼 클릭");
@@ -348,8 +369,7 @@ public class CounselorLoad : MonoBehaviour
         seleted[6] = counselors.counselorsCareer2[num];
         seleted[7] = counselors.counselorsCareer3[num];
         seleted[8] = counselors.counselorsSex[num];
-
-        
+     
 
         //선택된 상담사의 전문분야를 표시할 Text타입 변수 seletedMajorText에 선택된 상담사의 전문분야 할당.
         seletedMajorText.text = seleted[0];
@@ -375,12 +395,14 @@ public class CounselorLoad : MonoBehaviour
 
         counselors.LoadCounselorTime(counselors.major, seleted[1]);
 
-
-
     } // InputSeletedData(Counselors counselors, int num) end.
 
 
-    //선택된 상담사의 프로필이미지(ReservationProfileCanvas): 웹url에서 이미지를 가져와 RawImage에 적용시키는 함수.
+    /// <summary>
+    /// 선택된 상담사의 프로필이미지(ReservationProfileCanvas): 웹url에서 이미지를 가져와 RawImage에 적용시키는 함수.
+    /// </summary>
+    /// <param name="url"></param>
+    /// <returns></returns>
     IEnumerator GetTexture(string url)
     {
         UnityWebRequest www = UnityWebRequestTexture.GetTexture(url);
@@ -394,12 +416,15 @@ public class CounselorLoad : MonoBehaviour
         else
         {
             seletedProfileImg.texture = ((DownloadHandlerTexture)www.downloadHandler).texture;
-
         }
     }
 
-
-    // 프리팹용(counselorClone) : 웹url에서 이미지를 가져와 RawImage에 적용시키는 함수.
+    /// <summary>
+    /// 프리팹용(counselorClone) : 웹url에서 이미지를 가져와 RawImage에 적용시키는 함수.
+    /// </summary>
+    /// <param name="url"></param>
+    /// <param name="num"></param>
+    /// <returns></returns>
     IEnumerator GetTexturePrefab(string url, int num)
     {
         UnityWebRequest www = UnityWebRequestTexture.GetTexture(url);
@@ -478,7 +503,6 @@ public class CounselorLoad : MonoBehaviour
         sixteenText.color = Color.black;
         seventeenText.color = Color.black;
 
-
     }
 
 
@@ -548,7 +572,9 @@ public class CounselorLoad : MonoBehaviour
     }
 
 
-    // 선택한 날짜를 저장하는 함수.
+    /// <summary>
+    /// 선택한 날짜를 저장하는 함수.
+    /// </summary>
     public void SelectDay()
     {
         string seletedMonth = calendarMonth.text;    //선택한 날짜의 달을 담을 string타입 변수
@@ -821,8 +847,9 @@ public class CounselorLoad : MonoBehaviour
         }
     }
 
-
-    // 첫번째 예약신청 버튼. (팝업창 텍스트 변경)
+    /// <summary>
+    /// 첫번째 예약신청 버튼을 누르면 실행되는 함수. (팝업창 텍스트 변경)
+    /// </summary> 
     public void ReservationTryBtn()
     {
         confirmDay.text = appDay1;
@@ -831,8 +858,9 @@ public class CounselorLoad : MonoBehaviour
 
     }
 
-
-    // 팝업창 최종 예약하기 버튼.
+    /// <summary>
+    /// 팝업창 최종 예약하기 버튼을 누르면 실행되는 함수.
+    /// </summary>
     public void ReservationFinalBtn()
     {
         //예약일자 저장(오늘 날짜)
@@ -922,8 +950,11 @@ public class CounselorLoad : MonoBehaviour
     } // ReservationFinal() end.
 
 
-
-    // Counselors객체와 요일리스트를 매개변수로 받아와서 상담사목록 프리팹을 생성하는 함수.
+    /// <summary>
+    /// Counselors객체와 요일리스트를 매개변수로 받아와서 상담사목록 프리팹을 생성하는 함수.
+    /// </summary>
+    /// <param name="counselors"></param>
+    /// <param name="week"></param>
     public void CreatPrefabs(Counselors counselors, List<bool> week)
     {
         if (counselors != null)
@@ -984,7 +1015,10 @@ public class CounselorLoad : MonoBehaviour
     } // CreatPrefabs(Counselors counselors, List<bool> week) end.
 
 
-    // Counselors객체를 매개변수로 받아와서 상담사목록 프리팹을 파괴하는 함수.
+    /// <summary>
+    /// Counselors객체를 매개변수로 받아와서 상담사목록 프리팹을 파괴하는 함수.
+    /// </summary>
+    /// <param name="counselors"></param>
     public void DestroyPrefabs(Counselors counselors)
     {
         if (counselors != null)
@@ -1016,8 +1050,9 @@ public class CounselorLoad : MonoBehaviour
 
 
 
-
-    // 내담자 레코드 하위에 위치한 예약 레코드(appointment)
+    /// <summary>
+    /// 내담자 레코드 하위에 위치한 예약 레코드(appointment)
+    /// </summary>
     class ClientAppo
     {
         public string counselorUid   //상담사uid
@@ -1044,10 +1079,7 @@ public class CounselorLoad : MonoBehaviour
             , diary;                  //감정일기
 
 
-
-
         public int progress;         //수락상태, 0:무반응 1:수락 2:거절
-
 
         public ClientAppo(
             string counselorUid
@@ -1104,8 +1136,9 @@ public class CounselorLoad : MonoBehaviour
 
     } // ClientAppo end.
 
-
-    // 상담사 레코드 하위에 위치한 예약 레코드(appointment)
+    /// <summary>
+    /// 상담사 레코드 하위에 위치한 예약 레코드(appointment)
+    /// </summary> 
     class CounselorAppo
     {
         public string clientUid  //내담자uid
@@ -1159,7 +1192,6 @@ public class CounselorLoad : MonoBehaviour
         }
 
     } // CounselorAppo end.
-
 
 
 } // CounselorLoad end.
