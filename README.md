@@ -1,9 +1,12 @@
 # maon
 서울여대 2022 디지털미디어학과 캡스톤수업 슈니버스 팀 입니다.   
 [http://www.swudmgraduate.com/2022/project/detail/59?pageNo=1#commentSection](http://www.swudmgraduate.com/2022/project/detail/59)
-* __[프로젝트 압축파일 다운로드 및 백업자료](https://drive.google.com/drive/folders/1hwKHY7TAKy1rX2O48Xn41Xy_zrT9-QzN?usp=sharing)__     
+* __[프로젝트 압축파일 다운로드 및 백업자료](https://drive.google.com/drive/folders/1hwKHY7TAKy1rX2O48Xn41Xy_zrT9-QzN?usp=sharing)__          
 
-![maon](https://user-images.githubusercontent.com/40843278/236620364-52d42cbf-0dd9-477e-b92f-1dfff1dc9ce8.jpg)
+
+[![Video Label](http://img.youtube.com/vi/cYH9U2HStOs/0.jpg)](https://youtu.be/cYH9U2HStOs)  
+
+![maon](https://user-images.githubusercontent.com/40843278/236620364-52d42cbf-0dd9-477e-b92f-1dfff1dc9ce8.jpg)   
 
 ---
 
