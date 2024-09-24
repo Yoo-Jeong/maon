@@ -9,8 +9,6 @@
 ![maon](https://user-images.githubusercontent.com/40843278/236620364-52d42cbf-0dd9-477e-b92f-1dfff1dc9ce8.jpg)   
 
 ---
-
-## 바로가기
 1. [INTRO](#intro)
 2. [기능구현](#기능구현)
     * [로그인](#로그인)
