@@ -1,5 +1,5 @@
 # maon
-[![Video Label]([http://img.youtube.com/vi/cYH9U2HStOs/0.jpg)](https://youtu.be/cYH9U2HStOs](https://youtu.be/cYH9U2HStOs?si=o9BgePstx8AxTfdm&t=59))   
+[![Video Label](http://img.youtube.com/vi/cYH9U2HStOs/0.jpg)](https://youtu.be/cYH9U2HStOs)
 
 서울여대 2022 디지털미디어학과 캡스톤수업 슈니버스 팀 입니다.   
 [온라인 졸업전시 링크](http://www.swudmgraduate.com/2022/project/detail/59)
